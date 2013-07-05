@@ -11,13 +11,13 @@
 			<script type="text/javascript" charset="utf-8" src="javascripts/graphDemo.js"></script>-->
 			<div class="stats">
 				<p class="stat">
-					<span class="number">53</span>tickets
+					<span class="number"><?=$goal_noti?></span>process task
 				</p>
 				<p class="stat">
-					<span class="number">27</span>tasks
+					<span class="number"><?=$goal_noti?></span>training
 				</p>
 				<p class="stat">
-					<span class="number">15</span>waiting
+					<span class="number"><?=$goal_noti?></span>goal
 				</p>
 			</div>
 			<h1 class="page-title">Dashboard</h1>

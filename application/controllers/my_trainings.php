@@ -71,7 +71,7 @@ class My_trainings extends CI_Controller {
 										);
 	}
 
-	public function save_trainings( $action ) {
+	public function save_trainings( $action ) {		
 		if( $action == 'add' ){
 
 			$user = array( 'user_id' => $this->user_id );
@@ -86,40 +86,22 @@ class My_trainings extends CI_Controller {
 		}
 	}
 
-	public function update( $training_id ) {
-		# Check user's session
-		$this->template_library->check_session( 'user' );
-		$this->training_id = $training_id;
+	public function update() {
+		if( $this->input->is_ajax_request() ){
+			$items = $this->input->post( 'item' );
+			if( $items ){
+				for( $i = 0; $i < count( $items ); $i++ ){
+					$param = array( 
+									'user_id' => $this->user_id
+									,'status' => $this->input->post( 'state' )
+								  );
+					$this->dev_plan_model->updateEmpDevPlan( $items[$i], $param );
+				}
+			}
 
-		if( $this->input->post() )
-			$this->save_trainings( 'update' );
-
-		$where = array(
-						'training_id' => $training_id
-					  );
-		$training = $this->dev_plan_model->getAllEmpTraining( 
-													0
-													,1
-													,$where
-													,'*'
-												);
-		if( !count( $training ) ) redirect( base_url().'my_trainings' );
-
-		$template_param['trainings'] = $training[0];
-		// echo "<pre>";
-		// print_r($template_param);
-		// exit();
-		$template_param['left_side_nav'] = $this->load->view( '_components/left_side_nav', '', true );
-		$template_param['action']		 = 'Update Training';
-		$template_param['content']		 = 'add_training';
-
-		$this->template_library->render( 
-											$template_param 
-											,'user_header'
-											,'user_top'
-											,'user_footer'
-											,'' 
-										);
+			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Skills has been updated successfully!', 'class' => 'info' ) );
+			echo base_url().'skills';
+		}
 	}
 
 	public function delete() {
