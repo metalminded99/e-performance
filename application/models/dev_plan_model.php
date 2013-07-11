@@ -68,4 +68,15 @@ class Dev_Plan_Model extends CI_Model {
         return true;
     }
 
+    public function getEmpDevPlanReminder( $user_id ) {
+        $where = array( 
+                        'user_id' => $user_id
+                        ,'status' => 'For Approval'
+                      );
+
+        return $this->db
+                        ->where( $where )
+                        ->count_all_results( DEV_PLAN );
+    }
+
 }

@@ -14,7 +14,7 @@
 					<span class="number"><?=$goal_noti?></span>process task
 				</p>
 				<p class="stat">
-					<span class="number"><?=$goal_noti?></span>training
+					<span class="number"><?=$trainings_noti?></span>training
 				</p>
 				<p class="stat">
 					<span class="number"><?=$goal_noti?></span>goal

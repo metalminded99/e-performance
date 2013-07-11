@@ -13,11 +13,12 @@ class Home extends CI_Controller {
 		$this->load->model( 'news_model' );
 		$this->load->model( 'history_model' );
 		$this->load->model( 'goal_model' );
-
+		$this->load->model( 'dev_plan_model' );
 
 		// $data['news'] = $this->news_model->getActiveNews();
 		// $data['history'] = $this->history_model->getUserLogs( $this->session->userdata('user_id') );
 		$template_param['goal_noti']				= $this->goal_model->getEmpGoalReminder( $this->session->userdata( 'user_id' ) );
+		$template_param['trainings_noti']			= $this->dev_plan_model->getEmpDevPlanReminder( $this->session->userdata( 'user_id' ) );
 		$template_param['left_side_nav']			= $this->load->view( '_components/left_side_nav', '', true );
 		// $template_param['user_notifications']		= $this->load->view( '_components/user_notifications', '', true );
 		// $template_param['user_dashboard']			= $this->load->view( '_components/user_dashboard', '', true );
