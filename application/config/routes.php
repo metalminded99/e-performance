@@ -94,7 +94,7 @@ $route['acct_setting/update_contact'] = "home/update_contact";
 $route['skills/(:num)'] = "skills/index/$1";
 $route['abilities/(:num)'] = "abilities/index/$1";
 $route['activities/(:num)'] = "abilities/index/$1";
-
+$route['dept_goals/(:num)'] = "dept_goals/index/$1";
 $route['journals/(:num)'] = "journals/index/$1";
 
 $route['employees/info/goals/(:num)'] = "employees/goals/$1";

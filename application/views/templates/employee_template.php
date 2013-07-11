@@ -47,7 +47,7 @@
 						?>
 						<td><?=$this->template_library->get_year_diff( $employee['birthday'], $now_d )?></td>
 			          <td>
-			              <a title="view" class="view_btn" role="button" onclick="window.location='<?=base_url()?>employees/info/<?=$employee['user_id']?>';"><i class="icon-file"></i></a>
+			              <a title="view" class="view_btn" role="button" href="<?=base_url()?>employees/info/<?=$employee['user_id']?>"><i class="icon-file"></i></a>
 			          </td>
 			        </tr>
 			        <? 

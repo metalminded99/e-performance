@@ -22,12 +22,6 @@ class Goal_Model extends CI_Model {
                             ->result_array();
     }
 
-    public function getTotalDeptGoal( $dept ) {
-        return $this->db
-                        ->where( array( 'dept_id' => $dept ) )
-                        ->count_all_results( DEPT_GOALS );
-    }
-
     public function getTotalEmpGoal( $user_id ) {
     	return $this->db
                         ->where( array( 'user_id' => $user_id ) )
@@ -82,14 +76,6 @@ class Goal_Model extends CI_Model {
         return true;
     }
 
-    public function deleteGoal( $db_param ) {
-        $this->db
-                ->where( $db_param )
-                ->delete( JOBS );
-
-        return true;
-    }
-
     public function getGoalStats() {
         return $this->db
                         ->select( 'count(*) total' )
@@ -108,4 +94,47 @@ class Goal_Model extends CI_Model {
                         ->where( $where )
                         ->count_all_results( EMP_GOALS );
     }
+
+    public function getAllDeptGoal( $offset, $per_page, $where = array(), $fld = 'goal_id, goal_title, goal_desc, due_date, date_created' ) {
+            $this->db
+                    ->select( $fld )
+                    ->from( DEPT_GOALS )
+                    ->order_by( 'due_date', 'ASC' )
+                    ->limit( $per_page, $offset );
+            
+            if( !is_null( $where ) )
+                $this->db->where( $where ); 
+            
+            return $this->db
+                            ->get()
+                            ->result_array();
+    }
+
+    public function getTotalDeptGoal( $dept ) {
+        return $this->db
+                        ->where( array( 'department_id' => $dept ) )
+                        ->count_all_results( DEPT_GOALS );
+    }
+
+    public function saveNewDeptGoal( $db_param ) {
+        $this->db->insert( DEPT_GOALS, $db_param );
+        return $this->db->insert_id();
+    }
+
+    public function updateDeptGoal( $goal_id, $db_param ) {
+        $where = array( 'goal_id' => $goal_id );
+
+        return $this->db
+                        ->where( $where )
+                        ->update( DEPT_GOALS, $db_param );
+    }
+
+    public function deleteDeptGoal( $db_param ) {
+        $this->db
+                ->where( $db_param )
+                ->delete( DEPT_GOALS );
+
+        return true;
+    }
+
 }
