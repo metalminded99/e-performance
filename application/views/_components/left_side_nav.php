@@ -20,7 +20,7 @@
 				<li><a href="<?=base_url()?>activities">Activities</a></li>
 				<li><a href="<?=base_url()?>duties">Duties &amp; Responsibilty</a></li>
 				<li><a href="<?=base_url()?>dept_goals">Department Goal</a></li>
-				<li><a href="<?=base_url()?>skills">Process Management</a></li>
+				<li><a href="<?=base_url()?>process_management">Process Management</a></li>
 				<?php } ?>
 			</ul>
 			<div class="nav-header" data-toggle="collapse" data-target="#settings-menu">
