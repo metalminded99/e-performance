@@ -13,7 +13,7 @@ class Manage_User_Model extends CI_Model {
         $this->load->database();
     }    
     
-    public function getAllUsers( $offset, $per_page ) {
+    public function getAllUsers( $offset, $per_page, $where = array() ) {
         $db_param = array(
                             'U.lvl !=' => 1
                          );
@@ -23,7 +23,7 @@ class Manage_User_Model extends CI_Model {
                 ->from( USER.' U' )
                 ->join( JOBS.' J', 'J.job_id = U.job_id', 'left' )
                 ->join( DEPT.' D', 'D.dept_id = U.department_id', 'left' )
-                ->where( $db_param );
+                ->where( array_merge( $db_param, $where ) );
 
         return $this->db->limit( $per_page, $offset )->get()->result_array();
     }

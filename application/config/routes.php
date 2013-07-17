@@ -77,10 +77,15 @@ $route['control_panel/manage_activities'] = "admin/manage_activities";
 $route['control_panel/manage_activities/(:num)'] = "admin/manage_activities/index/$1";
 $route['control_panel/manage_activities/(:any)'] = "admin/manage_activities/$1";
 
-# Admin manage activities
+# Admin manage trainings
 $route['control_panel/manage_trainings'] = "admin/manage_trainings";
 $route['control_panel/manage_trainings/(:num)'] = "admin/manage_trainings/index/$1";
 $route['control_panel/manage_trainings/(:any)'] = "admin/manage_trainings/$1";
+
+# Admin manage process
+$route['control_panel/manage_process'] = "admin/manage_process";
+$route['control_panel/manage_process/(:num)'] = "admin/manage_process/index/$1";
+$route['control_panel/manage_process/(:any)'] = "admin/manage_process/$1";
 
 # Admin manage contents
 $route['control_panel/manage_contents/(:any)'] = "admin/manage_contents/$1";

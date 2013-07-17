@@ -9,7 +9,7 @@ class Process_Model extends CI_Model {
     
     public function getAllProcess( $offset, $per_page, $where = array() ) {
             $this->db
-                    ->select( '*' )
+                    ->select( 'proc_id, proc_title, proc_desc, start_date, end_date' )
                     ->from( PROCESS )
                     ->order_by( 'date_added', 'DESC' )
                     ->limit( $per_page, $offset );
@@ -22,14 +22,27 @@ class Process_Model extends CI_Model {
                             ->result_array();
     }
 
-    public function getTotalProcess() ) {
+    public function getTotalProcess() {
     	return $this->db
                         ->count_all_results( PROCESS );
     }
 
     public function saveNewProcess( $db_param ) {
+        $emp = $db_param[ 'emp' ];
+        unset( $db_param[ 'emp' ] );
+
         $this->db->insert( PROCESS, $db_param );
-        return $this->db->insert_id();
+        $proc_id = $this->db->insert_id();
+
+        if( count( $emp ) > 0 ) {
+            for ( $i=0; $i < count( $emp ); $i++ ) {
+                $emp_param = array(
+                                    'user_id'       => $emp[ $i ]
+                                    ,'process_id'   => $proc_id
+                                  );
+                $this->db->insert( EMP_PROCESS, $emp_param );
+            }
+        }
     }
 
     public function updateProcess( $goal_id, $db_param ) {
@@ -84,6 +97,13 @@ class Process_Model extends CI_Model {
         return $this->db
                         ->where( $where )
                         ->count_all_results( PROCESS );
+    }
+
+    public function getEmpProcess( $proc_id ) {
+        return $this->db
+                        ->where( 'process_id'. $proc_id )
+                        ->get( EMP_PROCESS )
+                        ->result_array();
     }
 
 }
