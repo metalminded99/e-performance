@@ -12,10 +12,6 @@ MySQL - 5.5.31-0ubuntu0.12.04.2 : Database - eperformance
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`eperformance` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
-USE `eperformance`;
-
 /*Table structure for table `tbl_abilities` */
 
 DROP TABLE IF EXISTS `tbl_abilities`;
@@ -51,6 +47,35 @@ CREATE TABLE `tbl_activities` (
 /*Data for the table `tbl_activities` */
 
 insert  into `tbl_activities`(`activity_id`,`activity_code`,`activity_name`,`activity_desc`,`date_added`) values (2,'AC','test activity','test activity','2013-06-19 18:32:29'),(3,'AC2','test activity 2','test activity 2','2013-06-19 18:32:45');
+
+/*Table structure for table `tbl_appraisal` */
+
+DROP TABLE IF EXISTS `tbl_appraisal`;
+
+CREATE TABLE `tbl_appraisal` (
+  `appraisal_id` int(11) NOT NULL AUTO_INCREMENT,
+  `appraisal_title` varchar(100) DEFAULT NULL,
+  `appraisal_desc` text,
+  `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`appraisal_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_appraisal` */
+
+/*Table structure for table `tbl_appraisal_questionaire` */
+
+DROP TABLE IF EXISTS `tbl_appraisal_questionaire`;
+
+CREATE TABLE `tbl_appraisal_questionaire` (
+  `question_id` int(11) NOT NULL AUTO_INCREMENT,
+  `appraisal_id` int(11) DEFAULT NULL,
+  `question` text,
+  PRIMARY KEY (`question_id`),
+  KEY `appraisal_id` (`appraisal_id`),
+  CONSTRAINT `tbl_appraisal_questionaire_ibfk_1` FOREIGN KEY (`appraisal_id`) REFERENCES `tbl_appraisal` (`appraisal_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_appraisal_questionaire` */
 
 /*Table structure for table `tbl_department` */
 
@@ -181,6 +206,43 @@ CREATE TABLE `tbl_emp_journals` (
 
 insert  into `tbl_emp_journals`(`journal_id`,`user_id`,`journal_title`,`journal_desc`,`date_created`,`modified_date`) values (1,6,'The quick brown fox','The quick brown fox jumps over the lazy fucking dog.','2013-07-04 18:21:37',NULL);
 
+/*Table structure for table `tbl_emp_perf_output` */
+
+DROP TABLE IF EXISTS `tbl_emp_perf_output`;
+
+CREATE TABLE `tbl_emp_perf_output` (
+  `user_id` int(11) NOT NULL,
+  `perf_id` int(11) NOT NULL,
+  `self_score` int(11) NOT NULL DEFAULT '0',
+  `peer_score` int(11) NOT NULL DEFAULT '0',
+  `sup_score` int(11) NOT NULL DEFAULT '0',
+  KEY `perf_id` (`perf_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `tbl_emp_perf_output_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tbl_users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `tbl_emp_perf_output_ibfk_2` FOREIGN KEY (`perf_id`) REFERENCES `tbl_perf_output` (`perf_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Employee Scores for Performance Output';
+
+/*Data for the table `tbl_emp_perf_output` */
+
+/*Table structure for table `tbl_emp_process` */
+
+DROP TABLE IF EXISTS `tbl_emp_process`;
+
+CREATE TABLE `tbl_emp_process` (
+  `user_id` int(11) DEFAULT NULL,
+  `process_id` int(11) DEFAULT NULL,
+  `date_accomplished` datetime DEFAULT NULL,
+  `date_assigned` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `user_id` (`user_id`),
+  KEY `process_id` (`process_id`),
+  CONSTRAINT `tbl_emp_process_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tbl_users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `tbl_emp_process_ibfk_2` FOREIGN KEY (`process_id`) REFERENCES `tbl_process` (`proc_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_emp_process` */
+
+insert  into `tbl_emp_process`(`user_id`,`process_id`,`date_accomplished`,`date_assigned`) values (2,NULL,NULL,'2013-07-18 11:49:33'),(8,NULL,NULL,'2013-07-18 11:49:33'),(2,4,NULL,'2013-07-18 11:50:19'),(6,4,NULL,'2013-07-18 11:50:19'),(8,4,NULL,'2013-07-18 11:50:19');
+
 /*Table structure for table `tbl_job_abilities` */
 
 DROP TABLE IF EXISTS `tbl_job_abilities`;
@@ -257,7 +319,7 @@ CREATE TABLE `tbl_job_skills` (
 
 /*Data for the table `tbl_job_skills` */
 
-insert  into `tbl_job_skills`(`skill_id`,`job_id`,`active`,`date_added`) values (2,1,'Yes','2013-06-20 16:05:12');
+insert  into `tbl_job_skills`(`skill_id`,`job_id`,`active`,`date_added`) values (2,1,'Yes','2013-07-22 19:26:30'),(7,1,'Yes','2013-07-22 19:26:30');
 
 /*Table structure for table `tbl_jobs` */
 
@@ -313,6 +375,22 @@ CREATE TABLE `tbl_news` (
 
 /*Data for the table `tbl_news` */
 
+/*Table structure for table `tbl_perf_output` */
+
+DROP TABLE IF EXISTS `tbl_perf_output`;
+
+CREATE TABLE `tbl_perf_output` (
+  `perf_id` int(11) NOT NULL AUTO_INCREMENT,
+  `perf_title` varchar(100) NOT NULL,
+  `perf_desc` text NOT NULL,
+  PRIMARY KEY (`perf_id`),
+  KEY `perf_title` (`perf_title`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1 COMMENT='List of performance output (appraisal form); static data ';
+
+/*Data for the table `tbl_perf_output` */
+
+insert  into `tbl_perf_output`(`perf_id`,`perf_title`,`perf_desc`) values (1,'Job Knowledge / Skills ','The extent to which an employee demonstrates functional knowledge and the skill level required to complete the assignments efficiently and effectively. Includes learning & adapting to changing skill requirements.'),(2,'Quantity of Work','The extent to which an employee uses available working time, plans and prioritizes work to achieve a reasonable volume of work.'),(3,'Quality of Work ','The extent to which an employee exerted effort to consistently achieve desired outcomes which are accurate, thorough and with a minimum avoidable errors.'),(4,'Timeliness','The extent to which an employee is able to work quickly and deliver required output on a timely basis. Adjusts to unexpected changes in work demands to meet timetables.');
+
 /*Table structure for table `tbl_process` */
 
 DROP TABLE IF EXISTS `tbl_process`;
@@ -326,9 +404,11 @@ CREATE TABLE `tbl_process` (
   `date_added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`proc_id`),
   KEY `proc_title` (`proc_title`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_process` */
+
+insert  into `tbl_process`(`proc_id`,`proc_title`,`proc_desc`,`start_date`,`end_date`,`date_added`) values (4,'Update Job Specifications','Update Job Specifications','2013-07-18','2013-07-22','2013-07-17 10:51:15');
 
 /*Table structure for table `tbl_skills` */
 
@@ -441,7 +521,7 @@ CREATE TABLE `tbl_users` (
 
 /*Data for the table `tbl_users` */
 
-insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-07-12 14:26:20',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,1,'2013-07-12 13:19:38',''),(5,'asd','3641265abc04ff623b3c82c131848950','2','asdasd','sdsad','asd','     asd       ','asd@asd.com','+123123','+123123','2013-06-09','Male','','','','','123123','asdasd',1,2,NULL,''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,1,'2013-07-08 11:11:56',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,1,'2013-06-26 10:03:55',''),(8,'klasdl','4bfd200eba0c0fb877d110b50805fd88','2','asdasd','sdkasdl','askdakls','     asdasda   ','asdasd@asd.com','123123','12312312','2013-06-11','Male','','','','','123123','asdasd',1,2,NULL,'user/1370944.jpg');
+insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-07-22 14:55:51',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,1,'2013-07-22 10:43:32',''),(5,'asd','3641265abc04ff623b3c82c131848950','2','asdasd','sdsad','asd','     asd       ','asd@asd.com','+123123','+123123','2013-06-09','Male','','','','','123123','asdasd',1,2,NULL,''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,1,'2013-07-08 11:11:56',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,1,'2013-06-26 10:03:55',''),(8,'klasdl','4bfd200eba0c0fb877d110b50805fd88','2','asdasd','sdkasdl','askdakls','     asdasda   ','asdasd@asd.com','123123','12312312','2013-06-11','Male','','','','','123123','asdasd',1,2,NULL,'user/1370944.jpg');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
