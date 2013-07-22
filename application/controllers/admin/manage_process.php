@@ -70,13 +70,15 @@ class Manage_process extends CI_Controller {
 		if( !is_integer( $proc_id ) && $proc_id <= 0 )
 			redirect( base_url().'control_panel/manage_process' );
 
-		if( $this->input->post() ) $this->save_process( 'edit' );
+		if( $this->input->post() ) $this->save_process( 'edit', $proc_id );
 
 		$this->load->model( 'manage_user_model' );
 		# Job form
-		$process_details = $this->process_model->getAllProcess( 0, 1, array( 'proc_id' => $proc_id ) );
-		$data['process'] = $process_details[0];
+		$process_details	= $this->process_model->getAllProcess( 0, 1, array( 'proc_id' => $proc_id ) );
+		$data['process']	= $process_details[0];
 		$data['users_list'] = $this->manage_user_model->getAllUsers( 0, 1000 );
+		$data['emp_process'] = $this->process_model->getEmpProcess( $proc_id );
+
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
 		$template_param['main_content'] = $this->load->view( 'admin/manage_process', $data, true );
 		$template_param['content'] = 'templates/admin_template';
@@ -85,12 +87,12 @@ class Manage_process extends CI_Controller {
 		$this->template_library->render( $template_param );
 	}
 
-	public function save_process( $action ) {
+	public function save_process( $action, $proc_id = 0 ) {
 		if( $action == 'add' ) {
 			$this->process_model->saveNewProcess( $this->input->post() );
 			$this->session->set_flashdata( 'message', array( 'str' => 'New process has been added successfully!', 'class' => 'n_ok' ) );
 		}elseif( $action == 'edit' ) {
-			$this->process_model->updateProcess( $this->input->post() );
+			$this->process_model->updateProcess( $proc_id, $this->input->post() );
 			$this->session->set_flashdata( 'message', array( 'str' => 'Process has been updated successfully!', 'class' => 'n_ok' ) );
 		}
 

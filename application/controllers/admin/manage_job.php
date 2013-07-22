@@ -49,8 +49,14 @@ class Manage_job extends CI_Controller {
 
 		if( $this->input->post() ) $this->save_job( 'add' );
 
-		# Department form
+		$this->load->model( 'skills_model' );
+		$this->load->model( 'abilities_model' );
+
+		# Job form
 		$data['departments'] = $this->department_model->getAllDepartment( 0, 1000 );
+		$data['skills']		= $this->skills_model->getAllSkills( 0, 1000 );
+		$data['abilities']	= $this->abilities_model->getAllAbilities( 0, 1000 );
+
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
 		$template_param['main_content'] = $this->load->view( 'admin/manage_job', $data, true );
 		$template_param['content'] = 'templates/admin_template';
@@ -69,7 +75,15 @@ class Manage_job extends CI_Controller {
 		if( $this->input->post() )
 			$this->save_job( 'edit' );
 
+		$this->load->model( 'skills_model' );
+		$this->load->model( 'abilities_model' );
+
 		# Job form
+		$data['t_skills']	= array();
+		$data['t_abilities']= array();
+		$data['skills']		= $this->skills_model->getAllSkills( 0, 1000 );
+		$data['abilities']	= $this->abilities_model->getAllAbilities( 0, 1000 );
+		$data['departments'] = $this->department_model->getAllDepartment( 0, 1000 );
 		$job_details = $this->job_model->getAllJob( 0, 1, null, array( 'job_id' => $job_id ) );
 		$data['job'] = $job_details[0];
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
@@ -98,6 +112,38 @@ class Manage_job extends CI_Controller {
 			echo "Job deleted successfully!";
 		}
 	}
+
+	public function update_skills() {			
+		if( $this->input->post() ){
+			$this->load->model( 'skills_model' );
+
+			$this->skills_model->deleteJobSkill( array( 'job_id' => $this->input->post( 'job_id' ) ) );
+
+			$skills = $this->input->post( 'skills' );
+			for ($i=0; $i < count( $skills ); $i++) { 
+				$insert = array(
+									'job_id'	=> $this->input->post( 'job_id' )
+									,'skill_id' => $skills[$i]
+									,'active'	=> 'Yes'
+								);
+				$this->skills_model->saveNewJobSkill( $insert );
+			}
+			$this->session->set_flashdata( 'message', 'Job skills has been updated successfully!' );
+			redirect( base_url().'control_panel/manage_job/update_job/'.$this->input->post( 'job_id' ) );			
+		}
+		else
+			redirect( base_url().'control_panel/manage_job' );
+	}
+
+	public function update_abilities() {
+		if( $this->input->post() ){
+			$this->load->model( 'abilities_model' );
+
+		}
+		else
+			redirect( base_url().'control_panel/manage_job' );
+	}
+
 }
 
 /* End of file manage_user.php */

@@ -34,6 +34,25 @@ class Process_Model extends CI_Model {
         $this->db->insert( PROCESS, $db_param );
         $proc_id = $this->db->insert_id();
 
+        $this->insertEmpProcess( $emp, $proc_id );
+    }
+
+    public function updateProcess( $process_id, $db_param ) {
+        $emp = $db_param[ 'emp' ];
+        unset( $db_param[ 'emp' ] );
+
+        $this->db
+                ->where( array( 'proc_id' => $process_id ) )
+                ->update( PROCESS, $db_param );
+
+        $this->db->delete( EMP_PROCESS, array( 'process_id' => $process_id ) );
+
+        $this->insertEmpProcess( $emp, $process_id );
+
+        return true;
+    }
+
+    public function insertEmpProcess( $emp, $proc_id ) {
         if( count( $emp ) > 0 ) {
             for ( $i=0; $i < count( $emp ); $i++ ) {
                 $emp_param = array(
@@ -43,41 +62,8 @@ class Process_Model extends CI_Model {
                 $this->db->insert( EMP_PROCESS, $emp_param );
             }
         }
-    }
 
-    public function updateProcess( $goal_id, $db_param ) {
-        $where = array( 'goal_id' => $goal_id );
-        if( isset( $db_param[ 'status' ] ) ) {
-            if( $db_param[ 'status' ] == 'Not Started' ){
-                $now = date('Y-m-d h:i:s');
-                $this->db
-                         ->where( $where )
-                         ->update( 
-                                    PROCESS
-                                    ,array( 
-                                            'approved' => 1
-                                            ,'date_approved' => $now
-                                          ) 
-                                 );
-            }
-        }
-
-        if( isset( $db_param[ 'percentage' ] ) ) {
-            if( $db_param[ 'percentage' ] > 0 ){
-                $this->db
-                         ->where( $where )
-                         ->update( 
-                                    PROCESS
-                                    ,array( 
-                                            'status' => 'In Progress'
-                                          )
-                                 );
-            }
-        }
-
-        return $this->db
-                        ->where( $where )
-                        ->update( PROCESS, $db_param );
+        return true;
     }
 
     public function deleteProcess( $db_param ) {
@@ -101,7 +87,8 @@ class Process_Model extends CI_Model {
 
     public function getEmpProcess( $proc_id ) {
         return $this->db
-                        ->where( 'process_id'. $proc_id )
+                        ->select( 'user_id' )
+                        ->where( array( 'process_id' => $proc_id ) )
                         ->get( EMP_PROCESS )
                         ->result_array();
     }
