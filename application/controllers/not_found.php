@@ -4,6 +4,8 @@ class Not_found extends CI_Controller {
 
 	public function __construct() {
 		parent::__construct();
+
+		$this->load->library( 'user_agent' );
 	}
 
 	public function index() {

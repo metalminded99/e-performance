@@ -6,6 +6,16 @@
         <!-- left side nav END -->
         
         <div class="span9">
+            <?php
+                if( $this->session->flashdata( 'message' ) ): 
+                    $msg = $this->session->flashdata( 'message' );
+            ?>
+            <div class="alert alert-<?=$msg['class']?>">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <?=$msg['str']?>
+            </div>
+            <?php endif; ?>
+            
             <?php if( isset( $heading ) ) { ?>
             <h1 class="page-title"><?=$heading?></h1>
             <?php
@@ -14,24 +24,12 @@
             ?>
             <div class="btn-toolbar">
                 <a href="<?=$add_link?>" class="btn btn-primary"><i class="icon-plus"></i><?=$add_link_text?></a>
-                <div class="btn-group"></div>
-            </div>
             <?php 
                 }
                 echo isset( $emp_menu ) ? $emp_menu : '' ;
-                if( $this->session->flashdata( 'message' ) ): 
-                    $msg = $this->session->flashdata( 'message' );
-            ?>
-                <div class="alert alert-<?=$msg['class']?>">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <?=$msg['str']?>
-                </div>
-            <?php 
-                endif;
 
                 if( $this->session->userdata( 'lvl' ) == 2 ) {
             ?>
-            <div class="btn-toolbar">
                 <div id="action" class="btn-group" style="display:none;">
                     <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
                     <ul class="dropdown-menu">
@@ -41,9 +39,9 @@
                         <li><a href="#" onclick="do_action( 'Rejected' );">Rejected</a></li>
                     </ul>
                 </div>
-                <div class="btn-group"></div>
-            </div>
+                <div class="btn-group"></div>            
             <? } ?>
+            </div>
             <div class="row-fluid">
                 <div class="block span12">
                     <div class="block-heading" data-target="#widget1container">

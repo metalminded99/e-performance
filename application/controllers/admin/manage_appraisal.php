@@ -1,44 +1,29 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Manage_process extends CI_Controller {
+class Manage_appraisal extends CI_Controller {
+	protected $user_job_id;
 
 	public function __construct() {
 		parent::__construct();
-
-		$this->load->model( 'process_model' );
-		$this->load->model( 'job_model' );
-		$this->load->model( 'department_model' );
+		$this->load->model( 'appraisal_model' );
 	}
 
 	public function index( $offset = 0 ) {
-		# Check user's session
-		$this->template_library->check_session( );
+		# Check admin's session
+		$this->template_library->check_session( 'admin' );
 
-		# Process list
+		# Appraisal list
 		$data['pagination'] = $this->template_library->get_pagination(
-																		'control_panel/manage_process' 
-																		,$this->process_model->getTotalProcess()
+																		'control_panel/manage_appraisal' 
+																		,$this->appraisal_model->getTotalAppraisal()
 																		,PER_PAGE
 																	 );
 
-		$data['h_title'] = 'Manage Process';
-		$data['listing'] = $this->process_model->getAllProcess( $offset, PER_PAGE );
-		$data['th'] = array(
-								'Process Title'
-								,'Description'
-								,'Start Date'
-								,'End Date'
-							);
-		$data['add_button'] = anchor(
-										base_url().'control_panel/manage_process/add'
-										,'Add new process'
-										,'class="button add"'
-									);
+		$data['appraisal'] = $this->appraisal_model->getAllAppraisal( $offset, PER_PAGE );
+
 		$data['counter'] = $offset;
-		$data['d_uri'] = 'manage_process/delete';
-		$data['u_uri'] = 'manage_process/update';
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
-		$template_param['main_content'] = $this->load->view( 'templates/results_listing', $data, true );
+		$template_param['main_content'] = $this->load->view( 'templates/appraisal_list_template', $data, true );
 		$template_param['content'] = 'templates/admin_template';
 
 		# Render page
@@ -107,5 +92,5 @@ class Manage_process extends CI_Controller {
 	}
 }
 
-/* End of file manage_process.php */
-/* Location: ./application/controllers/manage_process.php */
+/* End of file appraisal.php */
+/* Location: ./application/controllers/appraisal.php */

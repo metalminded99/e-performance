@@ -36,7 +36,7 @@ class Manage_job extends CI_Controller {
 		$data['d_uri'] = 'manage_job/delete_job';
 		$data['u_uri'] = 'manage_job/update_job';
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
-		$template_param['main_content'] = $this->load->view( 'templates/results_listing', $data, true );
+		$template_param['main_content'] = $this->load->view( 'templates/job_list_template', $data, true );
 		$template_param['content'] = 'templates/admin_template';
 
 		# Render page
@@ -51,11 +51,23 @@ class Manage_job extends CI_Controller {
 
 		$this->load->model( 'skills_model' );
 		$this->load->model( 'abilities_model' );
+		$this->load->model( 'duties_model' );
+		$this->load->model( 'activities_model' );
 
 		# Job form
 		$data['departments'] = $this->department_model->getAllDepartment( 0, 1000 );
-		$data['skills']		= $this->skills_model->getAllSkills( 0, 1000 );
-		$data['abilities']	= $this->abilities_model->getAllAbilities( 0, 1000 );
+
+		$data['skills']					= $this->skills_model->getAllSkills( 0, 1000 );
+		$data['skill_attributes']		= array();
+
+		$data['abilities']				= $this->abilities_model->getAllAbilities( 0, 1000 );
+		$data['abilities_attributes']	= array();
+
+		$data['activities']				= $this->activities_model->getAllActivities( 0, 1000 );
+		$data['act_attributes']			= array();
+
+		$data['duties']					= $this->duties_model->getAllDuties( 0, 1000 );
+		$data['duties_attributes']		= array();
 
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
 		$template_param['main_content'] = $this->load->view( 'admin/manage_job', $data, true );
@@ -77,12 +89,22 @@ class Manage_job extends CI_Controller {
 
 		$this->load->model( 'skills_model' );
 		$this->load->model( 'abilities_model' );
+		$this->load->model( 'duties_model' );
+		$this->load->model( 'activities_model' );
 
 		# Job form
-		$data['t_skills']	= array();
-		$data['t_abilities']= array();
-		$data['skills']		= $this->skills_model->getAllSkills( 0, 1000 );
-		$data['abilities']	= $this->abilities_model->getAllAbilities( 0, 1000 );
+		$data['skills']					= $this->skills_model->getAllSkills( 0, 1000 );
+		$data['skill_attributes']		= $this->skills_model->getAllJobSkills( 0, 1000, array( 'job_id' => $job_id ) );
+
+		$data['abilities']				= $this->abilities_model->getAllAbilities( 0, 1000 );
+		$data['abilities_attributes']	= $this->abilities_model->getAllJobAbilities( 0, 1000, array( 'job_id' => $job_id ) );
+
+		$data['activities']				= $this->activities_model->getAllActivities( 0, 1000 );
+		$data['act_attributes']			= $this->activities_model->getAllJobActivities( 0, 1000, array( 'job_id' => $job_id ) );
+
+		$data['duties']					= $this->duties_model->getAllDuties( 0, 1000 );
+		$data['duties_attributes']		= $this->duties_model->getAllJobDuties( 0, 1000, array( 'job_id' => $job_id ) );
+
 		$data['departments'] = $this->department_model->getAllDepartment( 0, 1000 );
 		$job_details = $this->job_model->getAllJob( 0, 1, null, array( 'job_id' => $job_id ) );
 		$data['job'] = $job_details[0];
@@ -96,8 +118,9 @@ class Manage_job extends CI_Controller {
 
 	public function save_job( $action ) {
 		if( $action == 'add' ) {
-			$this->job_model->saveNewJob( $this->input->post() );
+			$new_job_id = $this->job_model->saveNewJob( $this->input->post() );
 			$this->session->set_flashdata( 'message', array( 'str' => 'New job has been added successfully!', 'class' => 'n_ok' ) );
+			redirect( base_url().'control_panel/manage_job/update_job/'.$new_job_id.'#dandr' );
 		}elseif( $action == 'edit' ) {
 			$this->job_model->updateJob( $this->input->post() );
 			$this->session->set_flashdata( 'message', array( 'str' => 'Job has been updated successfully!', 'class' => 'n_ok' ) );
@@ -139,6 +162,63 @@ class Manage_job extends CI_Controller {
 		if( $this->input->post() ){
 			$this->load->model( 'abilities_model' );
 
+			$this->abilities_model->deleteJobAbility( array( 'job_id' => $this->input->post( 'job_id' ) ) );
+
+			$abilities = $this->input->post( 'abilities' );
+			for ($i=0; $i < count( $abilities ); $i++) { 
+				$insert = array(
+									'job_id'		=> $this->input->post( 'job_id' )
+									,'ability_id'	=> $abilities[$i]
+									,'active'		=> 'Yes'
+								);
+				$this->abilities_model->saveNewJobAbility( $insert );
+			}
+			$this->session->set_flashdata( 'message', 'Job ability has been updated successfully!' );
+			redirect( base_url().'control_panel/manage_job/update_job/'.$this->input->post( 'job_id' ) );
+		}
+		else
+			redirect( base_url().'control_panel/manage_job' );
+	}
+
+	public function update_duties() {			
+		if( $this->input->post() ){
+			$this->load->model( 'duties_model' );
+
+			$this->duties_model->deleteJobDuty( array( 'job_id' => $this->input->post( 'job_id' ) ) );
+
+			$duties = $this->input->post( 'duties' );
+			for ($i=0; $i < count( $duties ); $i++) { 
+				$insert = array(
+									'job_id'	=> $this->input->post( 'job_id' )
+									,'duty_id' => $duties[$i]
+									,'active'	=> 'Yes'
+								);
+				$this->duties_model->saveNewJobDuty( $insert );
+			}
+			$this->session->set_flashdata( 'message', 'Job duties has been updated successfully!' );
+			redirect( base_url().'control_panel/manage_job/update_job/'.$this->input->post( 'job_id' ) );			
+		}
+		else
+			redirect( base_url().'control_panel/manage_job' );
+	}
+
+	public function update_act() {
+		if( $this->input->post() ){
+			$this->load->model( 'activities_model' );
+
+			$this->activities_model->deleteJobActivity( array( 'job_id' => $this->input->post( 'job_id' ) ) );
+
+			$activities = $this->input->post( 'activities' );
+			for ($i=0; $i < count( $activities ); $i++) { 
+				$insert = array(
+									'job_id'		=> $this->input->post( 'job_id' )
+									,'activity_id'	=> $activities[$i]
+									,'active'		=> 'Yes'
+								);
+				$this->activities_model->saveNewJobActivity( $insert );
+			}
+			$this->session->set_flashdata( 'message', 'Job activities has been updated successfully!' );
+			redirect( base_url().'control_panel/manage_job/update_job/'.$this->input->post( 'job_id' ) );
 		}
 		else
 			redirect( base_url().'control_panel/manage_job' );

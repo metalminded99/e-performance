@@ -250,10 +250,8 @@ DROP TABLE IF EXISTS `tbl_job_abilities`;
 CREATE TABLE `tbl_job_abilities` (
   `ability_id` int(11) DEFAULT NULL,
   `job_id` int(11) DEFAULT NULL,
-  `ability_code` tinytext,
-  `ability_name` varchar(100) DEFAULT NULL,
-  `ability_desc` varchar(100) DEFAULT NULL,
   `active` enum('Yes','No') DEFAULT NULL,
+  `date_added` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `job_id` (`job_id`),
   KEY `ability_id` (`ability_id`),
   CONSTRAINT `tbl_job_abilities_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `tbl_jobs` (`job_id`) ON DELETE SET NULL ON UPDATE NO ACTION,
@@ -262,7 +260,7 @@ CREATE TABLE `tbl_job_abilities` (
 
 /*Data for the table `tbl_job_abilities` */
 
-insert  into `tbl_job_abilities`(`ability_id`,`job_id`,`ability_code`,`ability_name`,`ability_desc`,`active`) values (2,1,NULL,NULL,NULL,'Yes'),(3,1,NULL,NULL,NULL,'Yes');
+insert  into `tbl_job_abilities`(`ability_id`,`job_id`,`active`,`date_added`) values (3,1,'Yes','2013-07-23 09:31:50');
 
 /*Table structure for table `tbl_job_activities` */
 
@@ -271,10 +269,8 @@ DROP TABLE IF EXISTS `tbl_job_activities`;
 CREATE TABLE `tbl_job_activities` (
   `activity_id` int(11) DEFAULT NULL,
   `job_id` int(11) DEFAULT NULL,
-  `activity_code` tinytext,
-  `activity_name` varchar(100) DEFAULT NULL,
-  `activity_desc` varchar(100) DEFAULT NULL,
   `active` enum('Yes','No') DEFAULT NULL,
+  `date_added` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `job_id` (`job_id`),
   KEY `activity_id` (`activity_id`),
   CONSTRAINT `tbl_job_activities_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `tbl_jobs` (`job_id`) ON DELETE SET NULL ON UPDATE NO ACTION,
@@ -283,6 +279,8 @@ CREATE TABLE `tbl_job_activities` (
 
 /*Data for the table `tbl_job_activities` */
 
+insert  into `tbl_job_activities`(`activity_id`,`job_id`,`active`,`date_added`) values (3,1,'Yes','2013-07-23 14:40:34');
+
 /*Table structure for table `tbl_job_duties` */
 
 DROP TABLE IF EXISTS `tbl_job_duties`;
@@ -290,10 +288,8 @@ DROP TABLE IF EXISTS `tbl_job_duties`;
 CREATE TABLE `tbl_job_duties` (
   `duty_id` int(11) DEFAULT NULL,
   `job_id` int(11) DEFAULT NULL,
-  `duty_code` tinytext,
-  `duty_name` varchar(100) DEFAULT NULL,
-  `duty_desc` varbinary(100) DEFAULT NULL,
   `active` enum('Yes','No') DEFAULT NULL,
+  `date_added` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   KEY `job_id` (`job_id`),
   KEY `duty_id` (`duty_id`),
   CONSTRAINT `tbl_job_duties_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `tbl_jobs` (`job_id`) ON DELETE SET NULL ON UPDATE NO ACTION,
@@ -301,6 +297,8 @@ CREATE TABLE `tbl_job_duties` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_job_duties` */
+
+insert  into `tbl_job_duties`(`duty_id`,`job_id`,`active`,`date_added`) values (2,1,'Yes','2013-07-23 14:40:28');
 
 /*Table structure for table `tbl_job_skills` */
 
@@ -319,7 +317,7 @@ CREATE TABLE `tbl_job_skills` (
 
 /*Data for the table `tbl_job_skills` */
 
-insert  into `tbl_job_skills`(`skill_id`,`job_id`,`active`,`date_added`) values (2,1,'Yes','2013-07-22 19:26:30'),(7,1,'Yes','2013-07-22 19:26:30');
+insert  into `tbl_job_skills`(`skill_id`,`job_id`,`active`,`date_added`) values (3,1,'Yes','2013-07-23 09:31:43'),(5,1,'Yes','2013-07-23 09:31:43'),(6,1,'Yes','2013-07-23 09:31:43'),(8,1,'Yes','2013-07-23 09:31:43');
 
 /*Table structure for table `tbl_jobs` */
 
@@ -521,7 +519,7 @@ CREATE TABLE `tbl_users` (
 
 /*Data for the table `tbl_users` */
 
-insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-07-22 14:55:51',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,1,'2013-07-22 10:43:32',''),(5,'asd','3641265abc04ff623b3c82c131848950','2','asdasd','sdsad','asd','     asd       ','asd@asd.com','+123123','+123123','2013-06-09','Male','','','','','123123','asdasd',1,2,NULL,''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,1,'2013-07-08 11:11:56',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,1,'2013-06-26 10:03:55',''),(8,'klasdl','4bfd200eba0c0fb877d110b50805fd88','2','asdasd','sdkasdl','askdakls','     asdasda   ','asdasd@asd.com','123123','12312312','2013-06-11','Male','','','','','123123','asdasd',1,2,NULL,'user/1370944.jpg');
+insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-07-24 08:21:29',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,1,'2013-07-23 15:03:34',''),(5,'asd','3641265abc04ff623b3c82c131848950','2','asdasd','sdsad','asd','     asd       ','asd@asd.com','+123123','+123123','2013-06-09','Male','','','','','123123','asdasd',1,2,NULL,''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,1,'2013-07-08 11:11:56',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,1,'2013-06-26 10:03:55',''),(8,'klasdl','4bfd200eba0c0fb877d110b50805fd88','2','asdasd','sdkasdl','askdakls','     asdasda   ','asdasd@asd.com','123123','12312312','2013-06-11','Male','','','','','123123','asdasd',1,2,NULL,'user/1370944.jpg');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

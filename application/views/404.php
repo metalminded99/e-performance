@@ -54,7 +54,7 @@
                     <h1>Oops!</h1>
                     <p class="info">This page doesn't exist.</p>
                     <p><i class="icon-home"></i></p>
-                    <p><a href="<?=base_url()?>">Back to the home page</a></p>
+                    <p><a href="<?=$this->agent->is_referral() ? $this->agent->referrer() : $this->base_url()?>">Back to the home page</a></p>
                 </div>
             </div>
         </div>

@@ -15,8 +15,9 @@
 				</li>
 				<li class="upp"><a href="#">Settings</a>
 					<ul>
-						<li>&#8250; <a href="">Site configuration</a></li>
-						<li>&#8250; <a href="">Contact Form</a></li>
+						<li>&#8250; <a href="<?=base_url()?>control_panel/manage_process">Process Management</a></li>
+						<li>&#8250; <a href="<?=base_url()?>control_panel/manage_appraisal">Appraisal</a></li>
+						<li>&#8250; <a href="">Email Configuration</a></li>
 					</ul>
 				</li>
 			</ul>

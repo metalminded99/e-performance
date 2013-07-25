@@ -15,10 +15,6 @@
 
 				<?php if( $this->session->userdata( 'lvl' ) == '2' ) { ?>
 				<li><a href="<?=base_url()?>employees">Employees</a></li>
-				<li><a href="<?=base_url()?>skills">Skills</a></li>
-				<li><a href="<?=base_url()?>abilities">Abilities</a></li>
-				<li><a href="<?=base_url()?>activities">Activities</a></li>
-				<li><a href="<?=base_url()?>duties">Duties &amp; Responsibilty</a></li>
 				<li><a href="<?=base_url()?>dept_goals">Department Goal</a></li>
 				<?php } ?>
 			</ul>
