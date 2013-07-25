@@ -41,7 +41,7 @@ class Manage_appraisal extends CI_Controller {
 		# Process form
 		$data['users_list'] = $this->manage_user_model->getAllUsers( 0, 1000 );
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
-		$template_param['main_content'] = $this->load->view( 'admin/manage_process', $data, true );
+		$template_param['main_content'] = $this->load->view( 'admin/manage_appraisal', $data, true );
 		$template_param['content'] = 'templates/admin_template';
 
 		# Render page
