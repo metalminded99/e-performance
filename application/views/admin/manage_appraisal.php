@@ -21,26 +21,34 @@
 
    	function addQuestion( e_name ){
 		var txt_htm = '<div class="q_box"><div class="input_box_header"><span title="Delete" >X</span></div><textarea name="'+e_name+'[]" class="questions"></textarea></div>';
+		var e_index = $("#" +e_name+ " .q_box").length;
 
-		$('#'+e_name+' .q_box').append(txt_htm);
-
-		return false;
+		$( txt_htm ).insertAfter( "#"+e_name+" .q_box:nth-child("+e_index+")" );
 	}
 
-	$('#core .q_box span').live('click',function(e){
-		var index = $(this).index(this) + 1;
-		console.log('asd'+index);
-		$('#core .q_box').eq(index).remove();
-	})
+	$('#core .q_box span').live('click',function( e ) {
+		var index = $('#core .q_box span').index(this) + 1;
+		
+		$("#core .q_box").eq( index ).remove();
+	});
+
 	$('#perf .q_box span').live('click',function(e){
+		var index = $('#perf .q_box span').index(this) + 1;
+		
+		$("#perf .q_box").eq( index ).remove();
+	});
 
-	})
 	$('#skills .q_box span').live('click',function(e){
+		var index = $('#skills .q_box span').index(this) + 1;
+		
+		$("#skills .q_box").eq( index ).remove();
+	});
 
-	})
 	$('#abl .q_box span').live('click',function(e){
-
-	})
+		var index = $('#abl .q_box span').index(this) + 1;
+		
+		$("#abl .q_box").eq( index ).remove();
+	});
 
 </script>
 <div class="full_w">
