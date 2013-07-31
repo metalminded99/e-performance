@@ -34,11 +34,11 @@ class Manage_appraisal extends CI_Controller {
 		# Check user's session
 		$this->template_library->check_session( );
 
-		if( $this->input->post() ) $this->save_process( 'add' );
+		if( $this->input->post() ) $this->save_appraisal( 'add' );
 
 		$this->load->model( 'manage_user_model' );
 
-		# Process form
+		# Appraisal form
 		$data['users_list'] = $this->manage_user_model->getAllUsers( 0, 1000 );
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
 		$template_param['main_content'] = $this->load->view( 'admin/manage_appraisal', $data, true );
@@ -48,46 +48,46 @@ class Manage_appraisal extends CI_Controller {
 		$this->template_library->render( $template_param );
 	}
 
-	public function update( $proc_id = 0 ) {
+	public function update( $appraisal_id = 0 ) {
 		# Check user's session
 		$this->template_library->check_session( );
 
-		if( !is_integer( $proc_id ) && $proc_id <= 0 )
-			redirect( base_url().'control_panel/manage_process' );
+		if( !is_integer( $appraisal_id ) && $appraisal_id <= 0 )
+			redirect( base_url().'control_panel/manage_appraisal' );
 
-		if( $this->input->post() ) $this->save_process( 'edit', $proc_id );
+		if( $this->input->post() ) $this->save_appraisal( 'edit', $appraisal_id );
 
 		$this->load->model( 'manage_user_model' );
 		# Job form
-		$process_details	= $this->process_model->getAllProcess( 0, 1, array( 'proc_id' => $proc_id ) );
-		$data['process']	= $process_details[0];
+		$appraisal_details	= $this->appraisal_model->getAllAppraisal( 0, 1, array( 'appraisal_id' => $appraisal_id ) );
+		$data['appraisal']	= $appraisal_details[0];
 		$data['users_list'] = $this->manage_user_model->getAllUsers( 0, 1000 );
-		$data['emp_process'] = $this->process_model->getEmpProcess( $proc_id );
+		$data['emp_appraisal'] = $this->appraisal_model->getEmpAppraisal( $appraisal_id );
 
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
-		$template_param['main_content'] = $this->load->view( 'admin/manage_process', $data, true );
+		$template_param['main_content'] = $this->load->view( 'admin/manage_appraisal', $data, true );
 		$template_param['content'] = 'templates/admin_template';
 
 		# Render page
 		$this->template_library->render( $template_param );
 	}
 
-	public function save_process( $action, $proc_id = 0 ) {
+	public function save_appraisal( $action, $appraisal_id = 0 ) {
 		if( $action == 'add' ) {
-			$this->process_model->saveNewProcess( $this->input->post() );
-			$this->session->set_flashdata( 'message', array( 'str' => 'New process has been added successfully!', 'class' => 'n_ok' ) );
+			$this->appraisal_model->saveNewAppraisal( $this->input->post() );
+			$this->session->set_flashdata( 'message', array( 'str' => 'New appraisal has been added successfully!', 'class' => 'n_ok' ) );
 		}elseif( $action == 'edit' ) {
-			$this->process_model->updateProcess( $proc_id, $this->input->post() );
-			$this->session->set_flashdata( 'message', array( 'str' => 'Process has been updated successfully!', 'class' => 'n_ok' ) );
+			$this->appraisal_model->updateAppraisal( $appraisal_id, $this->input->post() );
+			$this->session->set_flashdata( 'message', array( 'str' => 'Appraisal has been updated successfully!', 'class' => 'n_ok' ) );
 		}
 
-		redirect( base_url().'control_panel/manage_process' );
+		redirect( base_url().'control_panel/manage_appraisal' );
 	}
 
 	public function delete() {
 		if( $this->input->is_ajax_request() ) {
-			$this->process_model->deleteProcess( array( 'proc_id' => $this->input->post( 'id' ) ) );
-			echo "Process deleted successfully!";
+			$this->appraisal_model->deleteAppraisal( array( 'appraisal_id' => $this->input->post( 'id' ) ) );
+			echo "Appraisal deleted successfully!";
 		}
 	}
 }

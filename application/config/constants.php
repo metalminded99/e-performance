@@ -56,7 +56,7 @@ define('TRAININGS'		, 'tbl_trainings');
 define('TRAINING_SKILLS', 'tbl_training_skills');
 define('TRAINING_ABL'	, 'tbl_training_abilities');
 define('APPRAISAL'		, 'tbl_appraisal');
-define('APP_QUESTION'	, 'tbl_appraisal');
+define('APP_QUESTION'	, 'tbl_appraisal_questionaire');
 
 define('EMP_GOALS'		, 'tbl_emp_goals');
 define('DEPT_GOALS'		, 'tbl_dept_goals');

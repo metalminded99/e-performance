@@ -27,6 +27,7 @@
 				if( count($appraisal) ): 
 					$ctr = isset($counter) ? $counter : 0;
 					foreach( $appraisal as $result ):
+						$ctr++;
 			?>
 			
 			<tr>
@@ -36,7 +37,7 @@
 				<td> <?=$this->template_library->format_mysql_date( $result[ 'date_created' ], 'M d, Y' )?> </td>
 				<td align = "center">
 					<a href="<?=base_url()?>control_panel/manage_appraisal/update/<?=$result[ 'appraisal_id' ]?>" class="table-icon edit" title="View/Edit"></a>
-					<a href="<?=base_url()?>control_panel/manage_appraisal/delete/<?=$result[ 'appraisal_id' ]?>" class="table-icon delete" title="Delete" onclick = "return confirm( 'Are you sure you want to delete this list?' );"></a>
+					<a href="javasctipt:void(0);" class="table-icon delete" title="Delete" onclick = "delete_list( <?=$result[ 'appraisal_id' ]?> );"></a>
 				</td>
 			</tr>
 
@@ -60,3 +61,21 @@
 		<a class="button add" href="<?=base_url()?>control_panel/manage_appraisal/add">Add new appraisal</a>
 	</div>
 </div>
+
+<script type="text/javascript">
+	function delete_list( id ) {
+		var ans = confirm( 'Are you sure you want to delete this list?' );
+
+		if( ans ){
+			$.ajax({
+                type: "POST"
+                ,url: "<?=base_url()?>control_panel/manage_appraisal/delete"
+                ,data: { 'id' : id },
+                success: function( data ) {
+	                alert( data );
+	                location.reload(); 
+                }
+            });
+		}
+	}
+</script>

@@ -26,8 +26,31 @@ class Appraisal_Model extends CI_Model {
     }
 
     public function saveNewAppraisal( $db_param ) {
-        $this->db->insert( APPRAISAL, $db_param );
-        return $this->db->insert_id();
+        $app = array( 
+                        'appraisal_title' => $db_param[ 'appraisal_title' ]
+                        ,'appraisal_desc' => $db_param[ 'appraisal_desc' ]
+                    );
+        unset($db_param[ 'appraisal_title' ]);
+        unset($db_param[ 'appraisal_desc' ]);
+
+        $this->db->insert( APPRAISAL, $app );
+        $app_id = $this->db->insert_id();
+        $questions = array_keys($db_param);
+        for( $i = 0; $i < count( $questions ); $i ++ ){
+            $cat = $questions[ $i ];
+            for( $x = 0; $x < count( $db_param[  $cat ] ); $x ++ ){
+                if( $db_param[ $cat ][ $x ] != '' ){
+                    $q_param = array(
+                                        'appraisal_id'  => $app_id
+                                        ,'question'     => $db_param[ $cat ][ $x ]
+                                        ,'category'     => $cat
+                                    );
+                    $this->db->insert( APP_QUESTION, $q_param );
+                }
+            }
+        }
+        
+        return true;
     }
 
     public function updateAppraisal( $db_param ) {
