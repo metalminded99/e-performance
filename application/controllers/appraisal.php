@@ -22,27 +22,12 @@ class Appraisal extends CI_Controller {
 																					,'user'
 																					,($this->uri->segment(2)) ? $this->uri->segment(2) : 0
 								 												);
-		$template_param['attributes'] = $this->appraisal_model->getAllJobAppraisal( $offset, PER_PAGE, array( 'job_id' => $this->user_job_id ) );
+		$template_param['appraisals'] = $this->appraisal_model->getAllAppraisal( $offset, PER_PAGE, array( 'job_id' => $this->user_job_id ) );
 
 		# Template meta data
-		$template_param['heading']			= 'Job Appraisal for <i>'.$this->session->userdata( 'job_title' ).'</i>';
-		$template_param['table_heading']	= array(
-														'Activity Code'
-														,'Activity Name'
-														,'Activity Description'
-														,'Active'
-													);
-		$template_param['add_link']			= base_url().'appraisal/new_appraisal';
-		$template_param['delete_url']		= base_url().'appraisal/delete_appraisal';
-		$template_param['update_url']		= base_url().'appraisal/update_appraisal';
-		$template_param['add_link_text']	= 'Add Activity';
 		$template_param['counter']	= $offset;
-		$template_param['key']	= 'activity_id';
-
-
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
-		$template_param['attr_selection']	= $this->get_appraisal_list();
-		$template_param['content']			= 'templates/job_attribute_template';
+		$template_param['content']			= 'templates/appraisal_template';
 		$this->template_library->render( 
 											$template_param 
 											,'user_header'
@@ -52,15 +37,16 @@ class Appraisal extends CI_Controller {
 										);
 	}
 
-	public function new_appraisal() {
+	public function add() {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
 		if( $this->input->post() )
-			$this->save_activity( 'new' );
+			$this->save_appraisal( 'add' );
 
-		$template_param['action'] = 'Add New';
-		$template_param['content']= 'appraisal';
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['action'] = 'Add New Appraisal';
+		$template_param['content']= 'add_appraisal';
 		$this->template_library->render( 
 											$template_param 
 											,'user_header'
@@ -70,49 +56,49 @@ class Appraisal extends CI_Controller {
 										);
 	}
 
-	public function save_appraisal() {
-		$job_activity = array( 
-							'job_id' => $this->user_job_id
-							,'active' => 'Yes'
-						  );
-		$items = $this->input->post( 'item' );
-		if( $items ){
-			for( $i = 0; $i < count( $items ); $i++ ){
-				$activity = array( 'activity_id' => $items[$i] );
-				$this->appraisal_model->saveNewJobActivity( array_merge( $activity, $job_activity ) );
-			}
+	public function save_appraisal( $action, $app_id = 0 ) {
+		if( $action == 'add' ) {
+			$this->appraisal_model->saveNewAppraisal( $this->input->post() );
+			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New appraisal has been added successfully!', 'class' => 'info' ) );
+		}elseif( $action == 'edit' ) {
+			$this->appraisal_model->updateAppraisal( $app_id, $this->input->post() );
+			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );
 		}
-		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New activity has been added successfully!', 'class' => 'info' ) );
+
 		redirect( base_url().'appraisal' );
 	}
 
-	public function update_appraisal() {
-		if( $this->input->is_ajax_request() ){
+	public function update( $app_id ) {
+		# Check user's session
+		$this->template_library->check_session( 'user' );
 
-			$items = $this->input->post( 'item' );
-			if( $items ){
-				for( $i = 0; $i < count( $items ); $i++ ){
-					$where = array( 
-									'activity_id' => $items[$i]
-									,'job_id' => $this->user_job_id
-								  );
-					$this->appraisal_model->updateJobActivity( array( 'active' => $this->input->post( 'state' ) ), $where );
-				}
-			}
+		if( $this->input->post() )
+			$this->save_appraisal( 'edit', $app_id );
 
-			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );
-			echo base_url().'appraisal';
-
+		$template_param['appraisal'] = $this->appraisal_model->getAllAppraisal( 0, 1, array( 'appraisal_id' => $app_id ) );
+		$cat = array(
+						'core'
+						,'perf'
+						,'skills'
+						,'abl'
+					);
+		for ($i=0; $i < count($cat); $i++) { 
+			$template_param[ $cat[$i] ] = $this->appraisal_model->getAppraisalQuestion( $app_id, $cat[$i] );
 		}
+
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['action'] = 'Update Appraisal';
+		$template_param['content']= 'add_appraisal';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
 	}
 
-	public function get_appraisal_list() {
-		$data['save_url'] = base_url().'appraisal/save_appraisal';
-		$data['attr_list'] = $this->appraisal_model->getAllAppraisal( 0, 1000 );
-		return $this->load->view( 'templates/attribute_list_template', $data, true );
-	}
-
-	public function delete_appraisal() {
+	public function delete() {
 		if( $this->input->is_ajax_request() ){
 			if( is_array( $this->input->post('item') ) ){
 				$items = $this->input->post('item');

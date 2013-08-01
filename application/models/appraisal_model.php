@@ -25,13 +25,27 @@ class Appraisal_Model extends CI_Model {
         return $this->db->count_all_results( APPRAISAL );
     }
 
+    public function getAppraisalQuestion( $app_id, $cat ) {
+        return $this->db
+                        ->where( 
+                                    array( 
+                                            'appraisal_id'  => $app_id 
+                                            ,'category'     => $cat
+                                          )
+                                )
+                        ->get( APP_QUESTION )
+                        ->result_array();
+    }
+
     public function saveNewAppraisal( $db_param ) {
         $app = array( 
-                        'appraisal_title' => $db_param[ 'appraisal_title' ]
-                        ,'appraisal_desc' => $db_param[ 'appraisal_desc' ]
+                        'appraisal_title'   => $db_param[ 'appraisal_title' ]
+                        ,'appraisal_desc'   => $db_param[ 'appraisal_desc' ]
+                        ,'job_id'           => $db_param[ 'job_id' ]
                     );
         unset($db_param[ 'appraisal_title' ]);
         unset($db_param[ 'appraisal_desc' ]);
+        unset($db_param[ 'job_id' ]);
 
         $this->db->insert( APPRAISAL, $app );
         $app_id = $this->db->insert_id();
@@ -53,17 +67,37 @@ class Appraisal_Model extends CI_Model {
         return true;
     }
 
-    public function updateAppraisal( $db_param ) {
-        $param = array();
-        foreach ($db_param as $key => $value) {
-            if( $key != 'activity_id' ){
-                $param[ $key ] = $value;
+    public function updateAppraisal( $app_id, $db_param ) {
+        $app = array( 
+                        'appraisal_title'   => $db_param[ 'appraisal_title' ]
+                        ,'appraisal_desc'   => $db_param[ 'appraisal_desc' ]
+                    );
+        unset($db_param[ 'appraisal_title' ]);
+        unset($db_param[ 'appraisal_desc' ]);
+        unset($db_param[ 'job_id' ]);
+
+        $this->db
+                ->where( array( 'appraisal_id' => $app_id ) )
+                ->update( APPRAISAL, $app );
+
+        $this->db->delete( APP_QUESTION, array( 'appraisal_id' => $app_id ) );
+        
+        $questions = array_keys($db_param);
+        for( $i = 0; $i < count( $questions ); $i ++ ){
+            $cat = $questions[ $i ];
+            for( $x = 0; $x < count( $db_param[  $cat ] ); $x ++ ){
+                if( $db_param[ $cat ][ $x ] != '' ){
+                    $q_param = array(
+                                        'appraisal_id'  => $app_id
+                                        ,'question'     => $db_param[ $cat ][ $x ]
+                                        ,'category'     => $cat
+                                    );
+                    $this->db->insert( APP_QUESTION, $q_param );
+                }
             }
         }
         
-        return $this->db
-                        ->where( 'activity_id', $db_param[ 'activity_id' ] )
-                        ->update( APPRAISAL, $param );
+        return true;
     }
 
     public function deleteAppraisal( $db_param ) {

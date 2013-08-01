@@ -16,6 +16,7 @@
 				<?php if( $this->session->userdata( 'lvl' ) == '2' ) { ?>
 				<li><a href="<?=base_url()?>employees">Employees</a></li>
 				<li><a href="<?=base_url()?>dept_goals">Department Goal</a></li>
+				<li><a href="<?=base_url()?>appraisal">Appraisals</a></li>
 				<?php } ?>
 			</ul>
 			<div class="nav-header" data-toggle="collapse" data-target="#settings-menu">

@@ -756,3 +756,28 @@ input[type="password"] {
     display: inline;
   }
 }
+
+/* APPRAISAL */
+.input_box_header{
+  position:relative;
+}
+
+.input_box_header span{
+  /*float:right;*/
+  cursor:pointer;
+  color: #FF0000;
+}
+
+.input_box_header span:hover{
+  font-weight: bolder;
+}
+
+.input_box textarea{
+  width:100%; 
+}
+
+.questions{
+  width: 100%;
+  height: 100px;
+  resize: none;
+}

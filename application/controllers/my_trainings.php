@@ -100,7 +100,7 @@ class My_trainings extends CI_Controller {
 			}
 
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Skills has been updated successfully!', 'class' => 'info' ) );
-			echo base_url().'skills';
+			echo base_url().'my_trainings';
 		}
 	}
 
