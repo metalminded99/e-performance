@@ -9,7 +9,7 @@
         <a href="<?=base_url()?>employees/info/dev_plan/<?=$user_id?>">Development Plan</a>
     </li>
     <li <?=$active == 'feedback' ? 'class="active"' : '' ?>>
-        <a href="<?=base_url()?>employees/info/feedback/<?=$user_id?>">360 Feedback</a>
+        <a href="<?=base_url()?>employees/info/360_feedback/<?=$user_id?>">360 Feedback</a>
     </li>
     <li <?=$active == 'journal' ? 'class="active"' : '' ?>>
         <a href="<?=base_url()?>employees/info/journals/<?=$user_id?>">Performance Journals</a>

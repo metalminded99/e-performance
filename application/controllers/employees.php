@@ -301,6 +301,69 @@ class Employees extends CI_Controller {
 		echo base_url().'employees/info/goals/'.$this->input->post( 'user' );
 	}
 
+	public function feedback( $user_id, $offset = 0 ) { 
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+
+		# Employee journals
+		$this->load->model( 'appraisal_model' );
+		$this->load->model( 'employees_Model' );
+
+		$template_param['pagination'] = $this->template_library->get_pagination(
+																					'employees/info/360_feedback/'.$user_id 
+																					,$this->appraisal_model->getTotalAssignedFeedback( array( 'user_id' => $user_id ) )
+																					,PER_PAGE
+																					,'user'
+																					,($this->uri->segment(5)) ? $this->uri->segment(5) : 0
+																				);
+
+		$template_param['feedback_history'] = $this->appraisal_model->getAssignedFeedbackHistory(
+																									array(
+																										'aa.user_id' => $user_id
+																										,'MONTH( aa.date_assigned ) < MONTH( NOW() )' => null
+																										,'YEAR( aa.date_assigned ) < YEAR( NOW() )' => null
+																									)
+																								);
+		$template_param['peers'] = $this->employees_Model->getAllEmployees( 
+																			0
+																			,10000
+																			,array(
+																					'U.user_id != '	=> $user_id 
+																					,'U.job_id'		=> $this->user_job_id
+																					,'U.lvl > '		=> 2
+																				  ) 
+																		   );
+		$data['active'] = 'feedback';
+		$data['user_id'] = $user_id;
+		$template_param['emp_menu'] = $this->load->view( '_components/emp_menu', $data, true );
+
+		# Template meta data
+		$template_param['counter']			= $offset;
+		$template_param['user_id']			= $user_id;
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']			= 'employee_feedback';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,''
+										);
+	}
+	
+	public function feedback_update() {
+		if( $this->input->is_ajax_request() ) {
+			$this->load->model( 'appraisal_model' );
+			$goals = $this->input->post( 'item' );
+
+			for( $g = 0; $g < count( $goals ); $g++ ){
+				$this->appraisal_model->updateEmpGoal( $goals[ $g ], array( 'status' => $this->input->post( 'state' ) ) );
+			}	
+		}
+		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s goal has been updated successfully!', 'class' => 'info' ) );
+		echo base_url().'employees/info/goals/'.$this->input->post( 'user' );
+	}
+
 }
 
 /* End of file employees.php */
