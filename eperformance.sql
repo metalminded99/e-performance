@@ -1,6 +1,6 @@
 /*
 SQLyog Community v11.1 Beta2 (32 bit)
-MySQL - 5.5.31-0ubuntu0.12.04.2 : Database - eperformance
+MySQL - 5.5.32-0ubuntu0.12.04.1 : Database - eperformance
 *********************************************************************
 */
 
@@ -54,13 +54,35 @@ DROP TABLE IF EXISTS `tbl_appraisal`;
 
 CREATE TABLE `tbl_appraisal` (
   `appraisal_id` int(11) NOT NULL AUTO_INCREMENT,
+  `job_id` int(11) DEFAULT NULL,
   `appraisal_title` varchar(100) DEFAULT NULL,
   `appraisal_desc` text,
   `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`appraisal_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`appraisal_id`),
+  KEY `job_id` (`job_id`),
+  CONSTRAINT `tbl_appraisal_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `tbl_jobs` (`job_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_appraisal` */
+
+insert  into `tbl_appraisal`(`appraisal_id`,`job_id`,`appraisal_title`,`appraisal_desc`,`date_created`) values (2,2,'The quick brown fox jumps over the lazy dog','The quick brown fox jumps over the lazy dog','2013-08-01 13:48:53');
+
+/*Table structure for table `tbl_appraisal_assignment` */
+
+DROP TABLE IF EXISTS `tbl_appraisal_assignment`;
+
+CREATE TABLE `tbl_appraisal_assignment` (
+  `user_id` int(11) DEFAULT NULL,
+  `peer_id` int(11) DEFAULT NULL,
+  `manager_id` int(11) DEFAULT NULL,
+  `status` enum('Pending','Completed') DEFAULT NULL,
+  `date_assigned` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `user_id` (`user_id`),
+  KEY `peer_id` (`peer_id`),
+  KEY `manager_id` (`manager_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_appraisal_assignment` */
 
 /*Table structure for table `tbl_appraisal_questionaire` */
 
@@ -70,12 +92,38 @@ CREATE TABLE `tbl_appraisal_questionaire` (
   `question_id` int(11) NOT NULL AUTO_INCREMENT,
   `appraisal_id` int(11) DEFAULT NULL,
   `question` text,
+  `category` enum('skills','abl','core','perf') DEFAULT NULL,
   PRIMARY KEY (`question_id`),
   KEY `appraisal_id` (`appraisal_id`),
   CONSTRAINT `tbl_appraisal_questionaire_ibfk_1` FOREIGN KEY (`appraisal_id`) REFERENCES `tbl_appraisal` (`appraisal_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_appraisal_questionaire` */
+
+insert  into `tbl_appraisal_questionaire`(`question_id`,`appraisal_id`,`question`,`category`) values (6,2,'The quick brown fox jumps over the lazy dog','core'),(7,2,'The quick brown fox jumps over the lazy dog','core'),(8,2,'The quick brown fox jumps over the lazy dog','core'),(9,2,'test','perf'),(10,2,'test1','perf'),(11,2,'test2','skills'),(12,2,'test3','skills'),(13,2,'test5','abl'),(14,2,'test7','abl');
+
+/*Table structure for table `tbl_appraisal_result` */
+
+DROP TABLE IF EXISTS `tbl_appraisal_result`;
+
+CREATE TABLE `tbl_appraisal_result` (
+  `user_id` int(11) DEFAULT NULL,
+  `appraisal_id` int(11) DEFAULT NULL,
+  `question_id` int(11) DEFAULT NULL,
+  `self_score` float DEFAULT NULL,
+  `peer_id` int(11) DEFAULT NULL,
+  `peer_score` float DEFAULT NULL,
+  `manager_id` int(11) DEFAULT NULL,
+  `manager_score` float DEFAULT NULL,
+  `date_submit` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `user_id` (`user_id`),
+  KEY `appraisal_id` (`appraisal_id`),
+  KEY `question_id` (`question_id`),
+  KEY `peer_id` (`peer_id`),
+  KEY `manager_id` (`manager_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_appraisal_result` */
 
 /*Table structure for table `tbl_department` */
 
@@ -115,8 +163,6 @@ CREATE TABLE `tbl_dept_goals` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 COMMENT='Department goals';
 
 /*Data for the table `tbl_dept_goals` */
-
-insert  into `tbl_dept_goals`(`goal_id`,`department_id`,`goal_title`,`goal_desc`,`due_date`,`days_to_remind`,`deliverables`,`success_measure`,`date_created`) values (2,1,'The quick brown fox','The quick brown fox','2013-08-01',3,'The quick brown fox','The quick brown fox','2013-07-09 18:00:01');
 
 /*Table structure for table `tbl_duties` */
 
@@ -243,6 +289,23 @@ CREATE TABLE `tbl_emp_process` (
 
 insert  into `tbl_emp_process`(`user_id`,`process_id`,`date_accomplished`,`date_assigned`) values (2,NULL,NULL,'2013-07-18 11:49:33'),(8,NULL,NULL,'2013-07-18 11:49:33'),(2,4,NULL,'2013-07-18 11:50:19'),(6,4,NULL,'2013-07-18 11:50:19'),(8,4,NULL,'2013-07-18 11:50:19');
 
+/*Table structure for table `tbl_history` */
+
+DROP TABLE IF EXISTS `tbl_history`;
+
+CREATE TABLE `tbl_history` (
+  `history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `history` varchar(255) DEFAULT NULL,
+  `module` enum('goal','training','appraisal','account') DEFAULT NULL,
+  `date_done` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`history_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `tbl_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tbl_users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `tbl_history` */
+
 /*Table structure for table `tbl_job_abilities` */
 
 DROP TABLE IF EXISTS `tbl_job_abilities`;
@@ -260,7 +323,7 @@ CREATE TABLE `tbl_job_abilities` (
 
 /*Data for the table `tbl_job_abilities` */
 
-insert  into `tbl_job_abilities`(`ability_id`,`job_id`,`active`,`date_added`) values (3,1,'Yes','2013-07-23 09:31:50');
+insert  into `tbl_job_abilities`(`ability_id`,`job_id`,`active`,`date_added`) values (3,NULL,'Yes','2013-07-23 09:31:50'),(2,4,'Yes','2013-07-25 07:15:56'),(3,4,'Yes','2013-07-25 07:15:56');
 
 /*Table structure for table `tbl_job_activities` */
 
@@ -279,7 +342,7 @@ CREATE TABLE `tbl_job_activities` (
 
 /*Data for the table `tbl_job_activities` */
 
-insert  into `tbl_job_activities`(`activity_id`,`job_id`,`active`,`date_added`) values (3,1,'Yes','2013-07-23 14:40:34');
+insert  into `tbl_job_activities`(`activity_id`,`job_id`,`active`,`date_added`) values (3,NULL,'Yes','2013-07-23 14:40:34'),(3,4,'Yes','2013-07-25 07:15:44');
 
 /*Table structure for table `tbl_job_duties` */
 
@@ -298,7 +361,7 @@ CREATE TABLE `tbl_job_duties` (
 
 /*Data for the table `tbl_job_duties` */
 
-insert  into `tbl_job_duties`(`duty_id`,`job_id`,`active`,`date_added`) values (2,1,'Yes','2013-07-23 14:40:28');
+insert  into `tbl_job_duties`(`duty_id`,`job_id`,`active`,`date_added`) values (2,NULL,'Yes','2013-07-23 14:40:28'),(2,4,'Yes','2013-07-25 07:15:35'),(3,4,'Yes','2013-07-25 07:15:35');
 
 /*Table structure for table `tbl_job_skills` */
 
@@ -317,7 +380,7 @@ CREATE TABLE `tbl_job_skills` (
 
 /*Data for the table `tbl_job_skills` */
 
-insert  into `tbl_job_skills`(`skill_id`,`job_id`,`active`,`date_added`) values (3,1,'Yes','2013-07-23 09:31:43'),(5,1,'Yes','2013-07-23 09:31:43'),(6,1,'Yes','2013-07-23 09:31:43'),(8,1,'Yes','2013-07-23 09:31:43');
+insert  into `tbl_job_skills`(`skill_id`,`job_id`,`active`,`date_added`) values (3,NULL,'Yes','2013-07-23 09:31:43'),(5,NULL,'Yes','2013-07-23 09:31:43'),(6,NULL,'Yes','2013-07-23 09:31:43'),(8,NULL,'Yes','2013-07-23 09:31:43'),(2,4,'Yes','2013-07-25 07:15:52'),(7,4,'Yes','2013-07-25 07:15:52'),(8,4,'Yes','2013-07-25 07:15:52');
 
 /*Table structure for table `tbl_jobs` */
 
@@ -334,11 +397,11 @@ CREATE TABLE `tbl_jobs` (
   KEY `dept_id` (`dept_id`),
   KEY `job_title` (`job_title`),
   CONSTRAINT `tbl_jobs_ibfk_1` FOREIGN KEY (`dept_id`) REFERENCES `tbl_department` (`dept_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_jobs` */
 
-insert  into `tbl_jobs`(`job_id`,`dept_id`,`job_title`,`job_desc`,`date_added`) values (1,1,'Recruitment','Recruitment','2013-06-05 00:00:00'),(2,1,'Employee Relations','Employee Relations','2013-06-05 00:00:00');
+insert  into `tbl_jobs`(`job_id`,`dept_id`,`job_title`,`job_desc`,`date_added`) values (2,1,'Employee Relations','Employee Relations','2013-06-05 00:00:00'),(4,4,'Accountant','Accountant','0000-00-00 00:00:00');
 
 /*Table structure for table `tbl_journal_comments` */
 
@@ -519,7 +582,7 @@ CREATE TABLE `tbl_users` (
 
 /*Data for the table `tbl_users` */
 
-insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-07-24 08:21:29',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,1,'2013-07-23 15:03:34',''),(5,'asd','3641265abc04ff623b3c82c131848950','2','asdasd','sdsad','asd','     asd       ','asd@asd.com','+123123','+123123','2013-06-09','Male','','','','','123123','asdasd',1,2,NULL,''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,1,'2013-07-08 11:11:56',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,1,'2013-06-26 10:03:55',''),(8,'klasdl','4bfd200eba0c0fb877d110b50805fd88','2','asdasd','sdkasdl','askdakls','     asdasda   ','asdasd@asd.com','123123','12312312','2013-06-11','Male','','','','','123123','asdasd',1,2,NULL,'user/1370944.jpg');
+insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-08-02 13:40:15',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,2,'2013-08-02 16:11:05',''),(5,'asd','3641265abc04ff623b3c82c131848950','2','asdasd','sdsad','asd','     asd       ','asd@asd.com','+123123','+123123','2013-06-09','Male','','','','','123123','asdasd',1,2,NULL,''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,2,'2013-07-08 11:11:56',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,2,'2013-06-26 10:03:55',''),(8,'klasdl','4bfd200eba0c0fb877d110b50805fd88','3','asdasd','sdkasdl','askdakls','     asdasda   ','asdasd@asd.com','123123','12312312','2013-06-11','Male','','','','','123123','asdasd',1,2,NULL,'user/1370944.jpg');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
