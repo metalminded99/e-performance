@@ -305,6 +305,9 @@ class Employees extends CI_Controller {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
+		if( $this->input->post() )
+			$this->add_feedback();
+
 		# Employee journals
 		$this->load->model( 'appraisal_model' );
 		$this->load->model( 'employees_Model' );
@@ -320,8 +323,6 @@ class Employees extends CI_Controller {
 		$template_param['feedback_history'] = $this->appraisal_model->getAssignedFeedbackHistory(
 																									array(
 																										'aa.user_id' => $user_id
-																										,'MONTH( aa.date_assigned ) < MONTH( NOW() )' => null
-																										,'YEAR( aa.date_assigned ) < YEAR( NOW() )' => null
 																									)
 																								);
 		$template_param['peers'] = $this->employees_Model->getAllEmployees( 
@@ -351,17 +352,35 @@ class Employees extends CI_Controller {
 										);
 	}
 	
-	public function feedback_update() {
-		if( $this->input->is_ajax_request() ) {
-			$this->load->model( 'appraisal_model' );
-			$goals = $this->input->post( 'item' );
+	public function add_feedback( ) {
+		$this->load->model( 'appraisal_model' );
+		
+		$this->appraisal_model->assignEmployeeFeedback( 
+														array(
+																'user_id'		=> $this->input->post( 'user_id' )
+																,'peer_id'		=> $this->input->post( 'peers' )
+																,'manager_id'	=> $this->session->userdata( 'user_id' )
+																,'status'		=> 'Pending'
+															 ) 
+													  );
 
-			for( $g = 0; $g < count( $goals ); $g++ ){
-				$this->appraisal_model->updateEmpGoal( $goals[ $g ], array( 'status' => $this->input->post( 'state' ) ) );
-			}	
-		}
 		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s goal has been updated successfully!', 'class' => 'info' ) );
-		echo base_url().'employees/info/goals/'.$this->input->post( 'user' );
+		redirect( base_url().'employees/info/360_feedback/'.$this->input->post( 'user_id' ) );
+	}
+	
+	public function feedback_delete( ) {
+		if( $this->input->is_ajax_request() ){
+			$this->load->model( 'appraisal_model' );
+			
+			$this->appraisal_model->deleteAssignEmployeeFeedback( 
+															array(
+																	'app_id' => $this->input->post( 'app_id' )
+																 ) 
+														  );
+
+			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s goal has been updated successfully!', 'class' => 'info' ) );
+			echo base_url().'employees/info/360_feedback/'.$this->input->post( 'user_id' );
+		}
 	}
 
 }

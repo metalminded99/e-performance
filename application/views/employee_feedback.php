@@ -13,8 +13,9 @@
                     </div>
                     <div id="widget1container" class="block-body">
                         <form id="frm_feedback" action = "" method = "POST" >
+                            <input type="hidden" id="user_id" name="user_id" value="<?=isset( $user_id ) ? $user_id : '' ?>" >
                             <div class="element">
-                                <label for = "peers">Peer List <span class="red">(required)</span></label>
+                                <label for = "peers">Peer to conduct the feedback <span class="red">(required)</span></label>
                                 <select id="peers" name="peers">
                                     <option value="">---------- Select Peer ----------</option>
                                     <?php 
@@ -47,6 +48,7 @@
                                 <th>Peer Name</th>
                                 <th>Status</th>
                                 <th>Date Assigned</th>
+                                <th></th>
                             </thead>
                             <tbody>
                                 <?php
@@ -59,7 +61,8 @@
                                     <td><?=$cnt?></td>
                                     <td><?=$feedback['full_name']?></td>
                                     <td><?=$feedback['status']?></td>
-                                    <td><?=$this->template_library->format_mysql_date( $feedback['date_created'], 'F d, Y' )?></td>
+                                    <td><?=$this->template_library->format_mysql_date( $feedback['date_assigned'], 'F d, Y' )?></td>
+                                    <td><?php if($feedback['status'] == 'Pending' ){ ?> <a id="<?=$feedback['app_id']?>" title="Remove" class="del_btn" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a> <?php } ?></td>
                                 </tr>
                                 <?php
                                         }
@@ -80,6 +83,20 @@
                         <div class="clearfix"></div>
                     </div>
                 </div>
+
+                <div class="modal small hide fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">Delete Confirmation</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p class="error-text"><i class="icon-warning-sign modal-icon"></i>Are you sure you want to delete this appraisal assignment?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                        <button class="btn btn-danger" data-dismiss="modal" onclick="delete_feedback();">Delete</button>
+                    </div>
+                </div>
                 
                 <div class="pagination">
                     <ul>
@@ -92,73 +109,13 @@
             var item_id;
             var json_feedback_history = <?=json_encode( $feedback_history )?>;
 
-            $( document ).ready( function() {
-                init();
-            });
-
-            function init(){
-                $('#job_attr tr td input[type=checkbox]').each( function() {
-                    $(this).prop('checked', false);
-                });
-            }
-
-            $('.view_btn').click( function() {
-                feedback_id = $(this).prop('id');
-
-                $.each( json_feedback_history, function( i, l ) {
-                    if( feedback_id === json_feedback_history[ i ].feedback_id  ){
-                        $('#feedback_title').text( json_feedback_history[ i ].feedback_title );
-                        $('#feedback_desc').text( json_feedback_history[ i ].feedback_desc );
-                        return true;
-                    }
-                });
-
-                return true;
-            });
-
             $('.del_btn').click( function() {
                 item_id = $(this).prop('id');
             });
 
-            <?php if( isset( $delete_url ) ) { ?>
             function delete_feedback(){
-                $.post( '<?=$delete_url?>', { feedback_id : item_id }, function(data) {
+                $.post( '<?=base_url()?>employees/info/360_feedback/delete', { 'app_id' : item_id, 'user_id' : '<?=isset( $user_id ) ? $user_id : 0 ?>'  }, function(data) {
                     window.location = data;
                 });
             }
-            <? } ?>
-
-            $('#select_all').click( function() {
-                var all = $(this).prop('checked');
-                toggle_checkbox( $('#tbl_feedback_history tr td input[type=checkbox]'), all );
-                if( all ){
-                    $('#action').show();
-                }else{
-                    $('#action').hide();
-                }
-            });
-
-            $('#tbl_feedback_history tr td input[type=checkbox]').click( function() {
-                if( $(this).prop( 'checked' ) ){
-                    $('#action').show();
-                }else{
-                    $('#action').hide();
-                }
-            });
-
-            <?php if( isset( $user_id ) ){ ?>
-            function do_action( action ){
-                var arr = [];
-                $( '#tbl_feedback_history tr td input[type=checkbox]' ).each( function() {
-                    if( $(this).prop( 'checked' ) ) {
-                        arr.push( $(this).val() );
-                    }
-                });
-                
-                $.post( '<?=base_url()?>/employees/info/feedback_history/update', { item : arr, state : action, user : '<?=$user_id?>' }, function(data) {
-                    window.location = data;
-                    // console.log( data );
-                });
-            }
-            <? } ?>
         </script>

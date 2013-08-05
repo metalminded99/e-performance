@@ -108,6 +108,11 @@ class Appraisal_Model extends CI_Model {
         return true;
     }
 
+    public function assignEmployeeFeedback( $db_data ) {
+        return $this->db
+                        ->insert( APP_ASSIGN, $db_data );
+    }
+
     public function getAssignedFeedback( $per_page, $offset, $where = null ) {
         if( !is_null( $where ) )
             $this->db->where( $where );
@@ -127,12 +132,17 @@ class Appraisal_Model extends CI_Model {
 
     public function getAssignedFeedbackHistory( $where ) {
         return $this->db
-                        ->select( "CONCAT(u.fname,' ',u.lname) full_name, aa.status, aa.date_assigned", FALSE )
+                        ->select( "aa.app_id, CONCAT(u.fname,' ',u.lname) full_name, aa.status, aa.date_assigned", FALSE )
                         ->from( APP_ASSIGN.' aa' )
                         ->join( USER.' u', 'u.user_id = aa.peer_id', 'left' )
                         ->where( $where )
                         ->get()
                         ->result_array();
+    }
+
+    public function deleteAssignEmployeeFeedback( $db_data ) {
+        return $this->db
+                        ->delete( APP_ASSIGN, $db_data );
     }
     
 }

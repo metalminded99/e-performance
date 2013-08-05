@@ -123,6 +123,7 @@ $route['employees/info/journals/update'] = "employees/journals_update";
 $route['employees/info/360_feedback/(:num)'] = "employees/feedback/$1";
 $route['employees/info/360_feedback/(:num)/(:num)'] = "employees/feedback/$1/$2";
 $route['employees/info/360_feedback/update'] = "employees/feedback_update";
+$route['employees/info/360_feedback/delete'] = "employees/feedback_delete";
 
 $route['control_panel/(:any)'] = "admin/admin/$1";
 $route['404_override'] = 'not_found';
