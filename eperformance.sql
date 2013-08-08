@@ -72,21 +72,20 @@ insert  into `tbl_appraisal`(`appraisal_id`,`job_id`,`appraisal_title`,`appraisa
 DROP TABLE IF EXISTS `tbl_appraisal_assignment`;
 
 CREATE TABLE `tbl_appraisal_assignment` (
-  `app_id` int(11) NOT NULL AUTO_INCREMENT,
+  `app_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `peer_id` int(11) DEFAULT NULL,
   `manager_id` int(11) DEFAULT NULL,
   `status` enum('Pending','Completed') DEFAULT NULL,
   `date_assigned` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`app_id`),
   KEY `user_id` (`user_id`),
   KEY `peer_id` (`peer_id`),
   KEY `manager_id` (`manager_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_appraisal_assignment` */
 
-insert  into `tbl_appraisal_assignment`(`app_id`,`user_id`,`peer_id`,`manager_id`,`status`,`date_assigned`) values (2,6,8,2,'Pending','2013-08-05 18:34:19'),(3,6,7,2,'Pending','2013-08-05 18:34:24');
+insert  into `tbl_appraisal_assignment`(`app_id`,`user_id`,`peer_id`,`manager_id`,`status`,`date_assigned`) values (2,6,7,2,'Pending','2013-08-08 19:04:47'),(2,6,8,2,'Pending','2013-08-08 19:07:41');
 
 /*Table structure for table `tbl_appraisal_questionaire` */
 
@@ -164,9 +163,11 @@ CREATE TABLE `tbl_dept_goals` (
   KEY `goal_title` (`goal_title`),
   KEY `department_id` (`department_id`),
   CONSTRAINT `tbl_dept_goals_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `tbl_department` (`dept_id`) ON DELETE SET NULL ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Department goals';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COMMENT='Department goals';
 
 /*Data for the table `tbl_dept_goals` */
+
+insert  into `tbl_dept_goals`(`goal_id`,`department_id`,`goal_title`,`goal_desc`,`due_date`,`days_to_remind`,`deliverables`,`success_measure`,`date_created`) values (1,1,'test1','test1','2013-09-30',5,'test1','test1','2013-08-07 14:22:09');
 
 /*Table structure for table `tbl_duties` */
 
@@ -301,14 +302,15 @@ CREATE TABLE `tbl_history` (
   `history_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `history` varchar(255) DEFAULT NULL,
-  `module` enum('goal','training','appraisal','account') DEFAULT NULL,
   `date_done` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`history_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `tbl_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tbl_users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_history` */
+
+insert  into `tbl_history`(`history_id`,`user_id`,`history`,`date_done`) values (1,2,'Created new department goal','2013-08-07 14:22:09'),(2,2,'Updated department goal','2013-08-07 14:23:57'),(3,2,'Deassigned peer to employee feedback','2013-08-08 18:55:26'),(4,2,'Assigned peer to employee feedback','2013-08-08 18:55:46'),(5,2,'Assigned peer to employee feedback','2013-08-08 18:57:05'),(6,2,'Assigned peer to employee feedback','2013-08-08 18:57:12'),(7,2,'Deassigned peer to employee feedback','2013-08-08 19:02:53'),(8,2,'Assigned peer to employee feedback','2013-08-08 19:04:47'),(9,2,'Deassigned peer to employee feedback','2013-08-08 19:05:03'),(10,2,'Assigned peer to employee feedback','2013-08-08 19:07:30'),(11,2,'Deassigned peer to employee feedback','2013-08-08 19:07:35'),(12,2,'Assigned peer to employee feedback','2013-08-08 19:07:41');
 
 /*Table structure for table `tbl_job_abilities` */
 
@@ -586,7 +588,7 @@ CREATE TABLE `tbl_users` (
 
 /*Data for the table `tbl_users` */
 
-insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-08-02 13:40:15',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,2,'2013-08-05 11:09:42',''),(5,'asd','3641265abc04ff623b3c82c131848950','2','asdasd','sdsad','asd','     asd       ','asd@asd.com','+123123','+123123','2013-06-09','Male','','','','','123123','asdasd',1,2,NULL,''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,2,'2013-07-08 11:11:56',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,2,'2013-06-26 10:03:55',''),(8,'klasdl','4bfd200eba0c0fb877d110b50805fd88','3','asdasd','sdkasdl','askdakls','     asdasda   ','asdasd@asd.com','123123','12312312','2013-06-11','Male','','','','','123123','asdasd',1,2,NULL,'user/1370944.jpg');
+insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-08-07 14:43:57',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,2,'2013-08-08 18:49:42',''),(5,'asd','3641265abc04ff623b3c82c131848950','2','asdasd','sdsad','asd','     asd       ','asd@asd.com','+123123','+123123','2013-06-09','Male','','','','','123123','asdasd',1,2,NULL,''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,2,'2013-08-08 19:07:56',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,2,'2013-06-26 10:03:55',''),(8,'klasdl','4bfd200eba0c0fb877d110b50805fd88','3','asdasd','sdkasdl','askdakls','     asdasda   ','asdasd@asd.com','123123','12312312','2013-06-11','Male','','','','','123123','asdasd',1,2,NULL,'user/1370944.jpg');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

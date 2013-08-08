@@ -3,6 +3,7 @@
 class Dept_goals extends CI_Controller {
 	protected $user_id;
 	protected $dept_id;
+	protected $module = 'dept_goal';
 
 	public function __construct() {
 		parent::__construct();
@@ -84,11 +85,23 @@ class Dept_goals extends CI_Controller {
 		if( $action == 'add' ){
 			$department = array( 'department_id' => $this->dept_id );
 			$this->goal_model->saveNewDeptGoal( array_merge( $department, $this->input->post() ) );
+
+			$log = array( 
+							'user_id'	=> $this->session->userdata( 'user_id' )
+							,'history'	=> 'Created new department goal'
+						);
+			$this->template_library->insert_log( $log );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New goal has been added successfully!', 'class' => 'info' ) );
 			redirect( base_url().'dept_goals' );
 
 		} elseif( $action == 'update' ) {
 			$this->goal_model->updateDeptGoal( $this->goal_id, $this->input->post() );
+			$log = array( 
+							'user_id'	=> $this->session->userdata( 'user_id' )
+							,'history'	=> 'Updated department goal'
+						);
+			$this->template_library->insert_log( $log );
+
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Your goal has been updated successfully!', 'class' => 'info' ) );
 			redirect( base_url().'dept_goals' );
 		}
@@ -135,6 +148,12 @@ class Dept_goals extends CI_Controller {
 			$db_data = array( 'goal_id' => $this->input->post( 'goal_id' ) );
 			$this->goal_model->deleteDeptGoal( $db_data );
 			
+			$log = array( 
+							'user_id'	=> $this->session->userdata( 'user_id' )
+							,'history'	=> 'Deleted department goal'
+						);
+			$this->template_library->insert_log( $log );
+
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Your goal has been deleted successfully!', 'class' => 'info' ) );
 			echo base_url().'dept_goals';
 		}

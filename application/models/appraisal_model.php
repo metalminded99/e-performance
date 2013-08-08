@@ -109,8 +109,14 @@ class Appraisal_Model extends CI_Model {
     }
 
     public function assignEmployeeFeedback( $db_data ) {
-        return $this->db
-                        ->insert( APP_ASSIGN, $db_data );
+        $exist = $this->db
+                          ->where( array( 'user_id' => $db_data['user_id'], 'peer_id' => $db_data['peer_id'] ) )
+                          ->count_all_results( APP_ASSIGN );
+        if( $exist == 0 ){
+            $this->db->insert( APP_ASSIGN, $db_data );
+            return true;
+        }else
+            return false;
     }
 
     public function getAssignedFeedback( $per_page, $offset, $where = null ) {
@@ -132,7 +138,7 @@ class Appraisal_Model extends CI_Model {
 
     public function getAssignedFeedbackHistory( $where ) {
         return $this->db
-                        ->select( "aa.app_id, CONCAT(u.fname,' ',u.lname) full_name, aa.status, aa.date_assigned", FALSE )
+                        ->select( "aa.app_id, u.user_id, CONCAT(u.fname,' ',u.lname) full_name, aa.status, aa.date_assigned", FALSE )
                         ->from( APP_ASSIGN.' aa' )
                         ->join( USER.' u', 'u.user_id = aa.peer_id', 'left' )
                         ->where( $where )
@@ -143,6 +149,50 @@ class Appraisal_Model extends CI_Model {
     public function deleteAssignEmployeeFeedback( $db_data ) {
         return $this->db
                         ->delete( APP_ASSIGN, $db_data );
+    }
+
+    public function getEmployeeFeedbackResult( $per_page, $offset, $user_id ) {
+        return $this->db
+                        ->select( "a.appraisal_title, ar.self_score, ar.peer_score, ar.manager_score, ar.date_submit" )
+                        ->from( APP_RESULT.' ar' )
+                        ->join( APPRAISAL.' a', 'a.appraisal_id = ar.appraisal_id', 'left' )
+                        ->where( array( 'ar.user_id' => $user_id ) )
+                        ->get()
+                        ->result_array();
+    }
+
+    public function getAllEmployeeFeedbackResult( $user_id ) {
+        return $this->db
+                        ->where( array( 'user_id' => $user_id ) )
+                        ->count_all_results( APP_RESULT );
+    }
+
+    public function getSelfFeedbackCount( $user_id ) {
+        return $this->db
+                        ->where( array( 'user_id' => $user_id ) )
+                        ->count_all_results( APP_ASSIGN );
+    }
+
+    public function getPeerFeedbackCount( $user_id ) {
+        return $this->db
+                        ->where( array( 'peer_id' => $user_id ) )
+                        ->count_all_results( APP_ASSIGN );
+    }
+
+    public function getMngrFeedbackCount( $user_id ) {
+        return $this->db
+                        ->where( array( 'manager_id' => $user_id ) )
+                        ->count_all_results( APP_ASSIGN );
+    }
+
+    public function getSelfFeedback( $per_page, $offset, $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db                        
+                        ->limit( $per_page, $offset )
+                        ->get( APP_ASSIGN )
+                        ->result_array();
     }
     
 }

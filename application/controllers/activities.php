@@ -2,6 +2,7 @@
 
 class Activities extends CI_Controller {
 	protected $user_job_id;
+	protected $module = 'activity';
 
 	public function __construct() {
 		parent::__construct();
@@ -82,6 +83,13 @@ class Activities extends CI_Controller {
 				$this->activities_model->saveNewJobActivity( array_merge( $activity, $job_activity ) );
 			}
 		}
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'module'	=> $this->module
+						,'history'	=> 'Created new activity'
+					);
+		$this->template_library->insert_log( $log );
+
 		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New activity has been added successfully!', 'class' => 'info' ) );
 		redirect( base_url().'activities' );
 	}
@@ -100,6 +108,12 @@ class Activities extends CI_Controller {
 				}
 			}
 
+			$log = array( 
+							'user_id'	=> $this->session->userdata( 'user_id' )
+							,'module'	=> $this->module
+							,'history'	=> 'Updated activity'
+						);
+			$this->template_library->insert_log( $log );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Activities has been updated successfully!', 'class' => 'info' ) );
 			echo base_url().'activities';
 
@@ -131,6 +145,12 @@ class Activities extends CI_Controller {
 				$this->activities_model->deleteJobActivity( $db_data );
 			}
 			
+			$log = array( 
+							'user_id'	=> $this->session->userdata( 'user_id' )
+							,'module'	=> $this->module
+							,'history'	=> 'Deleted activity'
+						);
+			$this->template_library->insert_log( $log );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Activity has been deleted successfully!', 'class' => 'info' ) );
 			echo base_url().'activities';
 		}

@@ -125,6 +125,8 @@ $route['employees/info/360_feedback/(:num)/(:num)'] = "employees/feedback/$1/$2"
 $route['employees/info/360_feedback/update'] = "employees/feedback_update";
 $route['employees/info/360_feedback/delete'] = "employees/feedback_delete";
 
+$route['employees/info/performance/(:num)'] = "employees/performance/$1";
+
 $route['control_panel/(:any)'] = "admin/admin/$1";
 $route['404_override'] = 'not_found';
 

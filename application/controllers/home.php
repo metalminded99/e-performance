@@ -14,15 +14,22 @@ class Home extends CI_Controller {
 		$this->load->model( 'history_model' );
 		$this->load->model( 'goal_model' );
 		$this->load->model( 'dev_plan_model' );
+		$this->load->model( 'appraisal_model' );
 
-		// $data['news'] = $this->news_model->getActiveNews();
-		// $data['history'] = $this->history_model->getUserLogs( $this->session->userdata('user_id') );
+		$data['news'] = $this->news_model->getActiveNews();
+		$data['history'] = $this->history_model->getUserLogs( $this->session->userdata('user_id') );
 		$template_param['goal_noti']				= $this->goal_model->getEmpGoalReminder( $this->session->userdata( 'user_id' ) );
 		$template_param['trainings_noti']			= $this->dev_plan_model->getEmpDevPlanReminder( $this->session->userdata( 'user_id' ) );
+		
+		$self_feedback 								= $this->appraisal_model->getSelfFeedbackCount( $this->session->userdata( 'user_id' ) );
+		$peer_feedback 								= $this->appraisal_model->getPeerFeedbackCount( $this->session->userdata( 'user_id' ) );
+		$mngr_feedback 								= $this->appraisal_model->getMngrFeedbackCount( $this->session->userdata( 'user_id' ) );
+		$template_param['feedback_noti']			= $self_feedback + $peer_feedback + $mngr_feedback;
+
 		$template_param['left_side_nav']			= $this->load->view( '_components/left_side_nav', '', true );
 		// $template_param['user_notifications']		= $this->load->view( '_components/user_notifications', '', true );
 		// $template_param['user_dashboard']			= $this->load->view( '_components/user_dashboard', '', true );
-		$template_param['user_widgets']				= $this->load->view( '_components/user_widgets', '', true );
+		$template_param['user_widgets']				= $this->load->view( 'templates/news_widget', $data, true );
 		$template_param['content']					= 'templates/user_template';
 		$this->template_library->render( 
 											$template_param 

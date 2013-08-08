@@ -124,6 +124,13 @@ class Template_library {
 			return false;
 		}
 	}
+
+	public function insert_log( $logs ) {
+		$this->CI_load->model( 'history_model' );
+
+		$this->CI->history_model->insert_log( $logs );
+	}
+
 }
 
 /* End of file template_library.php */

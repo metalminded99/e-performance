@@ -2,6 +2,7 @@
 
 class Abilities extends CI_Controller {
 	protected $user_job_id;
+	protected $module = 'ability';
 
 	public function __construct() {
 		parent::__construct();
@@ -82,6 +83,13 @@ class Abilities extends CI_Controller {
 				$this->abilities_model->saveNewJobAbility( array_merge( $ability, $job_ability ) );
 			}
 		}
+
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'module'	=> $this->module
+						,'history'	=> 'Created new ability'
+					);
+		$this->template_library->insert_log( $log );
 		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New ability has been added successfully!', 'class' => 'info' ) );
 		redirect( base_url().'abilities' );
 	}
@@ -100,6 +108,12 @@ class Abilities extends CI_Controller {
 				}
 			}
 
+			$log = array( 
+							'user_id'	=> $this->session->userdata( 'user_id' )
+							,'module'	=> $this->module
+							,'history'	=> 'Updated ability'
+						);
+			$this->template_library->insert_log( $log );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Abilities has been updated successfully!', 'class' => 'info' ) );
 			echo base_url().'abilities';
 
@@ -131,6 +145,13 @@ class Abilities extends CI_Controller {
 				$this->abilities_model->deleteJobAbility( $db_data );
 			}
 			
+			$log = array( 
+							'user_id'	=> $this->session->userdata( 'user_id' )
+							,'module'	=> $this->module
+							,'history'	=> 'Deleted ability'
+						);
+			$this->template_library->insert_log( $log );
+
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Ability has been deleted successfully!', 'class' => 'info' ) );
 			echo base_url().'abilities';
 		}

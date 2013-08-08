@@ -1,11 +1,11 @@
 <div class="row-fluid">
   <div class="block span6">
-    <div class="block-heading" data-target="#tablewidget">News</div>
+    <?php $news_cnt = count( $news ); ?>
+    <div class="block-heading" data-target="#tablewidget">News <?php if( $news_cnt > 0 ) { ?> <span class="label label-warning">+<?=$news_cnt?></span> <?php } ?></div>
     <div id="tablewidget" class="block-body">
       <table class="table">
         <tbody>
-          <?php 
-            $news_cnt = count( $news );
+          <?php             
             if( $news_cnt > 0 ):
               foreach( $news as $news_list ): 
           ?>
@@ -21,7 +21,7 @@
           ?>
           <tr>
             <td>
-              <h3>No news for today.</h3>
+              <h3>No news available.</h3>
             </td>
           </tr>
           <?php 
@@ -29,7 +29,7 @@
           ?>
         </tbody>
       </table>
-      <?php if( $news_cnt > 5 ) { ?><p><a href="users.html">More...</a></p><?php } ?>
+      <?php if( $news_cnt > 5 ) { ?><p><a href="<?=base_url()?>">More...</a></p><?php } ?>
     </div>
   </div>
   <div class="block span6">
@@ -43,7 +43,7 @@
         <thead>
           <tr>
             <th>Action</th>
-            <th>Log Date</th>
+            <th>Date</th>
           </tr>
         </thead>
         <?php
@@ -51,10 +51,10 @@
         ?>
         <tr>
           <td>
-            <?=$logs['log']?>
+            <?=$logs['history']?>
           </td>
           <td>
-            <?=$logs['date_log']?>
+            <small><?=$this->template_library->format_mysql_date( $logs['date_done'], 'M d, Y h:i a' )?></small>
           </td>
         </tr>
         <?php
@@ -63,7 +63,7 @@
         ?>
         <tr>
           <td>
-            <h3>No history available</h3>
+            <h3>No history available.</h3>
           </td>
         </tr>
         <?php

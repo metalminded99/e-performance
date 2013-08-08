@@ -39,8 +39,8 @@
 			      	?>
 			        <tr>
 			          	<td><?=$counter?></td>
-			          	<td><?=$appraisal['appraisal_title']?></td>
-			          	<td><?=$appraisal['appraisal_desc']?></td>
+			          	<td><?=$this->template_library->shorten_words( $appraisal['appraisal_title'] )?></td>
+			          	<td><?=$this->template_library->shorten_words( $appraisal['appraisal_desc'] )?></td>
 			          	<td><?=$appraisal['date_created']?></td>
 						<td>
 							<a title="update" class="up_btn" href="<?=base_url()?>appraisal/update/<?=$appraisal['appraisal_id']?>" role="button"><i class="icon-edit"></i></a>

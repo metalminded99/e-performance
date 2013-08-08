@@ -137,6 +137,13 @@ class Employees extends CI_Controller {
 				$this->goal_model->updateEmpGoal( $goals[ $g ], array( 'status' => $this->input->post( 'state' ) ) );
 			}	
 		}
+
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'history'	=> 'Change employee goal status to ' . strtoupper( $this->input->post( 'state' ) )
+					);
+		$this->template_library->insert_log( $log );
+
 		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s goal has been updated successfully!', 'class' => 'info' ) );
 		echo base_url().'employees/info/goals/'.$this->input->post( 'user' );
 	}
@@ -216,6 +223,12 @@ class Employees extends CI_Controller {
 
 		$this->dev_plan_model->saveNewEmpDevPlan( $training );
 
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'history'	=> 'Added new training to employee'
+					);
+		$this->template_library->insert_log( $log );
+
 		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New training has been added successfully!', 'class' => 'info' ) );
 		redirect( base_url().'employees/info/dev_plan/'.$this->input->post( 'user_id' ) );
 	}
@@ -231,6 +244,12 @@ class Employees extends CI_Controller {
 
 		$this->dev_plan_model->updateEmpDevPlan( $t_id, $training );
 
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'history'	=> 'Updated employee training'
+					);
+		$this->template_library->insert_log( $log );
+
 		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s training has been updated successfully!', 'class' => 'info' ) );
 
 		redirect( base_url().'employees/info/dev_plan/'.$this->input->post( 'user_id' ) );
@@ -243,6 +262,12 @@ class Employees extends CI_Controller {
 			$this->dev_plan_model->deleteEmpDevPlan( $this->input->post( 'training_id' ) );
 		}
 		
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'history'	=> 'Deleted employee training'
+					);
+		$this->template_library->insert_log( $log );
+
 		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s training has been removed successfully!', 'class' => 'info' ) );
 
 		echo base_url().'employees/info/dev_plan/'.$this->input->post( 'user' );
@@ -297,6 +322,13 @@ class Employees extends CI_Controller {
 				$this->journals_model->updateEmpGoal( $goals[ $g ], array( 'status' => $this->input->post( 'state' ) ) );
 			}	
 		}
+
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'history'	=> 'Updated employee journal'
+					);
+		$this->template_library->insert_log( $log );
+
 		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s goal has been updated successfully!', 'class' => 'info' ) );
 		echo base_url().'employees/info/goals/'.$this->input->post( 'user' );
 	}
@@ -334,6 +366,8 @@ class Employees extends CI_Controller {
 																					,'U.lvl > '		=> 2
 																				  ) 
 																		   );
+		$template_param['appraisals'] = $this->appraisal_model->getAllAppraisal( $offset, PER_PAGE, array( 'job_id' => $this->user_job_id ) );
+
 		$data['active'] = 'feedback';
 		$data['user_id'] = $user_id;
 		$template_param['emp_menu'] = $this->load->view( '_components/emp_menu', $data, true );
@@ -355,32 +389,84 @@ class Employees extends CI_Controller {
 	public function add_feedback( ) {
 		$this->load->model( 'appraisal_model' );
 		
-		$this->appraisal_model->assignEmployeeFeedback( 
-														array(
-																'user_id'		=> $this->input->post( 'user_id' )
-																,'peer_id'		=> $this->input->post( 'peers' )
-																,'manager_id'	=> $this->session->userdata( 'user_id' )
-																,'status'		=> 'Pending'
-															 ) 
-													  );
+		$add = $this->appraisal_model->assignEmployeeFeedback( 
+																array(
+																		'user_id'		=> $this->input->post( 'user_id' )
+																		,'app_id'		=> $this->input->post( 'app' )
+																		,'peer_id'		=> $this->input->post( 'peers' )
+																		,'manager_id'	=> $this->session->userdata( 'user_id' )
+																		,'status'		=> 'Pending'
+																	 ) 
+														  	);
+		if( !$add )
+			$msg = array( 'str' => '<i class="icon-exclamation-sign"></i> Ooops! Peer already assigned. Please select another peer to assign.', 'class' => 'danger' );
+		else
+			$msg = array( 'str' => '<i class="icon-ok"></i> Employee\'s feedback has been assigned successfully!', 'class' => 'info' );
 
-		$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s goal has been updated successfully!', 'class' => 'info' ) );
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'history'	=> 'Assigned peer to employee feedback'
+					);
+		$this->template_library->insert_log( $log );
+
+		$this->session->set_flashdata( 'message', $msg );
 		redirect( base_url().'employees/info/360_feedback/'.$this->input->post( 'user_id' ) );
 	}
 	
 	public function feedback_delete( ) {
 		if( $this->input->is_ajax_request() ){
 			$this->load->model( 'appraisal_model' );
-			
+			$ids = explode('|', $this->input->post( 'app_id' ) );
 			$this->appraisal_model->deleteAssignEmployeeFeedback( 
 															array(
-																	'app_id' => $this->input->post( 'app_id' )
+																	'app_id' => $ids[0]
+																	,'peer_id' => $ids[1]
 																 ) 
 														  );
+
+			$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'history'	=> 'Deassigned peer to employee feedback'
+					);
+			$this->template_library->insert_log( $log );
 
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s goal has been updated successfully!', 'class' => 'info' ) );
 			echo base_url().'employees/info/360_feedback/'.$this->input->post( 'user_id' );
 		}
+	}
+
+	public function performance( $user_id, $offset = 0 ) { 
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+
+		# Employee journals
+		$this->load->model( 'appraisal_model' );
+		$template_param['pagination'] = $this->template_library->get_pagination(
+																					'employees/info/performance/'.$user_id 
+																					,$this->appraisal_model->getAllEmployeeFeedbackResult( $user_id )
+																					,PER_PAGE
+																					,'user'
+																					,($this->uri->segment(5)) ? $this->uri->segment(5) : 0
+																				);
+
+		$template_param['performance']	= $this->appraisal_model->getEmployeeFeedbackResult( $offset, PER_PAGE, $user_id );
+
+		$data['active'] = 'perf';
+		$data['user_id'] = $user_id;
+		$template_param['emp_menu'] = $this->load->view( '_components/emp_menu', $data, true );
+
+		# Template meta data
+		$template_param['counter']			= $offset;
+		$template_param['user_id']			= $user_id;
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']			= 'employee_performance';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,''
+										);
 	}
 
 }
