@@ -1,27 +1,33 @@
 <script src="<?=base_url().JS?>highcharts/highcharts.js"></script>
 <script src="<?=base_url().JS?>highcharts/modules/exporting.js"></script>
 <script type = "text/javascript" > 
-	$(function () {
+	var self_score = <?=$self_score?>;
+	var peer_score = <?=$peer_score?>;
+	var manager_score = <?=$manager_score?>;
+
+	$(function () {		
 	    $('#container').highcharts({
 	        chart: {
 	            type: 'bar'
 	        },
 	        title: {
-	            text: 'Historic World Population by Region'
+	            text: 'Appraisal Summary'
 	        },
 	        subtitle: {
-	            text: 'Source: Wikipedia.org'
+	            text: 'Feedback scores'
 	        },
 	        xAxis: {
-	            categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania'],
+	            categories: ['Core Competency', 'Performance Output', 'Abilities', 'Skills'],
 	            title: {
 	                text: null
 	            }
 	        },
 	        yAxis: {
-	            min: 0,
+	            min			: 0,
+	            tInterval	: 1,
+				max			: 5,
 	            title: {
-	                text: 'Population (millions)',
+	                text: 'Ratings (Average)',
 	                align: 'high'
 	            },
 	            labels: {
@@ -29,7 +35,7 @@
 	            }
 	        },
 	        tooltip: {
-	            valueSuffix: ' millions'
+	            valueSuffix: ''
 	        },
 	        plotOptions: {
 	            bar: {
@@ -53,14 +59,14 @@
 	            enabled: false
 	        },
 	        series: [{
-	            name: 'Year 1800',
-	            data: [107, 31, 635, 203, 2]
+	            name: 'Self score',
+	            data: [ parseFloat(self_score[2].ave), parseFloat(self_score[3].ave), parseFloat(self_score[1].ave), parseFloat(self_score[0].ave) ]
 	        }, {
-	            name: 'Year 1900',
-	            data: [133, 156, 947, 408, 6]
+	            name: 'Peer score',
+	            data: [ parseFloat(peer_score[2].ave), parseFloat(peer_score[3].ave), parseFloat(peer_score[1].ave), parseFloat(peer_score[0].ave) ]
 	        }, {
-	            name: 'Year 2008',
-	            data: [973, 914, 4054, 732, 34]
+	            name: 'Manager score',
+	            data: [	parseFloat(manager_score[2].ave), parseFloat(manager_score[3].ave), parseFloat(manager_score[1].ave), parseFloat(manager_score[0].ave) ]
 	        }]
 	    });
 	});

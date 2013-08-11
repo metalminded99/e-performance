@@ -109,14 +109,53 @@ class Appraisal_Model extends CI_Model {
     }
 
     public function assignEmployeeFeedback( $db_data ) {
-        $exist = $this->db
-                          ->where( array( 'user_id' => $db_data['user_id'], 'peer_id' => $db_data['peer_id'] ) )
-                          ->count_all_results( APP_ASSIGN );
-        if( $exist == 0 ){
-            $this->db->insert( APP_ASSIGN, $db_data );
-            return true;
-        }else
+        $user_exist = $this->db
+                              ->where( array( 'user_id' => $db_data['user_id'], 'app_id' => $db_data['app_id'] ) )
+                              ->get( APP_ASSIGN )
+                              ->result_array( );
+        if( count( $user_exist ) == 0 ){
+            $this->db->insert(
+                                APP_ASSIGN
+                                ,array(
+                                        'user_id'   => $db_data['user_id']
+                                        ,'app_id'   => $db_data['app_id']
+                                        ,'status'   => $db_data['status']
+                                      ) 
+                             );
+            $assign_id = $this->db->insert_id();
+        }else{
+            $assign_id = $user_exist[0]['assign_id'];
+        }
+        
+        $mngr_exist = $this->db
+                                ->where( array( 'assign_id' => $assign_id ) )
+                                ->count_all_results( APP_MNGR_ASSIGN );
+        if( $mngr_exist == 0 ){
+            $this->db->insert( 
+                                APP_MNGR_ASSIGN
+                                ,array(
+                                        'assign_id'     => $assign_id
+                                        ,'manager_id'   => $db_data['manager_id']
+                                        ,'status'       => $db_data['status']
+                                      ) 
+                            );
+        }
+
+        $peer_exist = $this->db
+                                ->where( array( 'assign_id' => $assign_id ) )
+                                ->count_all_results( APP_PEER_ASSIGN );
+        if( $peer_exist == 0 ){
+            return $this->db->insert( 
+                                        APP_PEER_ASSIGN
+                                        ,array(
+                                                'assign_id' => $assign_id
+                                                ,'peer_id'  => $db_data['peer_id']
+                                                ,'status'   => $db_data['status']
+                                              ) 
+                                    );
+        }else{
             return false;
+        }
     }
 
     public function getAssignedFeedback( $per_page, $offset, $where = null ) {
@@ -138,9 +177,10 @@ class Appraisal_Model extends CI_Model {
 
     public function getAssignedFeedbackHistory( $where ) {
         return $this->db
-                        ->select( "aa.app_id, u.user_id, CONCAT(u.fname,' ',u.lname) full_name, aa.status, aa.date_assigned", FALSE )
+                        ->select( "aa.app_id, u.user_id, CONCAT(u.fname,' ',u.lname) full_name, pa.status, aa.date_assigned", FALSE )
                         ->from( APP_ASSIGN.' aa' )
-                        ->join( USER.' u', 'u.user_id = aa.peer_id', 'left' )
+                        ->join( APP_PEER_ASSIGN.' pa', 'pa.assign_id = aa.assign_id', 'left' )
+                        ->join( USER.' u', 'u.user_id = pa.peer_id', 'left' )
                         ->where( $where )
                         ->get()
                         ->result_array();
@@ -169,30 +209,109 @@ class Appraisal_Model extends CI_Model {
 
     public function getSelfFeedbackCount( $user_id ) {
         return $this->db
-                        ->where( array( 'user_id' => $user_id ) )
+                        ->where( array( 'user_id' => $user_id, 'status !=' => 'Completed' ) )
                         ->count_all_results( APP_ASSIGN );
     }
 
     public function getPeerFeedbackCount( $user_id ) {
         return $this->db
-                        ->where( array( 'peer_id' => $user_id ) )
-                        ->count_all_results( APP_ASSIGN );
+                        ->where( array( 'peer_id' => $user_id, 'status !=' => 'Completed' ) )
+                        ->count_all_results( APP_PEER_ASSIGN );
     }
 
     public function getMngrFeedbackCount( $user_id ) {
         return $this->db
-                        ->where( array( 'manager_id' => $user_id ) )
-                        ->count_all_results( APP_ASSIGN );
+                        ->where( array( 'manager_id' => $user_id, 'status !=' => 'Completed' ) )
+                        ->count_all_results( APP_MNGR_ASSIGN );
+    }
+
+    public function getFeedbackQuestion( $q_param ) {
+        return $this->db
+                        ->where( $q_param )
+                        ->get( APP_QUESTION )
+                        ->result_array();
     }
 
     public function getSelfFeedback( $per_page, $offset, $where = null ) {
         if( !is_null( $where ) )
             $this->db->where( $where );
 
-        return $this->db                        
-                        ->limit( $per_page, $offset )
-                        ->get( APP_ASSIGN )
+        return $this->db
+                        ->select( 'tas.app_id, a.appraisal_title, tas.date_assigned, tas.status' )
+                        ->from( APP_ASSIGN.' tas' )
+                        ->join( APPRAISAL.' a', 'a.appraisal_id = tas.app_id', 'left' )
+                        ->group_by( 'tas.app_id, tas.user_id' )
+                        ->limit( $offset, $per_page )
+                        ->get()
+                        ->result_array();
+    }
+
+    public function getPeerFeedback( $per_page, $offset, $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+         return $this->db
+                        ->select( 'tas.app_id, pa.assign_id, a.appraisal_title, tas.date_assigned, pa.status' )
+                        ->from( APP_PEER_ASSIGN.' pa' )
+                        ->join( APP_ASSIGN.' tas', 'tas.assign_id = pa.assign_id', 'left' )
+                        ->join( APPRAISAL.' a', 'a.appraisal_id = tas.app_id', 'left' )
+                        ->group_by( 'tas.app_id, pa.peer_id' )
+                        ->limit( $offset, $per_page )
+                        ->get()
                         ->result_array();
     }
     
+    public function insertFeedbackForm( $feedback, $cond ) {
+        $where = array(
+                        'user_id' => $feedback[ 'user_id' ]
+                        ,'question_id' => $feedback[ 'question_id' ]
+                        ,'appraisal_id' => $feedback[ 'appraisal_id' ]
+                      );
+
+        $exist = $this->db
+                          ->where( $where )
+                          ->count_all_results( APP_RESULT );
+
+        if( !$exist ){
+            return $this->db->insert( APP_RESULT, $feedback );
+        }
+        else{
+            if ( isset( $feedback[ 'peer_id' ] ) ){
+                $up_data = array( 'peer_id' => $feedback[ 'peer_id' ], 'peer_score' => $feedback[ 'peer_score' ] );
+            }else{
+                $up_data = array( 'manager_id' => $feedback[ 'manager_id' ], 'manager_score' => $feedback[ 'manager_score' ] );
+            }
+
+            return $this->db
+                            ->where( $where )
+                            ->update( APP_RESULT, $up_data );
+        }
+    }
+
+    public function updateFeedbackStatus( $db_param, $table ){ 
+        return $this->db->where( $db_param )->update( $table, array( 'status' => 'Completed' ) );
+    }
+
+    public function getFeedbackSummary( $field, $where = null ) {
+        if( is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->select( 'aq.category, AVG( ar.'.$field.' ) ave' )
+                        ->from( APP_RESULT.' ar' )
+                        ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+                        ->group_by( 'aq.category' )
+                        ->get()
+                        ->result_array();
+    }
+
+    public function getAssignedEmployee( $assign_id, $app_id ) {
+        return $this->db
+                        ->select( 'user_id' )
+                        ->where( array( 'assign_id' => $assign_id, 'app_id' => $app_id ) )
+                        ->limit( 1 )
+                        ->get( APP_ASSIGN )
+                        ->result_array();
+    }
+
 }

@@ -16,14 +16,21 @@ class Home extends CI_Controller {
 		$this->load->model( 'dev_plan_model' );
 		$this->load->model( 'appraisal_model' );
 
-		$data['news'] = $this->news_model->getActiveNews();
-		$data['history'] = $this->history_model->getUserLogs( $this->session->userdata('user_id') );
-		$template_param['goal_noti']				= $this->goal_model->getEmpGoalReminder( $this->session->userdata( 'user_id' ) );
-		$template_param['trainings_noti']			= $this->dev_plan_model->getEmpDevPlanReminder( $this->session->userdata( 'user_id' ) );
+		$data['news']						= $this->news_model->getActiveNews();
+		$data['history']					= $this->history_model->getUserLogs( $this->session->userdata('user_id') );
+		$template_param['goal_noti']		= $this->goal_model->getEmpGoalReminder( $this->session->userdata( 'user_id' ) );
+		$template_param['trainings_noti']	= $this->dev_plan_model->getEmpDevPlanReminder( $this->session->userdata( 'user_id' ) );
 		
-		$self_feedback 								= $this->appraisal_model->getSelfFeedbackCount( $this->session->userdata( 'user_id' ) );
-		$peer_feedback 								= $this->appraisal_model->getPeerFeedbackCount( $this->session->userdata( 'user_id' ) );
-		$mngr_feedback 								= $this->appraisal_model->getMngrFeedbackCount( $this->session->userdata( 'user_id' ) );
+		$self_feedback 						= $this->appraisal_model->getSelfFeedbackCount( $this->session->userdata( 'user_id' ) );
+		$peer_feedback 						= $this->appraisal_model->getPeerFeedbackCount( $this->session->userdata( 'user_id' ) );
+
+		$template_param['self_score']		= json_encode( $this->appraisal_model->getFeedbackSummary( 'self_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) ) );
+		$template_param['peer_score']		= json_encode( $this->appraisal_model->getFeedbackSummary( 'peer_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) ) );
+		$template_param['manager_score']	= json_encode( $this->appraisal_model->getFeedbackSummary( 'manager_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) ) );
+		$mngr_feedback = 0;
+		if( $this->session->userdata('lvl') == 2 )
+			$mngr_feedback 								= $this->appraisal_model->getMngrFeedbackCount( $this->session->userdata( 'user_id' ) );
+
 		$template_param['feedback_noti']			= $self_feedback + $peer_feedback + $mngr_feedback;
 
 		$template_param['left_side_nav']			= $this->load->view( '_components/left_side_nav', '', true );

@@ -2,19 +2,26 @@
 
 class Feedbacks extends CI_Controller {
 	protected $user_id;
+	protected $category;
 
 	public function __construct() {
 		parent::__construct();
 		$this->load->model( 'appraisal_model' );
 
 		$this->user_id = $this->session->userdata( 'user_id' );
+		$this->category = array(
+									'core'
+									,'perf'
+									,'skills'
+									,'abl'
+								);
 	}
 
 	public function index( $offset = 0 ) {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
-		# Journal list
+		# Appraisal list
 		$template_param['pagination'] = $this->template_library->get_pagination(
 																					'feedbacks' 
 																					,$this->appraisal_model->getSelfFeedbackCount( $this->user_id )
@@ -27,7 +34,7 @@ class Feedbacks extends CI_Controller {
 
 		# Template meta data
 		$template_param['heading']	= 'My Feedbacks';
-		$data['active'] = 'self';
+		$template_param['category'] = $data['active'] = 'self';
 		$template_param['app_menu'] = $this->load->view( '_components/app_menu', $data, true );
 		$template_param['counter']	= $offset;
 
@@ -42,16 +49,28 @@ class Feedbacks extends CI_Controller {
 										);
 	}
 
-	public function new_journal() {
+	public function peer( $offset = 0 ) {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
-		if( $this->input->post() )
-			$this->save_journal( 'new' );
+		# Appraisal list
+		$template_param['pagination'] = $this->template_library->get_pagination(
+																					'feedbacks' 
+																					,$this->appraisal_model->getPeerFeedbackCount( $this->user_id )
+																					,PER_PAGE
+																					,'user'
+																					,($this->uri->segment(2)) ? $this->uri->segment(2) : 0
+																				);
 
-		$template_param['action']			= 'Add New Journal';
-		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
-		$template_param['content']			= 'add_journal';
+		$template_param['feedbacks'] = $this->appraisal_model->getPeerFeedback( $offset, PER_PAGE, array( 'peer_id' => $this->user_id ) );
+		# Template meta data
+		$template_param['heading']	= 'Peer Feedbacks';
+		$template_param['category'] = $data['active'] = 'peer';
+		$template_param['app_menu'] = $this->load->view( '_components/app_menu', $data, true );
+		$template_param['counter']	= $offset;
+
+		$template_param['left_side_nav'] = $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']		 = 'peer_feedbacks';
 		$this->template_library->render( 
 											$template_param 
 											,'user_header'
@@ -61,35 +80,48 @@ class Feedbacks extends CI_Controller {
 										);
 	}
 
-	public function save_journal( $action, $journal_id = null ) {
-		$user = array( 'user_id' => $this->user_id );
-		if( $action == 'new' ){
-			$this->appraisal_model->saveNewJournal( array_merge( $user, $this->input->post() ) );
-			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New journal has been added successfully!', 'class' => 'info' ) );
-		}elseif ( $action == 'update' ) {
-			$this->appraisal_model->updateJournal( $this->input->post(), $journal_id );
-			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Journal has been added successfully!', 'class' => 'info' ) );
-		}
-
-		redirect( base_url().'feedbacks' );
-	}
-
-	public function update_journal( $journal_id ) {
+	public function feedback_question( $cat, $app_id, $assign = 0 ) {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
 		if( $this->input->post() )
-			$this->save_journal( 'update', $journal_id );
+			$this->save_feedback();
 
-		$db_param = array( 
-							'journal_id' => $journal_id
-							,'user_id' => $this->user_id
+		$q_param = array( 
+							'appraisal_id'	=> $app_id
+							,'category'		=> $cat
 						);
-		$feedbacks = $this->appraisal_model->getAllFeedbacks( 0, 1, $db_param );
-		$template_param['feedbacks']			= $feedbacks[0];
-		$template_param['action']			= 'Update Journal';
-		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
-		$template_param['content']			= 'add_journal';
+
+		$questions = $this->appraisal_model->getFeedbackQuestion( $q_param );
+		if( !$questions ){
+			$template_param['invalid']	= array(
+													'str' => '<i class="icon-ban-circle"></i> Feedback question not found! ' . anchor( base_url().'feedbacks', '<i class="icon-chevron-left"></i> back' )
+													,'class' => 'warning'
+												);
+		}
+
+		switch ( $cat ) {
+			case 'core':
+				$header = 'Core Competencies';
+				break;
+
+			case 'perf':
+				$header = 'Performance Output';
+				break;
+
+			case 'skills':
+				$header = 'Skills';
+				break;
+			
+			default:
+				$header = 'Abilities';
+				break;
+		}
+
+		$template_param['header']		= $header;
+		$template_param['questions']	= $questions;
+
+		$template_param['content']		 = 'feedback_questions';
 		$this->template_library->render( 
 											$template_param 
 											,'user_header'
@@ -99,34 +131,134 @@ class Feedbacks extends CI_Controller {
 										);
 	}
 
-	public function get_feedbacks_list() {
-		$data['save_url'] = base_url().'feedbacks/save_feedbacks';
-		$data['attr_list'] = $this->appraisal_model->getAllfeedbacks( 0, 1000, array( 'user_id' => $this->user_id ) );
-		return $this->load->view( 'templates/attribute_list_template', $data, true );
+	public function save_feedback() {
+		$cat_index	= array_search($this->uri->segment( 3 ), $this->category);
+		$app_id		= $this->uri->segment( 4 );
+		$assign_id	= $this->uri->segment( 5 );
+		$q_param	= array();
+		$where		= array();
+		$feed_type	= $this->uri->segment( 2 );
+
+		switch ( $feed_type ) {
+			case 'self_feedback':
+				$field		= 'self_score';
+				$u_field	= 'user_id';
+				$table 		= APP_ASSIGN;
+				$log 		= 'Evaluate self appraisal';
+				break;
+
+			case 'peer_feedback':
+				$field		= 'peer_score';
+				$u_field	= 'peer_id';
+				$table 		= APP_PEER_ASSIGN;
+				$log 		= 'Evaluate peer appraisal';
+				break;
+			
+			default:
+				$field		= 'manager_score';
+				$u_field	= 'manager_id';
+				$table 		= APP_MNGR_ASSIGN;
+				$log 		= 'Evaluate employee appraisal';
+				break;
+		}
+
+		foreach ( $this->input->post() as $key => $value ) {
+			$q_id = explode( '_', $key );
+			
+			if( $feed_type == 'self_feedback' ){
+				$q_param = array(
+									$u_field => $this->session->userdata('user_id')
+									,'appraisal_id' => $app_id
+									,'question_id' => $q_id[1]
+									,$field => $value
+								);
+			}else{
+				$assign_user = $this->appraisal_model->getAssignedEmployee( $assign_id, $app_id );
+				$q_param = array(
+									$field 			=> $value
+									,$u_field		=> $this->session->userdata('user_id')
+									,'user_id'		=> $assign_user[0]['user_id']
+									,'appraisal_id' => $app_id
+									,'question_id'	=> $q_id[1]
+								);
+			}
+
+			$this->appraisal_model->insertFeedbackForm( $q_param );
+		}
+		
+		if( isset( $this->category[ $cat_index + 1 ] ) ){
+			if( $assign_id != '' )
+				redirect( base_url().'feedbacks/'.$feed_type.'/'.$this->category[ $cat_index + 1 ].'/'.$app_id.'/'.$assign_id );
+			else
+				redirect( base_url().'feedbacks/'.$feed_type.'/'.$this->category[ $cat_index + 1 ].'/'.$app_id );
+		}
+		else{
+			if( $u_field != 'user_id' ){
+				$up_stats = array(
+									$u_field => $this->session->userdata('user_id')
+								 );
+			}else{
+				$up_stats = array(
+									$u_field => $this->session->userdata('user_id')
+									,'app_id' => $app_id
+								 );
+			}
+
+			$this->appraisal_model->updateFeedbackStatus( $up_stats, $table );
+
+			$log = array( 
+							'user_id'	=> $this->session->userdata( 'user_id' )
+							,'history'	=> $log
+						);
+			$this->template_library->insert_log( $log );
+
+			redirect( base_url().'feedbacks/thank_you' );
+		}
 	}
 
-	public function delete_feedbacks() {
-		if( $this->input->is_ajax_request() ){
-			if( is_array( $this->input->post('item') ) ){
-				$items = $this->input->post('item');
-				for( $s = 0; $s < count( $items ); $s++ ){
-					$db_data = array( 
-								'Journal_id' => $items[ $s ]
-								,'job_id' => $this->user_job_id
-							);
-					$this->appraisal_model->deleteJobJournal( $db_data );
-				}
-			}else{
-				$db_data = array( 
-								'Journal_id' => $this->input->post('item')
-								,'job_id' => $this->user_job_id
-							);
-				$this->appraisal_model->deleteJobJournal( $db_data );
-			}
-			
-			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Journal has been deleted successfully!', 'class' => 'info' ) );
-			echo base_url().'feedbacks';
+	public function thank_you() {
+		$template_param['header']		= 'Done!';
+
+		$template_param['content']		 = 'feedback_questions';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
+	}
+
+	public function get_feedback_summary() {
+		if ($this->input->is_ajax_request() ){			
+			$result_param = array(
+									'user_id'		=> $this->session->userdata( 'user_id' )
+									,'appraisal_id' => $this->input->post( 'app_id' )
+								 );
+			$cat = $this->input->post( 'cat' );
+
+			$result = 'print';
 		}
+		switch ( $cat ) {
+			case 'self':
+				$field = 'self_score';
+				break;
+
+			case 'peer':
+				$field = 'peer_score';
+				break;
+			
+			default:
+				$field = 'manager_score';
+				break;
+		}
+
+		$where = isset( $result_param ) ? $result_param : null ;
+
+		if( isset( $result ) )
+			echo json_encode( $this->appraisal_model->getFeedbackSummary( $field, $where ) );
+		else
+			return $this->appraisal_model->getFeedbackSummary( $field, $where );		
 	}
 
 }

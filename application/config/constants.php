@@ -58,6 +58,8 @@ define('TRAINING_ABL'	, 'tbl_training_abilities');
 define('APPRAISAL'		, 'tbl_appraisal');
 define('APP_QUESTION'	, 'tbl_appraisal_questionaire');
 define('APP_ASSIGN'		, 'tbl_appraisal_assignment');
+define('APP_PEER_ASSIGN', 'tbl_appraisal_peer_assignment');
+define('APP_MNGR_ASSIGN', 'tbl_appraisal_mngr_assignment');
 define('APP_RESULT'		, 'tbl_appraisal_result');
 
 define('EMP_GOALS'		, 'tbl_emp_goals');
