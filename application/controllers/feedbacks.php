@@ -21,6 +21,9 @@ class Feedbacks extends CI_Controller {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
+		if( $this->session->userdata( 'lvl' ) == 2 )
+			redirect( base_url().'feedbacks/mngr' );
+
 		# Appraisal list
 		$template_param['pagination'] = $this->template_library->get_pagination(
 																					'feedbacks' 
@@ -55,11 +58,11 @@ class Feedbacks extends CI_Controller {
 
 		# Appraisal list
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'feedbacks' 
+																					'feedbacks/peer' 
 																					,$this->appraisal_model->getPeerFeedbackCount( $this->user_id )
 																					,PER_PAGE
 																					,'user'
-																					,($this->uri->segment(2)) ? $this->uri->segment(2) : 0
+																					,($this->uri->segment(3)) ? $this->uri->segment(3) : 0
 																				);
 
 		$template_param['feedbacks'] = $this->appraisal_model->getPeerFeedback( $offset, PER_PAGE, array( 'peer_id' => $this->user_id ) );
@@ -71,6 +74,36 @@ class Feedbacks extends CI_Controller {
 
 		$template_param['left_side_nav'] = $this->load->view( '_components/left_side_nav', '', true );
 		$template_param['content']		 = 'peer_feedbacks';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
+	}
+
+	public function mngr( $offset = 0 ) {
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+
+		# Appraisal list
+		$template_param['pagination'] = $this->template_library->get_pagination(
+																					'feedbacks/mngr' 
+																					,$this->appraisal_model->getMngrFeedbackCount( $this->user_id )
+																					,PER_PAGE
+																					,'user'
+																					,($this->uri->segment(3)) ? $this->uri->segment(3) : 0
+																				);
+
+		$template_param['feedbacks'] = $this->appraisal_model->getMngrFeedback( $offset, PER_PAGE, array( 'manager_id' => $this->user_id ) );
+		# Template meta data
+		$template_param['category'] = $data['active'] = 'mngr';
+		$template_param['app_menu'] = $this->load->view( '_components/app_menu', $data, true );
+		$template_param['counter']	= $offset;
+
+		$template_param['left_side_nav'] = $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']		 = 'mngr_feedbacks';
 		$this->template_library->render( 
 											$template_param 
 											,'user_header'
@@ -230,11 +263,7 @@ class Feedbacks extends CI_Controller {
 	}
 
 	public function get_feedback_summary() {
-		if ($this->input->is_ajax_request() ){			
-			$result_param = array(
-									'user_id'		=> $this->session->userdata( 'user_id' )
-									,'appraisal_id' => $this->input->post( 'app_id' )
-								 );
+		if ($this->input->is_ajax_request() ){
 			$cat = $this->input->post( 'cat' );
 
 			$result = 'print';
@@ -242,23 +271,29 @@ class Feedbacks extends CI_Controller {
 		switch ( $cat ) {
 			case 'self':
 				$field = 'self_score';
+				$user = 'user_id';
 				break;
 
 			case 'peer':
 				$field = 'peer_score';
+				$user = 'peer_id';
 				break;
 			
 			default:
 				$field = 'manager_score';
+				$user = 'manager_id';
 				break;
 		}
 
-		$where = isset( $result_param ) ? $result_param : null ;
-
-		if( isset( $result ) )
-			echo json_encode( $this->appraisal_model->getFeedbackSummary( $field, $where ) );
+		if( isset( $result ) ){
+			$result_param = array(
+									$user				=> $this->session->userdata( 'user_id' )
+									,'aq.appraisal_id'	=> $this->input->post( 'app_id' )
+								 );
+			echo json_encode( $this->appraisal_model->getFeedbackSummary( $field, $result_param ) );
+		}
 		else
-			return $this->appraisal_model->getFeedbackSummary( $field, $where );		
+			return $this->appraisal_model->getFeedbackSummary( $field );
 	}
 
 }

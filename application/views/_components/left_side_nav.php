@@ -8,7 +8,6 @@
 
 				<?php if( $this->session->userdata( 'lvl' ) == '3' ) { ?>
 				<li><a href="<?=base_url()?>journals">Journals</a></li>
-				<li><a href="<?=base_url()?>feedbacks">360 Feedback</a></li>
 				<li><a href="<?=base_url()?>my_goal">Goals</a></li>
 				<li><a href="<?=base_url()?>my_trainings">Trainings</a></li>
 				<?php } ?>
@@ -18,6 +17,8 @@
 				<li><a href="<?=base_url()?>dept_goals">Department Goal</a></li>
 				<li><a href="<?=base_url()?>appraisal">Appraisals</a></li>
 				<?php } ?>
+
+				<li><a href="<?=base_url()?>feedbacks<?=$this->session->userdata('lvl') == 2 ? '/mngr' : '' ?>">360 Feedback</a></li>
 			</ul>
 			<div class="nav-header" data-toggle="collapse" data-target="#settings-menu">
 				<i class="icon-wrench"></i>Settings

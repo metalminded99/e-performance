@@ -260,11 +260,25 @@ class Appraisal_Model extends CI_Model {
                         ->get()
                         ->result_array();
     }
+
+    public function getMngrFeedback( $per_page, $offset, $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+         return $this->db
+                        ->select( 'tas.app_id, pa.assign_id, a.appraisal_title, tas.date_assigned, pa.status' )
+                        ->from( APP_MNGR_ASSIGN.' pa' )
+                        ->join( APP_ASSIGN.' tas', 'tas.assign_id = pa.assign_id', 'left' )
+                        ->join( APPRAISAL.' a', 'a.appraisal_id = tas.app_id', 'left' )
+                        ->limit( $offset, $per_page )
+                        ->get()
+                        ->result_array();
+    }
     
-    public function insertFeedbackForm( $feedback, $cond ) {
+    public function insertFeedbackForm( $feedback ) {
         $where = array(
-                        'user_id' => $feedback[ 'user_id' ]
-                        ,'question_id' => $feedback[ 'question_id' ]
+                        'user_id'       => $feedback[ 'user_id' ]
+                        ,'question_id'  => $feedback[ 'question_id' ]
                         ,'appraisal_id' => $feedback[ 'appraisal_id' ]
                       );
 
@@ -278,7 +292,7 @@ class Appraisal_Model extends CI_Model {
         else{
             if ( isset( $feedback[ 'peer_id' ] ) ){
                 $up_data = array( 'peer_id' => $feedback[ 'peer_id' ], 'peer_score' => $feedback[ 'peer_score' ] );
-            }else{
+            }elseif ( isset( $feedback[ 'manager_id' ] ) ){
                 $up_data = array( 'manager_id' => $feedback[ 'manager_id' ], 'manager_score' => $feedback[ 'manager_score' ] );
             }
 
@@ -293,7 +307,7 @@ class Appraisal_Model extends CI_Model {
     }
 
     public function getFeedbackSummary( $field, $where = null ) {
-        if( is_null( $where ) )
+        if( !is_null( $where ) )
             $this->db->where( $where );
 
         return $this->db

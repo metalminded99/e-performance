@@ -21,7 +21,7 @@
             <div class="row-fluid">
                 <div class="block span12">
                     <div class="block-heading" data-target="#widget1container">
-                        Peer Feedback
+                        Manager Feedback
                     </div>
                     <div id="widget1container" class="block-body">                        
                         <table id="tbl_feedbacks" class="table">
@@ -46,7 +46,7 @@
                                     <td><?=$this->template_library->format_mysql_date( $feedback['date_assigned'], 'F d, Y' )?></td>
                                     <td>
                                         <?php if($feedback['status'] == 'Pending' ){ ?> 
-                                        <a href="<?=base_url()?>feedbacks/peer_feedback/core/<?=$feedback['app_id']?>/<?=$feedback['assign_id']?>" title="Evaluate"><i class="icon-edit"></i></a> 
+                                        <a href="<?=base_url()?>feedbacks/mngr_feedback/core/<?=$feedback['app_id']?>/<?=$feedback['assign_id']?>" title="Evaluate"><i class="icon-edit"></i></a> 
                                         <?php } else { ?>
                                         <a href="javascript:void(0)" title="View Result" onclick="get_summary('<?=$feedback['app_id']?>');"><i class="icon-file"></i></a>
                                         <?php } ?>

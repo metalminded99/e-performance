@@ -24,9 +24,13 @@ class Home extends CI_Controller {
 		$self_feedback 						= $this->appraisal_model->getSelfFeedbackCount( $this->session->userdata( 'user_id' ) );
 		$peer_feedback 						= $this->appraisal_model->getPeerFeedbackCount( $this->session->userdata( 'user_id' ) );
 
-		$template_param['self_score']		= json_encode( $this->appraisal_model->getFeedbackSummary( 'self_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) ) );
-		$template_param['peer_score']		= json_encode( $this->appraisal_model->getFeedbackSummary( 'peer_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) ) );
-		$template_param['manager_score']	= json_encode( $this->appraisal_model->getFeedbackSummary( 'manager_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) ) );
+		$self_score		= $this->appraisal_model->getFeedbackSummary( 'self_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) );
+		$peer_score		= $this->appraisal_model->getFeedbackSummary( 'peer_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) );
+		$manager_score	= $this->appraisal_model->getFeedbackSummary( 'manager_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) );
+		
+		$template_param['self_score']		= !empty( $self_score ) ? json_encode( $self_score ) : 0 ;
+		$template_param['peer_score']		= !empty( $peer_score ) ? json_encode( $peer_score ) : 0 ;
+		$template_param['manager_score']	= !empty( $manager_score ) ? json_encode( $manager_score ) : 0 ;
 		$mngr_feedback = 0;
 		if( $this->session->userdata('lvl') == 2 )
 			$mngr_feedback 								= $this->appraisal_model->getMngrFeedbackCount( $this->session->userdata( 'user_id' ) );

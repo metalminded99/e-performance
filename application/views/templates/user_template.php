@@ -4,6 +4,27 @@
 	var self_score = <?=$self_score?>;
 	var peer_score = <?=$peer_score?>;
 	var manager_score = <?=$manager_score?>;
+	
+	var self_plot = [];
+	if( self_score == 0 ) {
+		self_plot = [ 0, 0, 0, 0 ];
+	} else {
+		self_plot = [ parseFloat(self_score[2].ave), parseFloat(self_score[3].ave), parseFloat(self_score[1].ave), parseFloat(self_score[0].ave) ];
+	}
+
+	var peer_plot = [];
+	if( peer_score == 0 ) {
+		peer_plot = [ 0, 0, 0, 0 ];
+	} else {
+		peer_plot = [ parseFloat(peer_score[2].ave), parseFloat(peer_score[3].ave), parseFloat(peer_score[1].ave), parseFloat(peer_score[0].ave) ];
+	}
+
+	var mngr_plot = [];
+	if( manager_score == 0 ) {
+		mngr_plot = [ 0, 0, 0, 0 ];
+	} else {
+		mngr_plot = [ parseFloat(manager_score[2].ave), parseFloat(manager_score[3].ave), parseFloat(manager_score[1].ave), parseFloat(manager_score[0].ave) ];
+	}
 
 	$(function () {		
 	    $('#container').highcharts({
@@ -60,13 +81,13 @@
 	        },
 	        series: [{
 	            name: 'Self score',
-	            data: [ parseFloat(self_score[2].ave), parseFloat(self_score[3].ave), parseFloat(self_score[1].ave), parseFloat(self_score[0].ave) ]
+	            data: self_plot
 	        }, {
 	            name: 'Peer score',
-	            data: [ parseFloat(peer_score[2].ave), parseFloat(peer_score[3].ave), parseFloat(peer_score[1].ave), parseFloat(peer_score[0].ave) ]
+	            data: peer_plot
 	        }, {
 	            name: 'Manager score',
-	            data: [	parseFloat(manager_score[2].ave), parseFloat(manager_score[3].ave), parseFloat(manager_score[1].ave), parseFloat(manager_score[0].ave) ]
+	            data: mngr_plot
 	        }]
 	    });
 	});
@@ -81,30 +102,44 @@
 		
 
 		<div class="span9">
-			<!-- <script type="text/javascript" src="lib/jqplot/jquery.jqplot.min.js"></script>
-			<script type="text/javascript" charset="utf-8" src="javascripts/graphDemo.js"></script>-->
 			<div class="stats">
 				<p class="stat">
-					<span class="number"><?=$goal_noti?></span>process task
+					<span class="number"><?=$goal_noti?></span>Process task
 				</p>
 				<p class="stat">
-					<span class="number"><?=$trainings_noti?></span>training
+					<span class="number"><?=$trainings_noti?></span>Training
 				</p>
 				<p class="stat">
-					<span class="number"><?=$goal_noti?></span>goal
+					<?php 
+						if( $goal_noti > 0 ) {
+					?>
+					<a href="<?=base_url()?>my_goal">
+						<span class="number"><?=$goal_noti?></span>
+					</a>
+					<?php 
+						} else {
+					?>
+					<span class="number"><?=$goal_noti?></span>
+					<?php
+						} 
+					?>
+					Goal
 				</p>
 				<p class="stat">
-					<span class="number">
-						<?php 
-							if( $feedback_noti > 0 ) {
-						?>
-						<a href="<?=base_url()?>feedbacks"><?=$feedback_noti?></a>
-						<?php 
-							} else {
-								echo $feedback_noti;
-							} 
-						?>
-					</span>Feedback
+					<?php 
+						if( $feedback_noti > 0 ) {
+					?>
+					<a href="<?=base_url()?>feedbacks">
+						<span class="number"><?=$feedback_noti?></span>
+					</a>
+					<?php 
+						} else {
+					?>
+					<span class="number"><?=$feedback_noti?></span>
+					<?php
+						} 
+					?>
+					Feedback
 				</p>
 			</div>
 			<h1 class="page-title">Dashboard</h1>
