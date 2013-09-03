@@ -20,6 +20,18 @@
 
 				<li><a href="<?=base_url()?>feedbacks<?=$this->session->userdata('lvl') == 2 ? '/mngr' : '' ?>">360 Feedback</a></li>
 			</ul>
+
+			<?php if( $this->session->userdata( 'lvl' ) == '2' ) { ?>
+			<div class="nav-header" data-toggle="collapse" data-target="#reports-menu">
+				<i class="icon-book"></i>Reports
+			</div>
+			<ul id="reports-menu" class="nav nav-list collapse in">
+				<li><a href="<?=base_url()?>reports/dept_goals">Department Goals</a></li>
+				<li><a href="<?=base_url()?>reports/emp_goals">Employee Goals</a></li>
+				<li><a href="<?=base_url()?>reports/trainings">Trainings</a></li>
+			</ul>
+			<?php } ?>
+
 			<div class="nav-header" data-toggle="collapse" data-target="#settings-menu">
 				<i class="icon-wrench"></i>Settings
 			</div>
