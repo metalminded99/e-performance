@@ -1,10 +1,13 @@
 <script src="<?=base_url().JS?>highcharts/highcharts.js"></script>
 <script src="<?=base_url().JS?>highcharts/modules/exporting.js"></script>
 <script type = "text/javascript" > 
+	var series_plot = [];
+	<?php if( !isset( $mngr_summary ) ){ ?>
+	
 	var self_score = <?=$self_score?>;
 	var peer_score = <?=$peer_score?>;
 	var manager_score = <?=$manager_score?>;
-	
+
 	var self_plot = [];
 	if( self_score == 0 ) {
 		self_plot = [ 0, 0, 0, 0 ];
@@ -25,6 +28,44 @@
 	} else {
 		mngr_plot = [ parseFloat(manager_score[2].ave), parseFloat(manager_score[3].ave), parseFloat(manager_score[1].ave), parseFloat(manager_score[0].ave) ];
 	}
+
+	series_plot = [{
+			            name: 'Self score',
+			            data: self_plot
+			        }, {
+			            name: 'Peer score',
+			            data: peer_plot
+			        }, {
+			            name: 'Manager score',
+			            data: mngr_plot
+			        }]
+
+	<?php } else { ?>
+		var mngr_summary = <?=$mngr_summary?>;
+		if( mngr_summary == 0 ) {
+			mngr_summary = [ 0, 0, 0, 0 ];
+			series_plot.push(
+								{
+									name	: ''
+									,data	: mngr_summary
+								}
+							);
+		} else {
+			$.each( mngr_summary, function( key, val ) {
+				series_plot.push(
+									{
+										name	: key
+										,data	: [
+													parseFloat(mngr_summary[key]['core'])
+													,parseFloat(mngr_summary[key]['perf'])
+													,parseFloat(mngr_summary[key]['abl'])
+													,parseFloat(mngr_summary[key]['skills'])
+												  ]
+									}
+								);
+			} );
+		}
+	<?php } ?>
 
 	$(function () {		
 	    $('#container').highcharts({
@@ -79,16 +120,7 @@
 	        credits: {
 	            enabled: false
 	        },
-	        series: [{
-	            name: 'Self score',
-	            data: self_plot
-	        }, {
-	            name: 'Peer score',
-	            data: peer_plot
-	        }, {
-	            name: 'Manager score',
-	            data: mngr_plot
-	        }]
+	        series: series_plot
 	    });
 	});
 </script>

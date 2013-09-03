@@ -2,8 +2,12 @@
 
 class Home extends CI_Controller {
 
+	protected $dept;
+
 	public function __construct() {
 		parent::__construct();
+
+		$this->dept = $this->session->userdata( 'department_id' );
 	}
 
 	public function index() {
@@ -15,6 +19,15 @@ class Home extends CI_Controller {
 		$this->load->model( 'goal_model' );
 		$this->load->model( 'dev_plan_model' );
 		$this->load->model( 'appraisal_model' );
+
+		if( $this->session->userdata('lvl') == 2 ){
+			$mngr_summary = array();
+			$mngr_view = $this->appraisal_model->getMngrViewSummary( $this->dept );
+			foreach ($mngr_view as $e_app) {
+				$mngr_summary[ $e_app['full_name'] ][ $e_app['category'] ] = number_format( $e_app['total_score'], 1);
+			}
+			$template_param['mngr_summary'] = !empty( $mngr_summary ) ? json_encode( $mngr_summary ) : 0 ;
+		}
 
 		$data['news']						= $this->news_model->getActiveNews();
 		$data['history']					= $this->history_model->getUserLogs( $this->session->userdata('user_id') );

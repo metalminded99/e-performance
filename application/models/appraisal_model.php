@@ -328,4 +328,16 @@ class Appraisal_Model extends CI_Model {
                         ->result_array();
     }
 
+    public function getMngrViewSummary( $dept_id ) {
+        return $this->db
+                        ->select( "aq.category,concat(u.fname,' ', u.lname) full_name, ((avg(self_score) + avg(peer_score) + avg(manager_score)) / 3) total_score", false )
+                        ->from( APP_RESULT.' ar' )
+                        ->join( USER.' u', 'u.user_id = ar.user_id', 'left' )
+                        ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+                        ->where( 'u.department_id', $dept_id )
+                        ->group_by( 'ar.user_id, aq.category' )
+                        ->get()
+                        ->result_array();
+    }
+
 }
