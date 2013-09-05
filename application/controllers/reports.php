@@ -122,11 +122,11 @@ class Reports extends CI_Controller {
 		$this->load->model( 'process_model' );
 
 		if($this->input->get()){
-			$where = "ed.date_start between '".$this->input->get('date_start1')."' AND '".$this->input->get('date_start2')."'";
-			$where .= "AND ed.date_end between '".$this->input->get('date_end1')."' AND '".$this->input->get('date_end2')."'";
+			$where = "p.start_date between '".$this->input->get('start_date1')."' AND '".$this->input->get('start_date2')."'";
+			$where .= "AND p.end_date between '".$this->input->get('end_date1')."' AND '".$this->input->get('end_date2')."'";
 
-			if( $this->input->get('training_title') ){
-				$where .= " AND t.training_title = '%".addslashes( $this->input->get('training_title') )."%'";
+			if( $this->input->get('proc_title') ){
+				$where .= " AND p.proc_title = '%".addslashes( $this->input->get('proc_title') )."%'";
 			}
 			if( $this->input->get('lname') ){
 				$where .= " AND u.lname like '%".addslashes( $this->input->get('lname') )."%'";
@@ -134,16 +134,21 @@ class Reports extends CI_Controller {
 			if( $this->input->get('fname') ){
 				$where .= " AND u.fname like '%".addslashes( $this->input->get('fname') )."%'";
 			}
-			if( $this->input->get('status') && $this->input->get('status') != 'All' ){
-				$where .= " AND ed.status = '".$this->input->get('status')."'";
+			if( $this->input->get('date_accomplised1') ){
+				if( $this->input->get('date_accomplised2') )
+					$ac2 = $this->input->get('date_accomplised2');
+				else
+					$ac2 = 'NOW()';
+
+				$where .= "AND ep.date_accomplised between '".$this->input->get('date_accomplised1')."' AND '".$ac2."'";
 			}
 
-			$report = $this->dev_plan_model->getEmpDevPlanReport( 
+			$report = $this->process_model->getEmpProcessReport( 
 																	$where
 																	,$this->input->get('by')
 																	,$this->input->get('order')
 																);
-			$template_param['emp_dev_plans'] = $report;
+			$template_param['emp_process'] = $report;
 		}
 
 		# Template meta data

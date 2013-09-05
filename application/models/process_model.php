@@ -93,4 +93,16 @@ class Process_Model extends CI_Model {
                         ->result_array();
     }
 
+    public function getEmpProcessReport( $where, $by, $order = 'ASC' ) {
+        return $this->db
+                        ->select( "CONCAT( u.fname,  ' ', u.lname ) full_name, p.proc_title, p.proc_desc, DATE_FORMAT(p.start_date,'%b %d, %Y') start_date, DATE_FORMAT(p.end_date,'%b %d, %Y') end_date, DATE_FORMAT(ep.date_accomplished,'%b %d, %Y') date_accomplished", FALSE )
+                        ->from( EMP_PROCESS.' ep' )
+                        ->join( PROCESS.' p', 'p.proc_id = ep.process_id', 'left' )
+                        ->join( USER.' u', 'u.user_id = ep.user_id', 'left' )
+                        ->where( $where )
+                        ->order_by( $by, $order )
+                        ->get()
+                        ->result_array();
+    }
+
 }
