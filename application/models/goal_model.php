@@ -137,4 +137,15 @@ class Goal_Model extends CI_Model {
         return true;
     }
 
+    public function getEmpGoalReport( $where, $by, $order = 'ASC' ) {
+        return $this->db
+                        ->select( "CONCAT(u.fname, ' ', u.lname)  full_name, eg.goal_title, eg.goal_desc, DATE_FORMAT(eg.due_date,'%b %d, %Y') due, eg.percentage, DATE_FORMAT(eg.date_approved,'%b %d, %Y') approved, eg.status", FALSE )
+                        ->from( EMP_GOALS.' eg' )
+                        ->join( USER.' u', 'u.user_id = eg.user_id', 'left' )
+                        ->where( $where )
+                        ->order_by( $by, $order )
+                        ->get()
+                        ->result_array();
+    }
+
 }

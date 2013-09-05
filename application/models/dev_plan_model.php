@@ -79,4 +79,16 @@ class Dev_Plan_Model extends CI_Model {
                         ->count_all_results( DEV_PLAN );
     }
 
+    public function getEmpDevPlanReport( $where, $by, $order = 'ASC' ) {
+        return $this->db
+                        ->select( "CONCAT(u.fname, ' ', u.lname) full_name, t.training_title, t.training_desc, DATE_FORMAT(ed.date_start, '%b %d, %Y') start_date, DATE_FORMAT(ed.date_end, '%b %d, %Y') end_date, ed.status", FALSE )
+                        ->from( DEV_PLAN.' ed' )
+                        ->join( TRAININGS.' t', 't.training_id = ed.training_id', 'left' )
+                        ->join( USER.' u', 'u.user_id = ed.user_id', 'left' )
+                        ->where( $where )
+                        ->order_by( $by, $order )
+                        ->get()
+                        ->result_array();
+    }
+
 }

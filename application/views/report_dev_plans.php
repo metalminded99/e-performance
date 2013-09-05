@@ -5,7 +5,7 @@
     $( document ).ready( function(){
         $( "#frm_report_dept_goal" ).validationEngine();
 
-        $( '#from_date' ).datepicker(
+        $( '#date_start1' ).datepicker(
                                         { 
                                             dateFormat: 'yy-mm-dd'
                                             ,changeMonth: true
@@ -13,18 +13,35 @@
                                         }
                                     );
 
-        $( '#to_date' ).datepicker(
+        $( '#date_start2' ).datepicker(
                                         { 
                                             dateFormat: 'yy-mm-dd'
                                             ,changeMonth: true
                                             ,changeYear: true
-                                            ,minDate: $( '#from_date' ).val()
+                                        }
+                                    );
+
+        $( '#date_end1' ).datepicker(
+                                        { 
+                                            dateFormat: 'yy-mm-dd'
+                                            ,changeMonth: true
+                                            ,changeYear: true
+                                            ,minDate: $( '#date_start' ).val()
+                                        }
+                                    );
+
+        $( '#date_end2' ).datepicker(
+                                        { 
+                                            dateFormat: 'yy-mm-dd'
+                                            ,changeMonth: true
+                                            ,changeYear: true
+                                            ,minDate: $( '#date_start' ).val()
                                         }
                                     );
     });
 
-    $( '#from_date' ).change( function(){
-        $( '#to_date' ).val('');
+    $( '#date_start' ).change( function(){
+        $( '#date_end' ).val('');
     } );
 </script>
 <div class="container-fluid">
@@ -44,19 +61,25 @@
             <div class="row-fluid">           
                 <div class="block span12">
                     <div class="block-heading" data-target="#widget1container">
-                        Employee Goals Report
+                        Development Plans Report
                     </div>
                     <div id="widget1container" class="block-body">
                         <form id="frm_report_dept_goal" action="" method="GET">
                             <div class="element">
-                                <label for="from_date">Due Date <span class="red">(required)</span></label>
-                                <input id="from_date" name="from_date" class="text validate[required] datepicker" value="<?=isset( $_GET['from_date'] ) ? $_GET['from_date'] : '' ?>"/>
+                                <label for="date_start1">Date Start <span class="red">(required)</span></label>
+                                <input id="date_start1" name="date_start1" class="text validate[required] datepicker" value="<?=isset( $_GET['date_start1'] ) ? $_GET['date_start1'] : '' ?>"/>
                                 To
-                                <input id="to_date" name="to_date" class="text validate[required] datepicker" value="<?=isset( $_GET['to_date'] ) ? $_GET['to_date'] : '' ?>"/>
+                                <input id="date_start2" name="date_start2" class="text validate[required] datepicker" value="<?=isset( $_GET['date_start2'] ) ? $_GET['date_start2'] : '' ?>"/>
                             </div>
                             <div class="element">
-                                <label for="goal_title">Title (Optional)</label>
-                                <input id="goal_title" name="goal_title" class="span9 text" value="<?=isset( $_GET['goal_title'] ) ? $_GET['goal_title'] : '' ?>"/>
+                                <label for="date_end1">Date End <span class="red">(required)</span></label>
+                                <input id="date_end1" name="date_end1" class="text validate[required] datepicker" value="<?=isset( $_GET['date_end1'] ) ? $_GET['date_end1'] : '' ?>"/>
+                                To
+                                <input id="date_end2" name="date_end2" class="text validate[required] datepicker" value="<?=isset( $_GET['date_end2'] ) ? $_GET['date_end2'] : '' ?>"/>
+                            </div>
+                            <div class="element">
+                                <label for="training_title">Title (Optional)</label>
+                                <input id="training_title" name="training_title" class="span9 text" value="<?=isset( $_GET['training_title'] ) ? $_GET['training_title'] : '' ?>"/>
                             </div>
                             <div class="element">
                                 <label for="lname">Employee Last Name (Optional)</label>
@@ -72,20 +95,18 @@
                                     <option value="All">All</option>
                                     <option value="In Progress">In Progress</option>
                                     <option value="Completed">Completed</option>
-                                    <option value="Not Started">Not Started</option>
-                                    <option value="Late">Late</option>
-                                    <option value="Unapproved">Unapproved</option>
-                                    <option value="Rejected">Rejected</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Cancelled">Cancelled</option>
                                 </select>
                             </div>
                             <div class="element">
                                 <label for="by">Order By (Optional)</label>
                                 <select id="by" name="by">
-                                    <option value="due_date">Due Date</option>
+                                    <option value="date_start">Date Start</option>
+                                    <option value="date_end">Date End</option>
+                                    <option value="training_title">Title</option>
                                     <option value="lname">Last Name</option>
                                     <option value="fname">First Name</option>
-                                    <option value="percentage">Percentage</option>
-                                    <option value="date_approved">Date Approved</option>
                                 </select>
                                 <select id="order" name="order">
                                     <option value="asc">Ascending</option>
@@ -99,30 +120,28 @@
                             <div class="clearfix"></div>
                         </form>
 
-                        <?php if( isset($emp_goals) ) { ?>
+                        <?php if( isset($emp_dev_plans) ) { ?>
                         <table id="tbl_goals" class="table table-bordered" style="font-size: 12px;">
                             <thead>
                                 <th>Employee</th>
-                                <th>Goal Title</th>
+                                <th>Training Title</th>
                                 <th>Description</th>
-                                <th>Due Date</th>
-                                <th>Date Approved</th>
-                                <th>Percentage</th>
+                                <th>Date Start</th>
+                                <th>Date End</th>
                                 <th>Status</th>
                             </thead>
                             <tbody>
                                 <?php 
-                                    if( !empty( $emp_goals ) ){
-                                        foreach ($emp_goals as $goal) {
+                                    if( !empty( $emp_dev_plans ) ){
+                                        foreach ($emp_dev_plans as $dev_plan) {
                                 ?>
                                 <tr>
-                                    <td><?=$goal['full_name']?></td>
-                                    <td><?=$goal['goal_title']?></td>
-                                    <td><?=$goal['goal_desc']?></td>
-                                    <td><?=$goal['due']?></td>
-                                    <td><?=$goal['approved']?></td>
-                                    <td><?=$goal['percentage']?>%</td>
-                                    <td><?=$goal['status']?></td>
+                                    <td><?=$dev_plan['full_name']?></td>
+                                    <td><?=$dev_plan['training_title']?></td>
+                                    <td><?=$dev_plan['training_desc']?></td>
+                                    <td><?=$dev_plan['start_date']?></td>
+                                    <td><?=$dev_plan['end_date']?></td>
+                                    <td><?=$dev_plan['status']?></td>
                                 </tr>
                                 <?php 
                                         }

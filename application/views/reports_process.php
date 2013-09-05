@@ -44,7 +44,7 @@
             <div class="row-fluid">           
                 <div class="block span12">
                     <div class="block-heading" data-target="#widget1container">
-                        Employee Goals Report
+                        Process Report
                     </div>
                     <div id="widget1container" class="block-body">
                         <form id="frm_report_dept_goal" action="" method="GET">

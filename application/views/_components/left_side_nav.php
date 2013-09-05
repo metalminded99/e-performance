@@ -26,9 +26,9 @@
 				<i class="icon-book"></i>Reports
 			</div>
 			<ul id="reports-menu" class="nav nav-list collapse in">
-				<li><a href="<?=base_url()?>reports/dept_goals">Department Goals</a></li>
 				<li><a href="<?=base_url()?>reports/emp_goals">Employee Goals</a></li>
 				<li><a href="<?=base_url()?>reports/dev_plans">Development Plans</a></li>
+				<li><a href="<?=base_url()?>reports/process">Process</a></li>
 			</ul>
 			<?php } ?>
 

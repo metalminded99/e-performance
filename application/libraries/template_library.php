@@ -131,6 +131,31 @@ class Template_library {
 		$this->CI->history_model->insert_log( $logs );
 	}
 
+	/*******************************************
+	* $msg_config - Array()
+	* 	-> to
+	* 	-> from
+	* 	-> from_name
+	* 	-> subj
+	* 	-> msg
+	********************************************/
+	public function send_email( $msg_config ) {
+		$config['mailtype'] = 'html';
+		$this->CI->load->library( 'email', $config );
+
+		$this->CI->email->from( $msg_config['from'], $msg_config['from_name'] );
+		$this->CI->email->to( $msg_config['to'] );
+
+		$this->CI->email->subject( $msg_config['subj'] );
+		$this->CI->email->message( $msg_config['msg'] );
+
+		if ( !$this->CI->email->send() ) {
+			return false;
+		}
+
+		return true;
+	}
+
 }
 
 /* End of file template_library.php */

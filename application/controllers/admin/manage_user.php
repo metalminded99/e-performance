@@ -107,8 +107,25 @@ class Manage_user extends CI_Controller {
 			$this->manage_user_model->deleteUser( $this->input->post() );
 			echo "User deleted successfully!";
 		}
+	}	
+
+	public function email_temp() {		
+		$data['from']	= 'E-Performance Administrator';
+		$data['to']		= 'Test User';
+		$data['msg']	= 'Henry Sy was born to a poor family in Xiamen, China on December 25,1924. He is the son of Henry H. Sy. He graduated from San Beda College Mendiola. He immigrated to the Philippines and got his start by selling rejected and overrun shoes from Tondo.';
+		$email_temp = $this->load->view('templates/email_template', $data, true);
+
+		$email_conf = array(
+								'to'			=> 'mgarcega.microsourcing@gmail.com'
+								,'from_name'	=> $data['from']
+								,'from'			=> 'no-reply@eperformance.com'
+								,'subj'			=> 'Test Email'
+								,'msg'			=> $data['msg']
+							);
+		$this->template_library->send_email( $email_conf );
 	}
 }
 
 /* End of file manage_user.php */
 /* Location: ./application/controllers/manage_user.php */
+x
