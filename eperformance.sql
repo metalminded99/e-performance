@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 11, 2013 at 03:09 PM
+-- Generation Time: Sep 08, 2013 at 08:00 AM
 -- Server version: 5.5.32
 -- PHP Version: 5.3.10-1ubuntu3.7
 
@@ -106,14 +106,15 @@ CREATE TABLE IF NOT EXISTS `tbl_appraisal_assignment` (
   PRIMARY KEY (`assign_id`),
   KEY `user_id` (`user_id`),
   KEY `app_id` (`app_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `tbl_appraisal_assignment`
 --
 
 INSERT INTO `tbl_appraisal_assignment` (`assign_id`, `app_id`, `user_id`, `status`, `date_assigned`) VALUES
-(2, 2, 6, 'Completed', '2013-08-10 07:37:43');
+(2, 2, 6, 'Completed', '2013-08-10 07:37:43'),
+(3, 2, 7, 'Completed', '2013-08-17 03:18:10');
 
 -- --------------------------------------------------------
 
@@ -128,6 +129,14 @@ CREATE TABLE IF NOT EXISTS `tbl_appraisal_mngr_assignment` (
   KEY `assign_id` (`assign_id`),
   KEY `manager_id` (`manager_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `tbl_appraisal_mngr_assignment`
+--
+
+INSERT INTO `tbl_appraisal_mngr_assignment` (`assign_id`, `manager_id`, `status`) VALUES
+(2, 2, 'Completed'),
+(3, 2, 'Completed');
 
 -- --------------------------------------------------------
 
@@ -148,7 +157,8 @@ CREATE TABLE IF NOT EXISTS `tbl_appraisal_peer_assignment` (
 --
 
 INSERT INTO `tbl_appraisal_peer_assignment` (`assign_id`, `peer_id`, `status`) VALUES
-(2, 7, 'Completed');
+(2, 7, 'Completed'),
+(3, 6, 'Completed');
 
 -- --------------------------------------------------------
 
@@ -210,17 +220,28 @@ CREATE TABLE IF NOT EXISTS `tbl_appraisal_result` (
 --
 
 INSERT INTO `tbl_appraisal_result` (`user_id`, `appraisal_id`, `question_id`, `self_score`, `peer_id`, `peer_score`, `manager_id`, `manager_score`, `date_submit`) VALUES
-(6, 2, 15, 5, 7, 5, NULL, NULL, '2013-08-10 03:33:35'),
-(6, 2, 16, 1, 7, 4, NULL, NULL, '2013-08-10 03:33:35'),
-(6, 2, 17, 2, 7, 3, NULL, NULL, '2013-08-10 03:33:35'),
-(6, 2, 18, 3, 7, 2, NULL, NULL, '2013-08-10 03:33:35'),
-(6, 2, 19, 4, 7, 1, NULL, NULL, '2013-08-10 03:33:35'),
-(6, 2, 20, 5, 7, 5, NULL, NULL, '2013-08-10 03:34:54'),
-(6, 2, 21, 5, 7, 4, NULL, NULL, '2013-08-10 03:34:54'),
-(6, 2, 22, 2, 7, 4, NULL, NULL, '2013-08-10 03:35:06'),
-(6, 2, 23, 3, 7, 5, NULL, NULL, '2013-08-10 03:35:06'),
-(6, 2, 24, 4, 7, 5, NULL, NULL, '2013-08-10 03:42:02'),
-(6, 2, 25, 5, 7, 4, NULL, NULL, '2013-08-10 03:42:02');
+(6, 2, 15, 5, 7, 5, 2, 4, '2013-08-10 03:33:35'),
+(6, 2, 16, 1, 7, 4, 2, 4, '2013-08-10 03:33:35'),
+(6, 2, 17, 2, 7, 3, 2, 4, '2013-08-10 03:33:35'),
+(6, 2, 18, 3, 7, 2, 2, 5, '2013-08-10 03:33:35'),
+(6, 2, 19, 4, 7, 1, 2, 4, '2013-08-10 03:33:35'),
+(6, 2, 20, 5, 7, 5, 2, 5, '2013-08-10 03:34:54'),
+(6, 2, 21, 5, 7, 4, 2, 3, '2013-08-10 03:34:54'),
+(6, 2, 22, 2, 7, 4, 2, 3, '2013-08-10 03:35:06'),
+(6, 2, 23, 3, 7, 5, 2, 2, '2013-08-10 03:35:06'),
+(6, 2, 24, 4, 7, 5, 2, 2, '2013-08-10 03:42:02'),
+(6, 2, 25, 5, 7, 4, 2, 4, '2013-08-10 03:42:02'),
+(7, 2, 15, 3, 6, 5, 2, 4, '2013-08-17 04:11:24'),
+(7, 2, 16, 3, 6, 4, 2, 4, '2013-08-17 04:11:24'),
+(7, 2, 17, 4, 6, 4, 2, 3, '2013-08-17 04:11:24'),
+(7, 2, 18, 4, 6, 4, 2, 3, '2013-08-17 04:11:24'),
+(7, 2, 19, 5, 6, 3, 2, 2, '2013-08-17 04:11:24'),
+(7, 2, 20, 3, 6, 3, 2, 3, '2013-08-17 04:11:28'),
+(7, 2, 21, 4, 6, 2, 2, 4, '2013-08-17 04:11:28'),
+(7, 2, 22, 3, 6, 4, 2, 5, '2013-08-17 04:11:35'),
+(7, 2, 23, 4, 6, 3, 2, 4, '2013-08-17 04:11:36'),
+(7, 2, 24, 5, 6, 4, 2, 4, '2013-08-17 04:11:39'),
+(7, 2, 25, 4, 6, 5, 2, 2, '2013-08-17 04:11:39');
 
 -- --------------------------------------------------------
 
@@ -357,7 +378,7 @@ CREATE TABLE IF NOT EXISTS `tbl_emp_goals` (
 
 INSERT INTO `tbl_emp_goals` (`goal_id`, `user_id`, `goal_title`, `goal_desc`, `due_date`, `days_to_remind`, `status`, `percentage`, `deliverables`, `success_measure`, `self_score`, `peer_score`, `sup_score`, `date_created`, `approved`, `sup_comment`, `date_approved`) VALUES
 (12, 7, 'test', 'test', '2013-06-30', 3, 'Not Started', 0, 'test', 'test', NULL, NULL, NULL, '2013-06-26 02:46:16', 1, NULL, '2013-06-26 10:46:16'),
-(14, 6, 'my goal', 'my goal', '2013-09-01', 3, 'In Progress', 90, 'my goal', 'my goal', NULL, NULL, NULL, '2013-06-26 02:52:33', 1, NULL, '2013-06-26 10:45:59');
+(14, 6, 'my goal', 'my goal', '2013-09-01', 3, 'Not Started', 90, 'my goal', 'my goal', NULL, NULL, NULL, '2013-08-28 15:53:59', 1, NULL, '2013-08-28 11:53:59');
 
 -- --------------------------------------------------------
 
@@ -419,11 +440,8 @@ CREATE TABLE IF NOT EXISTS `tbl_emp_process` (
 --
 
 INSERT INTO `tbl_emp_process` (`user_id`, `process_id`, `date_accomplished`, `date_assigned`) VALUES
-(2, NULL, NULL, '2013-07-18 03:49:33'),
-(8, NULL, NULL, '2013-07-18 03:49:33'),
-(2, 4, NULL, '2013-07-18 03:50:19'),
-(6, 4, NULL, '2013-07-18 03:50:19'),
-(8, 4, NULL, '2013-07-18 03:50:19');
+(6, 4, NULL, '2013-07-18 03:49:33'),
+(7, 4, NULL, '2013-07-18 03:50:19');
 
 -- --------------------------------------------------------
 
@@ -438,7 +456,7 @@ CREATE TABLE IF NOT EXISTS `tbl_history` (
   `date_done` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`history_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=22 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=31 ;
 
 --
 -- Dumping data for table `tbl_history`
@@ -464,8 +482,16 @@ INSERT INTO `tbl_history` (`history_id`, `user_id`, `history`, `date_done`) VALU
 (17, 2, 'Assigned peer to employee feedback', '2013-08-10 07:37:43'),
 (18, 2, 'Assigned peer to employee feedback', '2013-08-10 07:37:49'),
 (19, 6, 'Evaluate self appraisal', '2013-08-11 02:19:13'),
-(20, 7, 'Evaluate self appraisal', '2013-08-11 05:32:23'),
-(21, 7, 'Evaluate peer appraisal', '2013-08-11 06:17:45');
+(21, 7, 'Evaluate peer appraisal', '2013-08-11 06:17:45'),
+(22, 2, 'Assigned peer to employee feedback', '2013-08-17 03:18:10'),
+(23, 2, 'Evaluate employee appraisal', '2013-08-17 03:51:21'),
+(24, 7, 'Evaluate self appraisal', '2013-08-17 03:53:56'),
+(25, 7, 'Evaluate self appraisal', '2013-08-17 04:11:39'),
+(26, 2, 'Evaluate employee appraisal', '2013-08-17 04:12:54'),
+(27, 2, 'Evaluate employee appraisal', '2013-08-17 07:29:05'),
+(28, 6, 'Evaluate peer appraisal', '2013-08-17 07:58:50'),
+(29, 2, 'Change employee goal status to REJECTED', '2013-08-28 15:53:49'),
+(30, 2, 'Change employee goal status to NOT STARTED', '2013-08-28 15:53:59');
 
 -- --------------------------------------------------------
 
@@ -810,19 +836,17 @@ CREATE TABLE IF NOT EXISTS `tbl_users` (
   KEY `job_id` (`job_id`),
   KEY `uname` (`uname`),
   KEY `email` (`email`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 --
 -- Dumping data for table `tbl_users`
 --
 
 INSERT INTO `tbl_users` (`user_id`, `uname`, `pword`, `lvl`, `fname`, `mname`, `lname`, `home_address`, `email`, `home_phone`, `mobile_phone`, `birthday`, `gender`, `tin_id`, `sss_id`, `pagibig_id`, `philhealth_id`, `emergency_phone`, `emergency_contact`, `department_id`, `job_id`, `last_login`, `avatar`) VALUES
-(1, 'admin', 'e6e061838856bf47e1de730719fb2609', '1', 'Administrator', '', '', '', '', '', '', '0000-00-00', '', '', '', '', '', '', '', 0, 0, '2013-08-07 14:43:57', ''),
-(2, 'test', '827ccb0eea8a706c4c34a16891f84e7b', '2', 'test', 'test', 'test', ' test ', 'test@test.com', '123456', '12345', '1993-06-01', 'Male', '', '', '', '', '1321', 'test', 1, 2, '2013-08-10 13:05:33', ''),
-(5, 'asd', '3641265abc04ff623b3c82c131848950', '2', 'asdasd', 'sdsad', 'asd', '     asd       ', 'asd@asd.com', '+123123', '+123123', '2013-06-09', 'Male', '', '', '', '', '123123', 'asdasd', 1, 2, NULL, ''),
-(6, 'malbitos', '827ccb0eea8a706c4c34a16891f84e7b', '3', 'Mark', 'test', 'Albitos', 'asdasdasd        ', 'asdasdas@123.com', '+123123', '+123123', '1990-06-13', 'Male', '', '', '', '', '123123', 'Asdasd', 1, 2, '2013-08-11 14:18:37', ''),
-(7, 'jdelacruz', '827ccb0eea8a706c4c34a16891f84e7b', '3', 'Juan Miguel', 'Santo Domingo', 'Dela Cruz', '  asd', 'asd@asd.com', '1231231', '12312312', '1958-06-10', 'Male', '', '', '', '', '123123', 'klnfldsnflsdnf', 1, 2, '2013-08-11 12:51:33', ''),
-(8, 'klasdl', '4bfd200eba0c0fb877d110b50805fd88', '3', 'asdasd', 'sdkasdl', 'askdakls', '     asdasda   ', 'asdasd@asd.com', '123123', '12312312', '2013-06-11', 'Male', '', '', '', '', '123123', 'asdasd', 1, 2, NULL, 'user/1370944.jpg');
+(1, 'admin', 'e6e061838856bf47e1de730719fb2609', '1', 'Administrator', '', '', '', '', '', '', '0000-00-00', '', '', '', '', '', '', '', 0, 0, '2013-09-03 06:08:24', ''),
+(2, 'test', '827ccb0eea8a706c4c34a16891f84e7b', '2', 'test', 'test', 'test', ' test ', 'test@test.com', '123456', '12345', '1993-06-01', 'Male', '', '', '', '', '1321', 'test', 1, 2, '2013-09-04 23:54:08', ''),
+(6, 'malbitos', '827ccb0eea8a706c4c34a16891f84e7b', '3', 'Mark', 'test', 'Albitos', 'asdasdasd        ', 'asdasdas@123.com', '+123123', '+123123', '1990-06-13', 'Male', '', '', '', '', '123123', 'Asdasd', 1, 2, '2013-09-03 22:33:17', ''),
+(7, 'jdelacruz', '827ccb0eea8a706c4c34a16891f84e7b', '3', 'Juan Miguel', 'Santo Domingo', 'Dela Cruz', '  asd', 'asd@asd.com', '1231231', '12312312', '1958-06-10', 'Male', '', '', '', '', '123123', 'klnfldsnflsdnf', 1, 2, '2013-08-17 15:49:38', '');
 
 --
 -- Constraints for dumped tables
