@@ -24,7 +24,7 @@
 							<label for="login">Username:</label> <input id="login" name="user_name" class="text" autocomplete="off"> 
 							<label for="pass">Password:</label> <input id="pass" name="user_password" type="password" class="text" autocomplete="off">
 							<div class="sep"></div>
-							<button type="submit" class="ok">Login</button> <a class="button" href="">Forgotten password?</a>
+							<button type="submit" class="ok">Login</button>
 						</form>
 					</div>
 					<div class="footer">
