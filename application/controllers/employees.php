@@ -109,7 +109,11 @@ class Employees extends CI_Controller {
 																					,($this->uri->segment(5)) ? $this->uri->segment(5) : 0
 																				);
 
-		$template_param['goals']	= $this->goal_model->getAllEmpGoal( $offset, PER_PAGE, array( 'user_id' => $user_id ), '*' );
+		$template_param['goals']	= $this->goal_model->getAllEmpGoal( 
+																		$offset
+																		, PER_PAGE, array( 'user_id' => $user_id )
+																		, "goal_id, goal_title, goal_desc, DATE_FORMAT(due_date,'%b %e, %Y') due_date, DATE_FORMAT(date_created,'%b %e, %Y') date_created, status, percentage, days_to_remind, deliverables, success_measure, DATE_FORMAT(date_approved,'%b %e, %Y') date_approved" 
+																	  );
 
 		$data['active'] = 'goals';
 		$data['user_id'] = $user_id;

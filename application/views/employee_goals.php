@@ -28,22 +28,7 @@
                 </div>
             <?php 
                 endif;
-
-                if( $this->session->userdata( 'lvl' ) == 2 ) {
             ?>
-            <div class="btn-toolbar">
-                <div id="action" class="btn-group" style="display:none;">
-                    <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" onclick="do_action( 'Not Started' );">Approve</a></li>
-                        <li><a href="#" onclick="do_action( 'Completed' );">Completed</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#" onclick="do_action( 'Rejected' );">Rejected</a></li>
-                    </ul>
-                </div>
-                <div class="btn-group"></div>
-            </div>
-            <? } ?>
             <div class="row-fluid">
                 <div class="block span12">
                     <div class="block-heading" data-target="#widget1container">
@@ -52,37 +37,27 @@
                     <div id="widget1container" class="block-body">
                         <table id="tbl_goals" class="table">
                             <thead>
-                                <?php if( isset( $counter ) ){ ?>
                                 <th>#</th>
-                                <?php } else { ?>
-                                <th><input type="checkbox" id="select_all"></th>
-                                <?php } ?>
                                 <th>Goal Title</th>
                                 <th>Description</th>
                                 <th>Due Date</th>
                                 <th>Date Created</th>
                                 <th>Status</th>
-                                <?php if( $this->session->userdata( 'lvl' ) == 3 ) { ?>
-                                <th></th>
-                                <? } ?>
+                                <th>Options</th>
                             </thead>
                             <tbody>
                                 <?php
                                     if( count( $goals ) > 0 ){
-                                        $cnt = isset( $counter ) ? $counter : 0;
+                                        $cnt = $this->uri->segment(5) != '' ? $this->uri->segment(5) : 0;
                                         foreach ( $goals as $goal ) {
                                             $cnt++;
                                 ?>
                                 <tr>
-                                    <?php if( isset( $counter ) ){ ?>
                                     <td><?=$cnt?></td>
-                                    <?php } else { ?>
-                                    <td><input type="checkbox" name="goal[]" value="<?=$goal['goal_id']?>"></td>
-                                    <?php } ?>
                                     <td><?=$this->template_library->shorten_words( $goal['goal_title'] )?></td>
                                     <td><?=$this->template_library->shorten_words( $goal['goal_desc'] )?></td>
-                                    <td><?=$this->template_library->format_mysql_date( $goal['due_date'], 'F d, Y' )?></td>
-                                    <td><?=$this->template_library->format_mysql_date( $goal['date_created'], 'F d, Y' )?></td>
+                                    <td><?=$goal['due_date']?></td>
+                                    <td><?=$goal['date_created']?></td>
                                     <td><?=$goal['status']?></td>
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 3 ) { ?>
@@ -94,7 +69,10 @@
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
                                     <td>
-                                        <a id="<?=$goal['goal_id']?>" title="View details" class="view_btn" href="#detailModal" role="button" data-toggle="modal"><i class="icon-file"></i></a>
+                                        <a id="<?=$goal['goal_id']?>" title="View details" class="view_btn optlnk" href="#detailModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
+                                        <a id="<?=$goal['goal_id']?>" title="Approve" class="optlnk" href="#" role="button"><i class="icon-thumbs-up"></i></a>&nbsp;
+                                        <a id="<?=$goal['goal_id']?>" title="Reject"class="optlnk" href="#" role="button"><i class="icon-thumbs-down"></i></a>&nbsp;
+                                        <a id="<?=$goal['goal_id']?>" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
                                     </td>
                                     <? } ?>
 
@@ -182,14 +160,8 @@
             var json_goals = <?=json_encode( $goals )?>;
 
             $( document ).ready( function() {
-                init();
+                $('.optlnk').tooltip();
             });
-
-            function init(){
-                $('#job_attr tr td input[type=checkbox]').each( function() {
-                    $(this).prop('checked', false);
-                });
-            }
 
             $('.view_btn').click( function() {
                 goal_id = $(this).prop('id');
@@ -227,24 +199,6 @@
                 });
             }
             <? } ?>
-
-            $('#select_all').click( function() {
-                var all = $(this).prop('checked');
-                toggle_checkbox( $('#tbl_goals tr td input[type=checkbox]'), all );
-                if( all ){
-                    $('#action').show();
-                }else{
-                    $('#action').hide();
-                }
-            });
-
-            $('#tbl_goals tr td input[type=checkbox]').click( function() {
-                if( $(this).prop( 'checked' ) ){
-                    $('#action').show();
-                }else{
-                    $('#action').hide();
-                }
-            });
 
             <?php if( isset( $user_id ) ){ ?>
             function do_action( action ){

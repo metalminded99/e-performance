@@ -7,9 +7,9 @@ class Goal_Model extends CI_Model {
         $this->load->database();
     }    
     
-    public function getAllEmpGoal( $offset, $per_page, $where = array(), $fld = 'goal_id, goal_title, goal_desc, due_date, date_created, status' ) {
+    public function getAllEmpGoal( $offset, $per_page, $where = array(), $fld = "goal_id, goal_title, goal_desc, DATE_FORMAT(due_date,'%b %e, %Y') due_date, DATE_FORMAT(date_created,'%b %e, %Y') date_created, status" ) {
             $this->db
-                    ->select( $fld )
+                    ->select( $fld, false )
                     ->from( EMP_GOALS )
                     ->order_by( 'due_date', 'ASC' )
                     ->limit( $per_page, $offset );
