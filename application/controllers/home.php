@@ -19,6 +19,7 @@ class Home extends CI_Controller {
 		$this->load->model( 'goal_model' );
 		$this->load->model( 'dev_plan_model' );
 		$this->load->model( 'appraisal_model' );
+		$this->load->model( 'process_model' );
 
 		if( $this->session->userdata('lvl') == 2 ){
 			$mngr_summary = array();
@@ -33,6 +34,7 @@ class Home extends CI_Controller {
 		$data['history']					= $this->history_model->getUserLogs( $this->session->userdata('user_id') );
 		$template_param['goal_noti']		= $this->goal_model->getEmpGoalReminder( $this->session->userdata( 'user_id' ) );
 		$template_param['trainings_noti']	= $this->dev_plan_model->getEmpDevPlanReminder( $this->session->userdata( 'user_id' ) );
+		$template_param['process_noti']	= $this->process_model->getProcessReminder( $this->session->userdata( 'user_id' ) );
 		
 		$self_feedback 						= $this->appraisal_model->getSelfFeedbackCount( $this->session->userdata( 'user_id' ) );
 		$peer_feedback 						= $this->appraisal_model->getPeerFeedbackCount( $this->session->userdata( 'user_id' ) );

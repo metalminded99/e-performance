@@ -76,13 +76,16 @@ class Process_Model extends CI_Model {
 
     public function getProcessReminder( $user_id ) {
         $where = array( 
-                        'user_id' => $user_id
-                        ,"DATE_FORMAT(DATE_SUB(DUE_DATE, INTERVAL days_to_remind DAY), '%Y-%m-%d') = LEFT(SYSDATE(),10)" => null
+                        'ep.user_id' => $user_id
+                        ,"DATE(SYSDATE()) >= p.start_date" => null
+                        ,"DATE(SYSDATE()) <= p.end_date" => null
+                        ,"ep.date_accomplished" => null
                       );
 
         return $this->db
                         ->where( $where )
-                        ->count_all_results( PROCESS );
+                        ->join( PROCESS.' p', 'p.proc_id = ep.process_id', 'left' )
+                        ->count_all_results( EMP_PROCESS.' ep' );
     }
 
     public function getEmpProcess( $proc_id ) {
