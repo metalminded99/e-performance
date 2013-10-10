@@ -21,10 +21,34 @@ class Process_Model extends CI_Model {
                             ->get()
                             ->result_array();
     }
+    
+    public function getAllEmpProcess( $offset, $per_page, $where = array() ) {
+            $this->db
+                    ->select( 'p.proc_id, p.proc_title, p.proc_desc, p.start_date, p.end_date, ep.date_assigned, ep.status' )
+                    ->from( EMP_PROCESS.' ep' )
+                    ->join( PROCESS.' p', 'p.proc_id = ep.process_id', 'left' )
+                    ->order_by( 'p.date_added', 'DESC' )
+                    ->limit( $per_page, $offset );
+            
+            if( !is_null( $where ) )
+                $this->db->where( $where ); 
+            
+            return $this->db
+                            ->get()
+                            ->result_array();
+    }
 
     public function getTotalProcess() {
-    	return $this->db
+        return $this->db
                         ->count_all_results( PROCESS );
+    }
+
+    public function getTotalEmpProcess( $where = array() ) {
+        if( empty($where) )
+            $this->db->where( $where );
+
+    	return $this->db
+                        ->count_all_results( EMP_PROCESS );
     }
 
     public function saveNewProcess( $db_param ) {

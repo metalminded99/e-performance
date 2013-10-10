@@ -5,6 +5,7 @@
 			</div>
 			<ul id="main-menu" class="nav nav-list collapse in">
 				<li><a href="<?=base_url()?>">Home</a></li>
+				<li><a href="<?=base_url()?>process">Process</a></li>
 
 				<?php if( $this->session->userdata( 'lvl' ) == '3' ) { ?>
 				<li><a href="<?=base_url()?>journals">Journals</a></li>
