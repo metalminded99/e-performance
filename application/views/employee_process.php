@@ -7,28 +7,41 @@
         
         <div class="span9">
             <h1 class="page-title">Process Lists</h1>
+            <div class="">
+                <ul class="nav nav-tabs">
+                    <li class="<?=$this->uri->segment(2) == '' ? 'active' : ''?>">
+                        <a href="<?=base_url()?>process"><i class="icon-time"></i>&nbsp;Pending</a>
+                    </li>
+
+                    <li class="<?=$this->uri->segment(2) == 'completed' ? 'active' : ''?>">
+                        <a href="<?=base_url()?>process/completed"><i class="icon-check"></i>&nbsp;Completed</a>
+                    </li>
+
+                    <li class="<?=$this->uri->segment(2) == 'rejected' ? 'active' : ''?>">
+                        <a href="<?=base_url()?>process/rejected"><i class="icon-minus-sign"></i>&nbsp;Rejected</a>
+                    </li> 
+                </ul>
+            </div>
             <?php
-                if( $this->session->flashdata( 'message' ) ): 
-                    $msg = $this->session->flashdata( 'message' );
+                if( $this->session->flashdata( 'msg' ) ): 
             ?>
-                <div class="alert alert-<?=$msg['class']?>">
+                <div class="alert alert-info">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <?=$msg['str']?>
+                    <h4>Well done!</h4> <?=$this->session->flashdata( 'msg' )?>
                 </div>
             <?php 
                 endif;
             ?>
             <div class="row-fluid">
-                <div class="block span12">
+                <div class="block span12">                    
                     <div class="block-heading" data-target="#widget1container">
                         Process
-                    </div>
+                    </div>                    
                     <div id="widget1container" class="block-body">
                         <table id="tbl_process" class="table">
                             <thead>
                                 <th>#</th>
                                 <th>Process Title</th>
-                                <th>Description</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th>Date Assigned</th>
@@ -45,19 +58,18 @@
                                 <tr>
                                     <td><?=$cnt?></td>
                                     <td><?=$this->template_library->shorten_words( $proc['proc_title'] )?></td>
-                                    <td><?=$this->template_library->shorten_words( $proc['proc_desc'] )?></td>
                                     <td><?=$this->template_library->format_mysql_date($proc['start_date'], 'M d, Y')?></td>
                                     <td><?=$this->template_library->format_mysql_date($proc['end_date'], 'M d, Y')?></td>
                                     <td><?=$this->template_library->format_mysql_date($proc['date_assigned'], 'M d, Y')?></td>
                                     <td><?=$proc['status']?></td>
                                     <td>
-                                        <a id="<?=$proc['proc_id']?>" title="View details" class="view_btn optlnk" href="#detailModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
+                                        <a onclick="javascript:view_details(<?=$proc['proc_id']?>)" title="More details" class="view_btn optlnk" href="#detailModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
                                         <?php if( $proc['status'] == 'Pending' ){ ?>
-                                        <a id="<?=$proc['proc_id']?>" title="Start" class="optlnk" href="#" role="button"><i class="icon-play"></i></a>&nbsp;
+                                        <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'start')" title="Start" class="optlnk" href="#" role="button"><i class="icon-play"></i></a>&nbsp;
                                         <?php } elseif( $proc['status'] == 'On-going' ) { ?>
-                                        <a id="<?=$proc['proc_id']?>" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
+                                        <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'completed')" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
                                         <?php } ?>
-                                        <a id="<?=$proc['proc_id']?>" title="Reject"class="optlnk" href="#" role="button"><i class="icon-exclamation-sign"></i></a>&nbsp;
+                                        <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'reject')" title="Reject"class="optlnk" href="#" role="button"><i class="icon-exclamation-sign"></i></a>&nbsp;
                                     </td>
                                 </tr>
                                 <?php
@@ -65,7 +77,7 @@
                                     } else {
                                 ?>
                                 <tr>
-                                    <td colspan="5">
+                                    <td colspan="8">
                                         <center>
                                             <span class="label">No records found</label>
                                         </center>
@@ -103,32 +115,12 @@
                 <div class="modal small hide fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 id="myModalLabel">process Details</h3>
+                        <h3 id="myModalLabel">More Details</h3>
                     </div>
                     <div class="modal-body">
                          <div class="element">
-                            <label for="days_to_remind">Days to Remind</label>
-                            <p class="label label-info" id="days_to_remind"></p>
-                        </div>
-                        <div class="element">
-                            <label for="deliverables">Deliverables</label>
-                            <p class="label label-info" id="deliverables"></p>
-                        </div>
-                        <div class="element">
-                            <label for="success_measure">Measure of success</label>
-                            <p class="label label-info" id="success_measure"></p>
-                        </div>
-                        <div class="element">
-                            <label for="status">Status</label>
-                            <p class="label label-info" id="status"></p>
-                        </div>
-                        <div class="element">
-                            <label for="percentage">Percentage</label>
-                            <p class="label label-info" id="percentage"></p>
-                        </div>
-                        <div class="element">
-                            <label for="date_approved">Date Approved</label>
-                            <p class="label label-info" id="date_approved"></p>
+                            <label for="proc_desc">Descriptions:</label>
+                            <p class="label label-info" id="proc_desc"></p>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -146,20 +138,14 @@
                 $('.optlnk').tooltip();
             });
 
-            $('.view_btn').click( function() {
-                proc_id = $(this).prop('id');
-
+            function view_details( proc_id ) {
+                console.log(proc_id);
                 $.each( json_process, function( i, l ) {
-                    if( proc_id === json_process[ i ].proc_id  ){
+                    console.log(json_process[ i ].proc_id);
+                    if( proc_id == json_process[ i ].proc_id  ){
                         $.each( l, function( key, val ) {
                             if( $( '#'+key ).length ){
                                 var rval = val;
-
-                                if( key == 'percentage' )
-                                    rval = val + '%';
-
-                                if( val == null )
-                                    rval = 'N/A';
 
                                 $( '#'+key ).text( rval );
                             }
@@ -169,33 +155,17 @@
                 });
 
                 return true;
-            });
-
-            $('.del_btn').click( function() {
-                item_id = $(this).prop('id');
-            });
-
-            <?php if( isset( $delete_url ) ) { ?>
-            function delete_process(){
-                $.post( '<?=$delete_url?>', { proc_id : item_id }, function(data) {
-                    window.location = data;
-                });
             }
-            <? } ?>
 
-            <?php if( isset( $user_id ) ){ ?>
-            function do_action( action ){
-                var arr = [];
-                $( '#tbl_process tr td input[type=checkbox]' ).each( function() {
-                    if( $(this).prop( 'checked' ) ) {
-                        arr.push( $(this).val() );
+            function do_action( proc_id, action ) {
+                $.ajax({
+                    type: "POST"
+                    ,url: "<?=base_url();?>process/ajax_request"
+                    ,data: { proc_id : proc_id, action : action },
+                    success: function( data ) {
+                        window.location = '<?=base_url()?>process/<?=$uri?>'; 
                     }
                 });
-                
-                $.post( '<?=base_url()?>/employees/info/process/update', { item : arr, state : action, user : '<?=$user_id?>' }, function(data) {
-                    window.location = data;
-                    // console.log( data );
-                });
+                return true;
             }
-            <? } ?>
         </script>

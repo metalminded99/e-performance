@@ -132,4 +132,12 @@ class Process_Model extends CI_Model {
                         ->result_array();
     }
 
+    public function updateEmpProcess( $process_id, $db_param ) {
+        $this->db
+                ->where( array( 'process_id' => $process_id ) )
+                ->update( EMP_PROCESS, $db_param );
+
+        return true;
+    }
+
 }
