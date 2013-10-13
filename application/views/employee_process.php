@@ -13,6 +13,10 @@
                         <a href="<?=base_url()?>process"><i class="icon-time"></i>&nbsp;Pending</a>
                     </li>
 
+                    <li class="<?=$this->uri->segment(2) == 'on_going' ? 'active' : ''?>">
+                        <a href="<?=base_url()?>process/on_going"><i class="icon-road"></i>&nbsp;On-going</a>
+                    </li>
+
                     <li class="<?=$this->uri->segment(2) == 'completed' ? 'active' : ''?>">
                         <a href="<?=base_url()?>process/completed"><i class="icon-check"></i>&nbsp;Completed</a>
                     </li>
@@ -27,7 +31,7 @@
             ?>
                 <div class="alert alert-info">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <h4>Well done!</h4> <?=$this->session->flashdata( 'msg' )?>
+                    <strong>Well done!</strong> <?=$this->session->flashdata( 'msg' )?>
                 </div>
             <?php 
                 endif;
@@ -51,7 +55,7 @@
                             <tbody>
                                 <?php
                                     if( count( $process ) > 0 ){
-                                        $cnt = $this->uri->segment(2) != '' ? $this->uri->segment(2) : 0;
+                                        $cnt = $count;
                                         foreach ( $process as $proc ) {
                                             $cnt++;
                                 ?>
@@ -64,12 +68,18 @@
                                     <td><?=$proc['status']?></td>
                                     <td>
                                         <a onclick="javascript:view_details(<?=$proc['proc_id']?>)" title="More details" class="view_btn optlnk" href="#detailModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
+                                        
                                         <?php if( $proc['status'] == 'Pending' ){ ?>
                                         <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'start')" title="Start" class="optlnk" href="#" role="button"><i class="icon-play"></i></a>&nbsp;
                                         <?php } elseif( $proc['status'] == 'On-going' ) { ?>
                                         <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'completed')" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
-                                        <?php } ?>
+
+                                        <?php } if( $proc['status'] == 'Completed' || $proc['status'] == 'Rejected' ) { ?>
+                                        <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'start')" title="Restart" class="optlnk" href="#" role="button"><i class="icon-repeat"></i></a>
+                                        <?php } if( $proc['status'] != 'Rejected' ) { ?>
                                         <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'reject')" title="Reject"class="optlnk" href="#" role="button"><i class="icon-exclamation-sign"></i></a>&nbsp;
+                                        <?php } ?>
+                                        
                                     </td>
                                 </tr>
                                 <?php
