@@ -71,6 +71,7 @@ define('JOB_ACTIVITIES'	, 'tbl_job_activities');
 define('JOB_ABILITIES'	, 'tbl_job_abilities');
 define('PROCESS'		, 'tbl_process');
 define('EMP_PROCESS'	, 'tbl_emp_process');
+define('EMP_PROCESS_COM', 'tbl_emp_proc_comment');
 
 define('JOURNALS'		, 'tbl_emp_journals');
 define('DEV_PLAN'		, 'tbl_emp_development');

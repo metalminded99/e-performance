@@ -76,7 +76,7 @@
 					?>
 
 					<tr>
-						<td align="center"><input type="checkbox" name="emp[]" class="emp" value="<?=$employee['user_id']?>" <?=$this->template_library->check_array_value_exist( $emp_process, $employee['user_id'] ) ? 'checked="true"' : ''?> ></td>
+						<td align="center"><input type="checkbox" name="emp[]" class="emp" value="<?=$employee['user_id']?>" <?=$this->template_library->check_array_value_exist( @$emp_process, $employee['user_id'] ) ? 'checked="true"' : ''?> ></td>
 						<td><?=ucwords( $employee['lname'].', '.$employee['fname'].' '.$employee['mname'] )?></td>
 						<td><?=ucwords( $employee['job_title'])?></td>
 						<td><?=ucwords( $employee['dept_name'])?></td>

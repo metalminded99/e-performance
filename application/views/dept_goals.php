@@ -6,6 +6,15 @@
         <!-- left side nav END -->
         
         <div class="span9">
+            <ul class="nav nav-pills">
+                <li <?=$this->uri->segment(1) == 'my_goal' ? 'class="active"' : '' ?>>
+                    <a href="<?=base_url()?>my_goal">My Goals</a>
+                </li>
+                <li <?=$this->uri->segment(1) == 'dept_goals' ? 'class="active"' : '' ?>>
+                    <a href="<?=base_url()?>dept_goals">Department Goals</a>
+                </li>
+            </ul>
+
             <?php
                 if( $this->session->flashdata( 'message' ) ): 
                     $msg = $this->session->flashdata( 'message' );

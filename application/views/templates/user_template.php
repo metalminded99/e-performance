@@ -67,50 +67,70 @@
 		}
 	<?php } ?>
 
+	function getProcessData( stats ) {
+		var pie_data = [];
+		$.ajax({
+            type: "POST"
+            ,url: "<?=base_url();?>home/ajax_request"
+            ,dataType: 'json'
+            ,data: { action : 'get_process', proc_stat : stats },
+            success: function( data ) {
+                $.each( data, function( key, val ){
+                	pie_data.push( [ key, parseFloat(val) ] );
+                });
+
+            	$('#process').highcharts({
+			        chart: {
+			            plotBackgroundColor: null,
+			            plotBorderWidth: null,
+			            plotShadow: false
+			        },
+			        title: {
+			            text: 'Process Status, 2013'
+			        },
+			        tooltip: {
+			    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+			        },
+			        plotOptions: {
+			            pie: {
+			                allowPointSelect: true,
+			                cursor: 'pointer',
+			                dataLabels: {
+			                    enabled: false
+			                },
+			                showInLegend: true
+			            }
+			        },
+			        credits: {
+			            enabled: false
+			        },
+			        series: [{
+			            type: 'pie',
+			            name: 'Process',
+			            data: pie_data
+			        }]
+			    });
+            }
+        });
+	}
+
 	$(function () {
-		$('#process').highcharts({
-	        chart: {
-	            plotBackgroundColor: null,
-	            plotBorderWidth: null,
-	            plotShadow: false
-	        },
-	        title: {
-	            text: 'Process Status, 2013'
-	        },
-	        tooltip: {
-	    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}</b>'
-	        },
-	        plotOptions: {
-	            pie: {
-	                allowPointSelect: true,
-	                cursor: 'pointer',
-	                dataLabels: {
-	                    enabled: false
-	                },
-	                showInLegend: true
-	            }
-	        },
-	        credits: {
-	            enabled: false
-	        },
-	        series: [{
-	            type: 'pie',
-	            name: 'Process',
-	            data: [
-	                ['Firefox',   45.0],
-	                ['IE',       26.8],
-	                {
-	                    name: 'Chrome',
-	                    y: 12.8,
-	                    sliced: true,
-	                    selected: true
-	                },
-	                ['Safari',    8.5],
-	                ['Opera',     6.2],
-	                ['Others',   0.7]
-	            ]
-	        }]
-	    });
+		$('#proc_loading')
+	                    .hide()
+	                    .ajaxStart(function() {
+	                        $('#proc_status').hide();
+	                        $(this).show();
+	                    })
+	                    .ajaxStop(function() {
+	                        $(this).hide();
+	                        $('#proc_status').show();
+	                    });
+
+		getProcessData( 'Pending' );
+
+		$("input:radio").prop('name','proc_stat').change(function(){ 
+			getProcessData( $(this).val() );
+		});
 
 		$('#scores').highcharts({
             chart: {
@@ -219,15 +239,8 @@
 	            }
 	        },
 	        legend: {
-	            layout: 'vertical',
-	            align: 'right',
-	            verticalAlign: 'top',
-	            x: -340,
-	            y: 0,
-	            floating: true,
-	            borderWidth: 1,
 	            backgroundColor: '#FFFFFF',
-	            shadow: true
+                reversed: true
 	        },
 	        credits: {
 	            enabled: false
@@ -290,7 +303,20 @@
 		<div class="span9">
 			<div class="stats">
 				<p class="stat">
-					<span class="number"><?=$process_noti?></span>Process task
+					<?php 
+						if( $process_noti > 0 ) {
+					?>
+					<a href="<?=base_url()?>process">
+						<span class="number"><?=$process_noti?></span>
+					</a>
+					<?php 
+						} else {
+					?>
+					<span class="number">0</span>
+					<?php
+						} 
+					?>
+					Process task
 				</p>
 				<p class="stat">
 					<span class="number"><?=$trainings_noti?></span>Training
@@ -305,7 +331,7 @@
 					<?php 
 						} else {
 					?>
-					<span class="number"><?=$goal_noti?></span>
+					<span class="number">0</span>
 					<?php
 						} 
 					?>
@@ -321,7 +347,7 @@
 					<?php 
 						} else {
 					?>
-					<span class="number"><?=$feedback_noti?></span>
+					<span class="number">0</span>
 					<?php
 						} 
 					?>
@@ -332,10 +358,27 @@
 			<div class="row-fluid">
 				<!--- Pie Chart -->
 				<div class="block span6">
-					<p class="block-heading" data-toggle="collapse" data-target="#chart-container">
+					<p class="block-heading">
 						Process Status
 					</p>
 					<div id="process-container" class="block-body collapse in">
+						<div id="proc_status" style="text-align:center;">
+							<label class="radio inline">
+								<input type="radio" name="proc_stat" value="Pending" checked="checked"> Pending
+							</label>
+							<label class="radio inline">
+								<input type="radio" name="proc_stat" value="On-Going"> On-Going
+							</label>
+							<label class="radio inline">
+								<input type="radio" name="proc_stat" value="Completed"> Completed
+							</label>
+							<label class="radio inline">
+								<input type="radio" name="proc_stat" value="Rejected"> Rejected
+							</label>
+						</div>
+						<div id="proc_loading" style="text-align:center;">
+							<span class="label label-info">Loading <img src="<?=base_url().IMG?>login-loader.gif"></span> 
+						</div>
 						<div id="process" style="width: auto; height: 350px; margin: 0 auto"></div>
 					</div>
 				</div>

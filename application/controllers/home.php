@@ -144,6 +144,22 @@ class Home extends CI_Controller {
 		}
 	}
 
+	public function ajax_request() {
+		$this->load->model( 'process_model' );
+		if( $this->input->is_ajax_request() ){
+			if( $this->input->post('action') == 'get_process' ) {
+				$stats 		 = $this->process_model->getProcessSummary( $this->input->post('proc_stat') );
+				$stats_array = array();
+				foreach ($stats as $stat) {
+					$stats_array[ $stat[ 'proc_title' ] ] =  $stat[ 'total' ];
+				} 
+
+				echo json_encode( $stats_array );
+			}
+		}else
+			redirect( base_url() );
+	}
+
 }
 
 /* End of file home.php */

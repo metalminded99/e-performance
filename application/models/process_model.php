@@ -44,7 +44,7 @@ class Process_Model extends CI_Model {
     }
 
     public function getTotalEmpProcess( $where = array() ) {
-        if( empty($where) )
+        if( !empty($where) )
             $this->db->where( $where );
 
     	return $this->db
@@ -132,12 +132,38 @@ class Process_Model extends CI_Model {
                         ->result_array();
     }
 
-    public function updateEmpProcess( $process_id, $db_param ) {
+    public function updateEmpProcess( $process_id, $user_id, $db_param ) {
         $this->db
-                ->where( array( 'process_id' => $process_id ) )
+                ->where( 'process_id', $process_id )
+                ->where( 'user_id', $user_id )
                 ->update( EMP_PROCESS, $db_param );
 
         return true;
+    }
+
+    public function insertEmpProcessComment( $db_data ) {
+        $this->db->insert( EMP_PROCESS_COM, $db_data );
+
+        return true;
+    }
+
+    public function getEmpProcessComment( $proc_id, $user_id ) {
+        return $this->db
+                        ->select( "comment, DATE_FORMAT(date_comment, '%M %d, %Y') date_comment", false )
+                        ->where( 'proc_id', $proc_id )
+                        ->where( 'user_id', $user_id )
+                        ->get( EMP_PROCESS_COM )
+                        ->result_array();
+    }
+
+    public function getProcessSummary( $status ) {
+        return $this->db
+                        ->select( "p.proc_title, count(*) total", false )
+                        ->join( PROCESS .' p', 'p.proc_id = ep.process_id', 'left' )
+                        ->where( 'ep.status', $status )
+                        ->group_by( 'ep.process_id' )
+                        ->get( EMP_PROCESS.' ep' )
+                        ->result_array();
     }
 
 }

@@ -1,3 +1,5 @@
+<script type="text/javascript" src="<?=base_url().JS?>languages/jquery.validationEngine-en.js"></script>
+<script type="text/javascript" src="<?=base_url().JS?>jquery.validationEngine.js"></script>
 <div class="container-fluid">
     <div class="row-fluid">
 
@@ -71,13 +73,12 @@
                                         
                                         <?php if( $proc['status'] == 'Pending' ){ ?>
                                         <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'start')" title="Start" class="optlnk" href="#" role="button"><i class="icon-play"></i></a>&nbsp;
+                                        
                                         <?php } elseif( $proc['status'] == 'On-going' ) { ?>
-                                        <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'completed')" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
+                                        <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'complete')" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
 
-                                        <?php } if( $proc['status'] == 'Completed' || $proc['status'] == 'Rejected' ) { ?>
-                                        <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'start')" title="Restart" class="optlnk" href="#" role="button"><i class="icon-repeat"></i></a>
-                                        <?php } if( $proc['status'] != 'Rejected' ) { ?>
-                                        <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'reject')" title="Reject"class="optlnk" href="#" role="button"><i class="icon-exclamation-sign"></i></a>&nbsp;
+                                        <?php } if( $proc['status'] != 'Rejected' && $proc['status'] != 'Completed' ) { ?>
+                                        <a onclick="$('#hproc_id').val(<?=$proc['proc_id']?>);$('#reject_modal').validationEngine();" title="Reject" href="#rejectModal" class="optlnk" data-toggle="modal" data-backdrop="static" data-keyboard="false"><i class="icon-exclamation-sign"></i></a>&nbsp;
                                         <?php } ?>
                                         
                                     </td>
@@ -108,18 +109,26 @@
                     </ul>
                 </div>
 
-                <div class="modal small hide fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 id="myModalLabel">Delete Confirmation</h3>
-                    </div>
-                    <div class="modal-body">
-                        <p class="error-text"><i class="icon-warning-sign modal-icon"></i>Are you sure you want to delete this process?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                        <button class="btn btn-danger" data-dismiss="modal" onclick="delete_process();">Delete</button>
-                    </div>
+                <div class="modal small hide fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <input type="hidden" id="hproc_id" name="hproc_id">
+                    <form id="reject_modal" onsubmit="return false;">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3 id="myModalLabel">Reject Confirmation</h3>
+                        </div>
+                        <div class="modal-body">                                
+                                <p class="error-text"><i class="icon-warning-sign modal-icon"></i>Are you sure you want to reject this process?</p>
+                                <br/>
+                                <p class="text-center">
+                                    Please enter your comment here:
+                                    <textarea id="hproc_comment" class="text validate[required]" style="margin: 0px 0px 10px; width: 335px; height: 106px;resize: none;"></textarea>
+                                </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            <button class="btn btn-danger" onclick="javascript:do_action($('#hproc_id').val(), 'reject', $('#hproc_comment').val())">Continue</button>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="modal small hide fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -129,8 +138,17 @@
                     </div>
                     <div class="modal-body">
                          <div class="element">
-                            <label for="proc_desc">Descriptions:</label>
-                            <p class="label label-info" id="proc_desc"></p>
+                            <label class="label label-info" for="proc_desc">Descriptions:</label>
+                            <p id="proc_desc"></p>
+
+                            <div id="comment" style="display:none;">
+                                <br/>
+                                <label class="label label-info" for="proc_comm">Comment:</label>
+                                <blockquote>
+                                    <p id="proc_comm"></p>
+                                    <small id="comm_date"></small>
+                                </blockquote>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -149,9 +167,7 @@
             });
 
             function view_details( proc_id ) {
-                console.log(proc_id);
                 $.each( json_process, function( i, l ) {
-                    console.log(json_process[ i ].proc_id);
                     if( proc_id == json_process[ i ].proc_id  ){
                         $.each( l, function( key, val ) {
                             if( $( '#'+key ).length ){
@@ -163,19 +179,49 @@
                         return true;
                     }
                 });
+                <?php if($uri == 'rejected') { ?>
+                get_comments( proc_id );
+                <?php } ?>
 
                 return true;
             }
 
-            function do_action( proc_id, action ) {
+            function do_action( proc_id, action, msg) {
+                var ans = confirm('Do you really want to ' + action + ' this process?');
+                if( ans ) {
+                    if( action == 'reject' ){
+                        if( msg == '' ){
+                            alert('Please enter comment!');
+                            return false;
+                        }
+                    }
+                    $.ajax({
+                        type: "POST"
+                        ,url: "<?=base_url();?>process/ajax_request"
+                        ,data: { proc_id : proc_id, action : action, msg : msg },
+                        success: function( data ) {
+                            window.location = '<?=base_url()?>process/<?=$uri?>';
+                        }
+                    });
+
+                    $('#rejectModal').modal('hide');
+                }
+                return true;
+            }
+
+            function get_comments( proc_id ){
                 $.ajax({
                     type: "POST"
                     ,url: "<?=base_url();?>process/ajax_request"
-                    ,data: { proc_id : proc_id, action : action },
+                    ,dataType: "json"
+                    ,data: { proc_id : proc_id, action : 'get_comment'},
                     success: function( data ) {
-                        window.location = '<?=base_url()?>process/<?=$uri?>'; 
+                        if( data ){
+                            $('#proc_comm').text(data.comment);
+                            $('#comm_date').text(data.date_comment);
+                            $('#comment').show();
+                        }
                     }
                 });
-                return true;
             }
         </script>
