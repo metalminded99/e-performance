@@ -46,9 +46,9 @@
                                     <td><?=$this->template_library->format_mysql_date( $feedback['date_assigned'], 'F d, Y' )?></td>
                                     <td>
                                         <?php if($feedback['status'] == 'Pending' ){ ?> 
-                                        <a href="<?=base_url()?>feedbacks/peer_feedback/core/<?=$feedback['app_id']?>/<?=$feedback['assign_id']?>" title="Evaluate"><i class="icon-edit"></i></a> 
+                                        <a href="<?=base_url()?>feedbacks/peer_feedback/<?=$feedback['app_id']?>/<?=$feedback['assign_id']?>" title="Evaluate" class="optlnk"><i class="icon-edit"></i></a> 
                                         <?php } else { ?>
-                                        <a href="javascript:void(0)" title="View Result" onclick="get_summary('<?=$feedback['app_id']?>');"><i class="icon-file"></i></a>
+                                        <a href="javascript:void(0)" title="View Result" onclick="get_summary('<?=$feedback['app_id']?>');" class="optlnk"><i class="icon-file"></i></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -113,6 +113,7 @@
         <script type="text/javascript">
             $( document ).ready( function(){
                 $( "#frm_feedback" ).validationEngine();
+                $('.optlnk').tooltip();
             });
 
             function get_summary( app_id ){

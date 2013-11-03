@@ -6,14 +6,16 @@
         <!-- left side nav END -->
         
         <div class="span9">
-            <ul class="nav nav-pills">
-                <li <?=$this->uri->segment(1) == 'my_goal' ? 'class="active"' : '' ?>>
-                    <a href="<?=base_url()?>my_goal">My Goals</a>
-                </li>
-                <li <?=$this->uri->segment(1) == 'dept_goals' ? 'class="active"' : '' ?>>
-                    <a href="<?=base_url()?>dept_goals">Department Goals</a>
-                </li>
-            </ul>
+            <?php if( $this->session->userdata('lvl') > 2 ) { ?>
+                <ul class="nav nav-pills">
+                    <li <?=$this->uri->segment(1) == 'my_goal' ? 'class="active"' : '' ?>>
+                        <a href="<?=base_url()?>my_goal">My Goals</a>
+                    </li>
+                    <li <?=$this->uri->segment(1) == 'dept_goals' ? 'class="active"' : '' ?>>
+                        <a href="<?=base_url()?>dept_goals">Department Goals</a>
+                    </li>
+                </ul>
+            <?php } ?>
 
             <?php
                 if( $this->session->flashdata( 'message' ) ): 
@@ -26,28 +28,17 @@
             <?php endif; ?>
             
             <?php if( isset( $heading ) ) { ?>
-            <h1 class="page-title"><?=$heading?></h1>
+            <h2 class="page-title"><?=$heading?></h2>
             <?php
                 }
                 if( isset( $add_link_text ) ) {
             ?>
             <div class="btn-toolbar">
-                <a href="<?=$add_link?>" class="btn btn-primary"><i class="icon-plus"></i><?=$add_link_text?></a>
             <?php 
                 }
-                echo isset( $emp_menu ) ? $emp_menu : '' ;
-
                 if( $this->session->userdata( 'lvl' ) == 2 ) {
             ?>
-                <div id="action" class="btn-group" style="display:none;">
-                    <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" onclick="do_action( 'Not Started' );">Approve</a></li>
-                        <li><a href="#" onclick="do_action( 'Completed' );">Completed</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#" onclick="do_action( 'Rejected' );">Rejected</a></li>
-                    </ul>
-                </div>
+                <a href="<?=$add_link?>" class="btn btn-primary"><i class="icon-plus"></i> <?=$add_link_text?></a>
                 <div class="btn-group"></div>            
             <? } ?>
             </div>
@@ -59,18 +50,12 @@
                     <div id="widget1container" class="block-body">
                         <table id="tbl_goals" class="table">
                             <thead>
-                                <?php if( isset( $counter ) ){ ?>
                                 <th>#</th>
-                                <?php } else { ?>
-                                <th><input type="checkbox" id="select_all"></th>
-                                <?php } ?>
                                 <th>Goal Title</th>
                                 <th>Description</th>
                                 <th>Due Date</th>
                                 <th>Date Created</th>
-                                <?php if( $this->session->userdata( 'lvl' ) == 3 ) { ?>
                                 <th></th>
-                                <? } ?>
                             </thead>
                             <tbody>
                                 <?php
@@ -80,18 +65,18 @@
                                             $cnt++;
                                 ?>
                                 <tr>
-                                    <?php if( isset( $counter ) ){ ?>
                                     <td><?=$cnt?></td>
-                                    <?php } else { ?>
-                                    <td><input type="checkbox" name="goal[]" value="<?=$goal['goal_id']?>"></td>
-                                    <?php } ?>
                                     <td><?=$this->template_library->shorten_words( $goal['goal_title'] )?></td>
                                     <td><?=$this->template_library->shorten_words( $goal['goal_desc'] )?></td>
                                     <td><?=$this->template_library->format_mysql_date( $goal['due_date'], 'F d, Y' )?></td>
                                     <td><?=$this->template_library->format_mysql_date( $goal['date_created'], 'F d, Y' )?></td>
                                     <td>
-                                        <a title="update" class="up_btn" href="<?=$update_url?>/<?=$goal['goal_id']?>" role="button"><i class="icon-edit"></i></a>
-                                        <a id="<?=$goal['goal_id']?>" title="Remove" class="del_btn" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
+                                        <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
+                                        <a title="Update" class="up_btn optlnk" href="<?=$update_url?>/<?=$goal['goal_id']?>" role="button"><i class="icon-edit"></i></a>
+                                        <a id="<?=$goal['goal_id']?>" title="Remove" class="del_btn optlnk" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
+                                        <?php } else { ?>
+                                        <a id="<?=$goal['goal_id']?>" title="View Details" class="view_btn optlnk" href="#detailModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>
+                                        <?php } ?>
                                     </td>
                                 </tr>
                                 <?php
@@ -152,18 +137,6 @@
                             <label for="success_measure">Measure of success</label>
                             <p class="label label-info" id="success_measure"></p>
                         </div>
-                        <div class="element">
-                            <label for="status">Status</label>
-                            <p class="label label-info" id="status"></p>
-                        </div>
-                        <div class="element">
-                            <label for="percentage">Percentage</label>
-                            <p class="label label-info" id="percentage"></p>
-                        </div>
-                        <div class="element">
-                            <label for="date_approved">Date Approved</label>
-                            <p class="label label-info" id="date_approved"></p>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
@@ -176,10 +149,15 @@
             var item_id;
             var json_goals = <?=json_encode( $goals )?>;
 
+            $( document ).ready( function() {
+                $('.optlnk').tooltip();
+            });
+
             $('.view_btn').click( function() {
                 goal_id = $(this).prop('id');
 
                 $.each( json_goals, function( i, l ) {
+                    console.log(l);
                     if( goal_id === json_goals[ i ].goal_id  ){
                         $.each( l, function( key, val ) {
                             if( $( '#'+key ).length ){

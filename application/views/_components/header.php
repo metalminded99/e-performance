@@ -7,7 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>navi.css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>jquery-ui.css" />
 	<link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>validationEngine.jquery.css">
-	<script type="text/javascript" src="<?=base_url().JS?>jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="<?=base_url().JS?>jquery-1.10.2.min.js"></script>
 	<script src="<?=base_url().JS?>common.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	$(function(){

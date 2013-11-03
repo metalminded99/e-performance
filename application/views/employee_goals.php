@@ -1,3 +1,5 @@
+<script type="text/javascript" src="<?=base_url().JS?>languages/jquery.validationEngine-en.js"></script>
+<script type="text/javascript" src="<?=base_url().JS?>jquery.validationEngine.js"></script>
 <div class="container-fluid">
     <div class="row-fluid">
 
@@ -6,6 +8,10 @@
         <!-- left side nav END -->
         
         <div class="span9">
+            <?php 
+                if( $this->uri->segment(1) == 'my_goal' ) { 
+                    $landing_page = base_url().'my_goal';
+            ?>
             <ul class="nav nav-pills">
                 <li <?=$this->uri->segment(1) == 'my_goal' ? 'class="active"' : '' ?>>
                     <a href="<?=base_url()?>my_goal">My Goals</a>
@@ -14,18 +20,11 @@
                     <a href="<?=base_url()?>dept_goals">Department Goals</a>
                 </li>
             </ul>
-            <?php if( isset( $heading ) ) { ?>
-            <h1 class="page-title"><?=$heading?></h1>
+            <?php } if( isset( $heading ) ) { ?>
+            <h2 class="page-title"><?=$heading?>: <?=$this->uri->segment(2) != '' ? str_replace( '_', ' ', ucwords( $this->uri->segment(2) ) ) : 'Pending'?></h2>
             <?php
                 }
-                if( isset( $add_link_text ) ) {
-            ?>
-            <div class="btn-toolbar">
-                <a href="<?=$add_link?>" class="btn btn-primary"><i class="icon-plus"></i><?=$add_link_text?></a>
-                <div class="btn-group"></div>
-            </div>
-            <?php 
-                }
+
                 echo isset( $emp_menu ) ? $emp_menu : '' ;
                 if( $this->session->flashdata( 'message' ) ): 
                     $msg = $this->session->flashdata( 'message' );
@@ -39,10 +38,39 @@
             ?>
             <div class="row-fluid">
                 <div class="block span12">
-                    <div class="block-heading" data-target="#widget1container">
-                        Goals
-                    </div>
                     <div id="widget1container" class="block-body">
+                        <?php if( $this->session->userdata('lvl') == 3 ) { ?>
+                        <div class="">
+                            <ul class="nav nav-tabs">
+                                <li class="<?=$this->uri->segment(2) == '' ? 'active' : ''?>">
+                                    <a href="<?=base_url()?>my_goal"><i class="icon-time"></i>&nbsp;Pending <span class="badge badge-info"><?=$p_cnt?></span></a>
+                                </li>
+
+                                <li class="<?=$this->uri->segment(2) == 'on_going' ? 'active' : ''?>">
+                                    <a href="<?=base_url()?>my_goal/on_going"><i class="icon-road"></i>&nbsp;On-going <span class="badge badge-info"><?=$og_cnt?></span></a>
+                                </li>
+
+                                <li class="<?=$this->uri->segment(2) == 'completed' ? 'active' : ''?>">
+                                    <a href="<?=base_url()?>my_goal/completed"><i class="icon-check"></i>&nbsp;Completed <span class="badge badge-success"><?=$co_cnt?></span></a>
+                                </li>
+
+                                <li class="<?=$this->uri->segment(2) == 'warning' ? 'active' : ''?>">
+                                    <a href="<?=base_url()?>my_goal/warning"><i class="icon-bullhorn"></i>&nbsp;Warning <span class="badge badge-warning"><?=$w_cnt?></span></a>
+                                </li>
+
+                                <li class="<?=$this->uri->segment(2) == 'at_risk' ? 'active' : ''?>">
+                                    <a href="<?=base_url()?>my_goal/at_risk"><i class="icon-fire"></i>&nbsp;At Risk <span class="badge badge-important"><?=$ar_cnt?></span></a>
+                                </li>
+
+                                <li class="<?=$this->uri->segment(2) == 'rejected' ? 'active' : ''?>">
+                                    <a href="<?=base_url()?>my_goal/rejected"><i class="icon-thumbs-down"></i>&nbsp;Rejected <span class="badge badge-important"><?=$r_cnt?></span></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pull-right">
+                            <a href="<?=base_url()?>my_goal/add" class="btn btn-small btn-primary"><i class="icon-plus"></i>&nbsp;Add Goal</a>
+                        </div>
+                        <?php } ?>
                         <table id="tbl_goals" class="table">
                             <thead>
                                 <th>#</th>
@@ -66,21 +94,49 @@
                                     <td><?=$this->template_library->shorten_words( $goal['goal_desc'] )?></td>
                                     <td><?=$goal['due_date']?></td>
                                     <td><?=$goal['date_created']?></td>
-                                    <td><?=$goal['status']?></td>
+                                    <td>
+                                        <?php 
+                                            if( $goal['status'] == 'Rejected' ){
+                                                echo $goal['status'];
+                                            }
+                                            elseif( $goal['approved'] == 1 ) {
+                                                echo $goal['status'];
+                                            } 
+                                            else {
+                                                echo 'For Approval';
+                                            }
+                                        ?>
+                                    </td>
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 3 ) { ?>
                                     <td>
-                                        <a title="update" class="up_btn" href="<?=$update_url?>/<?=$goal['goal_id']?>" role="button"><i class="icon-edit"></i></a>
-                                        <a id="<?=$goal['goal_id']?>" title="Remove" class="del_btn" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
+                                        <?php if( $goal['status'] == 'Pending' ){ ?>
+                                        <a title="update" class="up_btn optlnk" href="<?=base_url()?>my_goal/update/<?=$goal['goal_id']?>" role="button"><i class="icon-edit"></i></a>&nbsp;
+                                        <?php } ?>
+
+                                        <a id="<?=$goal['goal_id']?>" title="More details" class="view_btn optlnk" href="#detailModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
+                                        
+                                        <?php if( $goal['status'] == 'Pending' && $goal['approved'] == 1 ){ ?>
+                                        <a onclick="javascript:do_action(<?=$goal['goal_id']?>, 'start')" title="Start" class="optlnk" href="javascript:void(0);" role="button"><i class="icon-play"></i></a>&nbsp;
+                                        
+                                        <?php } elseif( $goal['status'] == 'On-going' ) { ?>
+                                        <a onclick="javascript:do_action(<?=$goal['goal_id']?>, 'complete')" title="Completed" class="optlnk" href="javascript:void(0);" role="button"><i class="icon-ok"></i></a>&nbsp;
+                                        <?php } elseif( $goal['status'] != 'Completed' ) { ?>
+                                        <a id="<?=$goal['goal_id']?>" title="Remove" class="del_btn optlnk" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
+                                        <?php } ?>
                                     </td>
                                     <? } ?>
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
                                     <td>
+                                        <?php if( $goal['status'] == 'Rejected' ) { ?>
+                                        <a id="<?=$goal['goal_id']?>" title="View details" class="comment_btn optlnk" href="#commentModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
+                                        <?php }else{ ?>
                                         <a id="<?=$goal['goal_id']?>" title="View details" class="view_btn optlnk" href="#detailModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
-                                        <a id="<?=$goal['goal_id']?>" title="Approve" class="optlnk" href="#" role="button"><i class="icon-thumbs-up"></i></a>&nbsp;
-                                        <a id="<?=$goal['goal_id']?>" title="Reject"class="optlnk" href="#" role="button"><i class="icon-thumbs-down"></i></a>&nbsp;
-                                        <a id="<?=$goal['goal_id']?>" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
+                                        <?php }if( !$goal['approved'] && $goal['status'] == 'Pending' ) { ?>
+                                        <a onclick="javascript:do_action(<?=$goal['goal_id']?>, 'approve')" title="Approve" class="optlnk" href="javascript:void(0);" role="button"><i class="icon-thumbs-up"></i></a>&nbsp;
+                                        <a onclick="$('#reject_modal').validationEngine();" title="Reject" class="optlnk" href="#rejectModal" role="button" data-toggle="modal"><i class="icon-thumbs-down"></i></a>&nbsp;
+                                        <?php } ?>
                                     </td>
                                     <? } ?>
 
@@ -90,7 +146,7 @@
                                     } else {
                                 ?>
                                 <tr>
-                                    <td colspan="5">
+                                    <td colspan="7">
                                         <center>
                                             <span class="label">No records found</label>
                                         </center>
@@ -125,35 +181,78 @@
                     </div>
                 </div>
 
-                <div class="modal small hide fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal small hide fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <form id="reject_modal" onsubmit="return false;">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3 id="myModalLabel">Reject Confirmation</h3>
+                        </div>
+                        <div class="modal-body">
+                            <p class="error-text"><i class="icon-warning-sign modal-icon"></i>Please enter comment to reject goal.</p>
+                            <br/6>
+                            <textarea id="reject_comment" name="reject_comment" class="validate[required]" style="resize:none;width: 100%;"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                            <button class="btn btn-danger" onclick="javascript:do_action(<?=$goal['goal_id']?>, 'reject', $('#reject_comment').val())">Reject</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal small hide fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top: -250px;">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         <h3 id="myModalLabel">Goal Details</h3>
                     </div>
-                    <div class="modal-body">
-                         <div class="element">
-                            <label for="days_to_remind">Days to Remind</label>
-                            <p class="label label-info" id="days_to_remind"></p>
+                    <div id="details">
+                        <div class="modal-body">
+                             <div class="element">
+                                <label for="days_to_remind">Days to Remind</label>
+                                <p class="label label-info" id="days_to_remind"></p>
+                            </div>
+                            <div class="element">
+                                <label for="deliverables">Deliverables</label>
+                                <p class="label label-info" id="deliverables"></p>
+                            </div>
+                            <div class="element">
+                                <label for="success_measure">Measure of success</label>
+                                <p class="label label-info" id="success_measure"></p>
+                            </div>
+                            <div class="element">
+                                <label for="status">Status</label>
+                                <p class="label label-info" id="status"></p>
+                            </div>
+                            <div class="element">
+                                <label for="percentage">Percentage</label>
+                                <p class="label label-info" id="percentage"></p>
+                            </div>
+                            <div class="element">
+                                <label for="dg_title">Department goal link</label>
+                                <p class="label label-info" id="dg_title"></p>
+                            </div>
+                            <div class="element">
+                                <label for="date_approved">Date Approved</label>
+                                <p class="label label-info" id="date_approved"></p>
+                            </div>
                         </div>
-                        <div class="element">
-                            <label for="deliverables">Deliverables</label>
-                            <p class="label label-info" id="deliverables"></p>
-                        </div>
-                        <div class="element">
-                            <label for="success_measure">Measure of success</label>
-                            <p class="label label-info" id="success_measure"></p>
-                        </div>
-                        <div class="element">
-                            <label for="status">Status</label>
-                            <p class="label label-info" id="status"></p>
-                        </div>
-                        <div class="element">
-                            <label for="percentage">Percentage</label>
-                            <p class="label label-info" id="percentage"></p>
-                        </div>
-                        <div class="element">
-                            <label for="date_approved">Date Approved</label>
-                            <p class="label label-info" id="date_approved"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
+                    </div>
+                </div>
+
+                <div class="modal small hide fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top: -250px;">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">Goal Details</h3>
+                    </div>
+                    <div id="comments">
+                        <div class="modal-body">
+                            <h3>Notes</h3>
+                            <blockquote>
+                                <p id="comment"></p>
+                                <small id="date_commented"></small>
+                            </blockquote>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -169,6 +268,7 @@
 
             $( document ).ready( function() {
                 $('.optlnk').tooltip();
+                $( "#reject_modal" ).validationEngine();
             });
 
             $('.view_btn').click( function() {
@@ -189,38 +289,44 @@
                                 $( '#'+key ).text( rval );
                             }
                         });
-                        return true;
                     }
                 });
+            });
 
-                return true;
+            $('.comment_btn').click( function() {
+                goal_id = $(this).prop('id');
+
+                $.post( '<?=base_url()?>my_goal/check_status', { action : 'check_status', goal_id : goal_id }, function(data) {
+                    $.each( data, function( key, val ) {
+                        if( $( '#'+key ).length ){
+                            $( '#'+key ).text( val );
+                        }
+                    });
+                }, 'json');
             });
 
             $('.del_btn').click( function() {
                 item_id = $(this).prop('id');
             });
 
-            <?php if( isset( $delete_url ) ) { ?>
+            <?php if( $this->uri->segment(1) == 'my_goal' ) { ?>
             function delete_goal(){
-                $.post( '<?=$delete_url?>', { goal_id : item_id }, function(data) {
+                $.post( '<?=base_url()?>my_goal/delete', { goal_id : item_id }, function(data) {
                     window.location = data;
                 });
             }
-            <? } ?>
+            <?php } ?>
 
-            <?php if( isset( $user_id ) ){ ?>
-            function do_action( action ){
-                var arr = [];
-                $( '#tbl_goals tr td input[type=checkbox]' ).each( function() {
-                    if( $(this).prop( 'checked' ) ) {
-                        arr.push( $(this).val() );
-                    }
-                });
-                
-                $.post( '<?=base_url()?>/employees/info/goals/update', { item : arr, state : action, user : '<?=$user_id?>' }, function(data) {
-                    window.location = data;
-                    // console.log( data );
+            function do_action( goal, action, comment ){
+                if( action == 'reject' ){
+                    if( comment == '' )
+                        return false;
+
+                    $('#reject_comment').val('');
+                    $('#rejectModal').modal('hide');
+                }
+                $.post( '<?=base_url()?>/my_goal/ajax_request', { state : action, goal : goal, comment : comment }, function(data) {
+                    window.location = '<?=isset($landing_page) ? $landing_page : base_url().uri_string() ?>';
                 });
             }
-            <? } ?>
         </script>

@@ -55,14 +55,18 @@ define('ACTIVITIES'		, 'tbl_activities');
 define('TRAININGS'		, 'tbl_trainings');
 define('TRAINING_SKILLS', 'tbl_training_skills');
 define('TRAINING_ABL'	, 'tbl_training_abilities');
+
 define('APPRAISAL'		, 'tbl_appraisal');
 define('APP_QUESTION'	, 'tbl_appraisal_questionaire');
 define('APP_ASSIGN'		, 'tbl_appraisal_assignment');
 define('APP_PEER_ASSIGN', 'tbl_appraisal_peer_assignment');
 define('APP_MNGR_ASSIGN', 'tbl_appraisal_mngr_assignment');
 define('APP_RESULT'		, 'tbl_appraisal_result');
+define('APP_MAIN_CAT'	, 'tbl_appraisal_main_categories');
+define('APP_SUB_CAT'	, 'tbl_appraisal_sub_categories');
 
 define('EMP_GOALS'		, 'tbl_emp_goals');
+define('EMP_GOALS_COM'	, 'tbl_emp_goal_comments');
 define('DEPT_GOALS'		, 'tbl_dept_goals');
 
 define('JOB_SKILLS'		, 'tbl_job_skills');

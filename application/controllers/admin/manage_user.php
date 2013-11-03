@@ -128,4 +128,3 @@ class Manage_user extends CI_Controller {
 
 /* End of file manage_user.php */
 /* Location: ./application/controllers/manage_user.php */
-x

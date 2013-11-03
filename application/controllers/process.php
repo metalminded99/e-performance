@@ -11,13 +11,17 @@ class Process extends CI_Controller {
 		$this->user_id = $this->session->userdata( 'user_id' );
 	}
 
-	public function index( $offset = 0 ) {
+	public function index() {
+		$this->lists();
+	}
+
+	public function lists( $offset = 0 ) {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
 		# Process list
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'Process' 
+																					'process/lists' 
 																					,$this->process_model->getTotalEmpProcess( 
 																																array( 
 																																		'user_id' => $this->user_id 
@@ -26,7 +30,7 @@ class Process extends CI_Controller {
 																															)
 																					,PER_PAGE
 																					,'user'
-																					,($this->uri->segment(2)) ? $this->uri->segment(2) : 0
+																					,$offset
 																				);
 		$template_param['process'] = $this->process_model->getAllEmpProcess( $offset, PER_PAGE, array( 'user_id' => $this->user_id, 'status' => 'Pending' ) );
 		# Template meta data
@@ -49,7 +53,7 @@ class Process extends CI_Controller {
 
 		# Process list
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'Process' 
+																					'process/on_going' 
 																					,$this->process_model->getTotalEmpProcess( array( 'user_id' => $this->user_id, 'status' => 'On-going' ) )
 																					,PER_PAGE
 																					,'user'
@@ -76,7 +80,7 @@ class Process extends CI_Controller {
 
 		# Process list
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'Process' 
+																					'process/completed' 
 																					,$this->process_model->getTotalEmpProcess( array( 'user_id' => $this->user_id, 'status' => 'Completed' ) )
 																					,PER_PAGE
 																					,'user'
@@ -103,7 +107,7 @@ class Process extends CI_Controller {
 
 		# Process list
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'Process' 
+																					'process/rejected' 
 																					,$this->process_model->getTotalEmpProcess( array( 'user_id' => $this->user_id, 'status' => 'Rejected' ) )
 																					,PER_PAGE
 																					,'user'

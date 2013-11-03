@@ -7,11 +7,12 @@ class Goal_Model extends CI_Model {
         $this->load->database();
     }    
     
-    public function getAllEmpGoal( $offset, $per_page, $where = array(), $fld = "goal_id, goal_title, goal_desc, DATE_FORMAT(due_date,'%b %e, %Y') due_date, DATE_FORMAT(date_created,'%b %e, %Y') date_created, status" ) {
+    public function getAllEmpGoal( $offset, $per_page, $where = array() ) {
             $this->db
-                    ->select( $fld, false )
-                    ->from( EMP_GOALS )
-                    ->order_by( 'due_date', 'ASC' )
+                    ->select( 'eg.*, dg.goal_id dg_id, dg.goal_title dg_title' )
+                    ->from( EMP_GOALS. ' eg' )
+                    ->join( DEPT_GOALS. ' dg', 'dg.department_id = eg.dept_goal_id', 'left' )
+                    ->order_by( 'eg.due_date', 'ASC' )
                     ->limit( $per_page, $offset );
             
             if( !is_null( $where ) )
@@ -22,7 +23,10 @@ class Goal_Model extends CI_Model {
                             ->result_array();
     }
 
-    public function getTotalEmpGoal( $user_id ) {
+    public function getTotalEmpGoal( $user_id, $status = null ) {
+        if( !is_null( $status ) )
+            $this->db->where( array( 'status' => $status ) );
+
     	return $this->db
                         ->where( array( 'user_id' => $user_id ) )
                         ->count_all_results( EMP_GOALS );
@@ -36,7 +40,7 @@ class Goal_Model extends CI_Model {
     public function updateEmpGoal( $goal_id, $db_param ) {
         $where = array( 'goal_id' => $goal_id );
         if( isset( $db_param[ 'status' ] ) ) {
-            if( $db_param[ 'status' ] == 'Not Started' ){
+            if( $db_param[ 'status' ] == 'Pending' ){
                 $now = date('Y-m-d h:i:s');
                 $this->db
                          ->where( $where )
@@ -47,6 +51,10 @@ class Goal_Model extends CI_Model {
                                             ,'date_approved' => $now
                                           ) 
                                  );
+            }   else {
+                $this->db
+                         ->where( $where )
+                         ->update( EMP_GOALS , $db_param );
             }
         }
 
@@ -66,6 +74,10 @@ class Goal_Model extends CI_Model {
         return $this->db
                         ->where( $where )
                         ->update( EMP_GOALS, $db_param );
+    }
+
+    public function addEmpGoalComment( $db_param ) {
+        $this->db->insert( EMP_GOALS_COM, $db_param );
     }
 
     public function deleteEmpGoal( $db_param ) {
@@ -95,9 +107,8 @@ class Goal_Model extends CI_Model {
                         ->count_all_results( EMP_GOALS );
     }
 
-    public function getAllDeptGoal( $offset, $per_page, $where = array(), $fld = 'goal_id, goal_title, goal_desc, due_date, date_created' ) {
+    public function getAllDeptGoal( $offset, $per_page, $where = array() ) {
             $this->db
-                    ->select( $fld )
                     ->from( DEPT_GOALS )
                     ->order_by( 'due_date', 'ASC' )
                     ->limit( $per_page, $offset );
@@ -145,6 +156,13 @@ class Goal_Model extends CI_Model {
                         ->where( $where )
                         ->order_by( $by, $order )
                         ->get()
+                        ->result_array();
+    }
+
+    public function getEmpGoalComment( $where ) {
+        return $this->db
+                        ->where( $where )
+                        ->get( EMP_GOALS_COM )
                         ->result_array();
     }
 

@@ -43,7 +43,7 @@ class Template_library {
 		$config['base_url'] = base_url() . $uri;
 		$config['total_rows'] = $total_rows;
 		$config['per_page'] = PER_PAGE;
-		if( $module == 'admin' ){			
+		if( $module == 'admin' ){
 			$config['full_tag_open'] = '<div class="pagination">';
 			$config['full_tag_close'] = '</div>';
 			$config['first_link'] = '« First';

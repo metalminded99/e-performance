@@ -42,10 +42,19 @@ class Home extends CI_Controller {
 		$self_score		= $this->appraisal_model->getFeedbackSummary( 'self_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) );
 		$peer_score		= $this->appraisal_model->getFeedbackSummary( 'peer_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) );
 		$manager_score	= $this->appraisal_model->getFeedbackSummary( 'manager_score', array( 'user_id' => $this->session->userdata( 'user_id' ) ) );
+
+		$score_summary	= $this->appraisal_model->getPerformanceSummary();
+		$performance = array();
+		$months = range(1, 12);
+		if( count($score_summary) > 0 ){
+			foreach ($score_summary as $ss) {
+				for( $i=0; $i < count($months); $i++ ){
+					$performance[ $ss['dsy'] ][ $months[$i] ] = $ss['dsm'] == $months[$i] ? (($ss['sc'] + $ss['ps'] + $ss['ms']) / 3) : 0;
+				}
+			}
+		}
 		
-		$template_param['self_score']		= !empty( $self_score ) ? json_encode( $self_score ) : 0 ;
-		$template_param['peer_score']		= !empty( $peer_score ) ? json_encode( $peer_score ) : 0 ;
-		$template_param['manager_score']	= !empty( $manager_score ) ? json_encode( $manager_score ) : 0 ;
+		$template_param['performance_summary']		= !empty( $performance ) ? json_encode( $performance ) : 0 ;
 		$mngr_feedback = 0;
 		if( $this->session->userdata('lvl') == 2 )
 			$mngr_feedback 								= $this->appraisal_model->getMngrFeedbackCount( $this->session->userdata( 'user_id' ) );

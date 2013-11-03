@@ -13,8 +13,17 @@ class Appraisal extends CI_Controller {
 	public function index( $offset = 0 ) {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
-
-		# Activity list
+		$this->load->library('user_agent');
+		if( $this->agent->is_referral() ) {
+			if( preg_match( '/update/', $this->agent->referrer() ) ) {
+				$this->session->unset_userdata('app_data-title');
+				$cat = $this->appraisal_model->getAppraisalMainCategories();
+				foreach ($cat as $val) {
+					$this->session->unset_userdata('app_data-'.$val['main_category_id'] );
+				}
+			}
+		}
+		# Appraisal list
 		$template_param['pagination'] = $this->template_library->get_pagination(
 																					'appraisal' 
 																					,$this->appraisal_model->getTotalAppraisal( array( 'job_id' => $this->user_job_id ) )
@@ -37,14 +46,42 @@ class Appraisal extends CI_Controller {
 										);
 	}
 
+	public function categories( ) {
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+
+		# Appraisal list
+		$template_param['main_cat'] = $this->appraisal_model->getAppraisalMainCategories();
+
+		# Template meta data
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']			= 'appraisal_categories';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
+	}
+
 	public function add() {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
-		if( $this->input->post() )
-			$this->save_appraisal( 'add' );
+		if( $this->input->post() ){
+			$step = $this->input->post( 'step' );
+			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
+
+			$cat = $this->appraisal_model->getAppraisalMainCategories();
+			if( $step <= count( $cat ) )
+				$template_param['cat'] = $cat[ ( $step - 1 ) ];
+			else
+				$this->save_appraisal( 'add' );
+		}
 
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['step'] = @$step != '' ? $step + 1 : 1;
 		$template_param['action'] = 'Add New Appraisal';
 		$template_param['content']= 'add_appraisal';
 		$this->template_library->render( 
@@ -58,10 +95,26 @@ class Appraisal extends CI_Controller {
 
 	public function save_appraisal( $action, $app_id = 0 ) {
 		if( $action == 'add' ) {
-			$this->appraisal_model->saveNewAppraisal( $this->input->post() );
+			$db_data = $this->session->userdata( 'app_data-title' );
+			$this->session->unset_userdata('app_data-title');
+
+			$cat = $this->appraisal_model->getAppraisalMainCategories();
+			foreach ($cat as $val) {
+				array_push( $db_data, $this->session->userdata( 'app_data-'.$val['main_category_id'] ) );
+				$this->session->unset_userdata('app_data-'.$val['main_category_id'] );
+			}
+			$this->appraisal_model->saveNewAppraisal( $db_data );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New appraisal has been added successfully!', 'class' => 'info' ) );
 		}elseif( $action == 'edit' ) {
-			$this->appraisal_model->updateAppraisal( $app_id, $this->input->post() );
+			$db_data = $this->session->userdata( 'app_data-title' );
+			$this->session->unset_userdata('app_data-title');
+
+			$cat = $this->appraisal_model->getAppraisalMainCategories();
+			foreach ($cat as $val) {
+				array_push( $db_data, $this->session->userdata( 'app_data-'.$val['main_category_id'] ) );
+				$this->session->unset_userdata('app_data-'.$val['main_category_id'] );
+			}
+			$this->appraisal_model->updateAppraisal( $app_id, $db_data );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );
 		}
 
@@ -72,21 +125,24 @@ class Appraisal extends CI_Controller {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
-		if( $this->input->post() )
-			$this->save_appraisal( 'edit', $app_id );
+		if( $this->input->post() ){
+			$step = $this->input->post( 'step' );
+			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
 
-		$template_param['appraisal'] = $this->appraisal_model->getAllAppraisal( 0, 1, array( 'appraisal_id' => $app_id ) );
-		$cat = array(
-						'core'
-						,'perf'
-						,'skills'
-						,'abl'
-					);
-		for ($i=0; $i < count($cat); $i++) { 
-			$template_param[ $cat[$i] ] = $this->appraisal_model->getAppraisalQuestion( $app_id, $cat[$i] );
+			$cat = $this->appraisal_model->getAppraisalMainCategories();
+			if( $step <= count( $cat ) ){
+				$template_param['cat'] = $cat[ ( $step - 1 ) ];
+			}
+			else
+				$this->save_appraisal( 'edit', $app_id );
+		}
+
+		if ( !isset( $step ) ) {
+			$template_param['appraisal'] = $this->appraisal_model->getAllAppraisal( 0, 1, array( 'appraisal_id' => $app_id ) );
 		}
 
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['step'] = @$step != '' ? $step + 1 : 1;
 		$template_param['action'] = 'Update Appraisal';
 		$template_param['content']= 'add_appraisal';
 		$this->template_library->render( 
@@ -100,25 +156,68 @@ class Appraisal extends CI_Controller {
 
 	public function delete() {
 		if( $this->input->is_ajax_request() ){
-			if( is_array( $this->input->post('item') ) ){
-				$items = $this->input->post('item');
-				for( $s = 0; $s < count( $items ); $s++ ){
-					$db_data = array( 
-								'activity_id' => $items[ $s ]
-								,'job_id' => $this->user_job_id
-							);
-					$this->appraisal_model->deleteJobActivity( $db_data );
-				}
-			}else{
-				$db_data = array( 
-								'activity_id' => $this->input->post('item')
-								,'job_id' => $this->user_job_id
-							);
-				$this->appraisal_model->deleteJobActivity( $db_data );
-			}
+			$db_data = array( 'appraisal_id' => $this->input->post('item') );
+			$this->appraisal_model->deleteAppraisal( $db_data );
 			
-			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Activity has been deleted successfully!', 'class' => 'info' ) );
+			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been deleted successfully!', 'class' => 'info' ) );
 			echo base_url().'appraisal';
+		}
+	}
+
+	public function ajax_request( ) {
+		if( $this->input->is_ajax_request() ){
+			$action = $this->input->post('action');
+			if( $action != '' ){ 
+				switch ( $action ) {
+					case 'add_main_cat':
+						$db_data = array('main_category_name' => $this->input->post( 'sub_cat' ));
+						$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New appraisal main category has been added successfully!', 'class' => 'info' ) );
+						echo $this->appraisal_model->addAppraisalMainCategories( $db_data );
+						break;
+					
+					case 'add_sub_cat':
+						$db_data = array(
+											 'main_cat_id'			=> $this->input->post( 'main_id' )
+											,'sub_category_name'	=> $this->input->post( 'sub_cat' )
+										);
+						$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New appraisal sub category has been added successfully!', 'class' => 'info' ) );
+						echo $this->appraisal_model->addAppraisalSubCategories( $db_data );
+						break;
+					
+					case 'remove_sub_cat':
+						$db_data = array( 'sub_category_id' => $this->input->post( 'item_id' ) );
+						$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal sub category deleted successfully!', 'class' => 'info' ) );
+						$this->appraisal_model->removeAppraisalSubCategories( $db_data );
+						break;
+
+					case 'update_sub_cat':
+						$db_data = array( 'sub_category_name' => $this->input->post( 'item' ) );
+						$where = array( 'sub_category_id' => $this->input->post( 'item_id' ) );
+
+						$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal sub category updated successfully!', 'class' => 'info' ) );
+						$this->appraisal_model->updateAppraisalSubCategories( $db_data, $where );
+						break;
+
+					case 'update_main_cat':
+						$db_data = array( 'main_category_name' => $this->input->post( 'item' ) );
+						$where = array( 'main_category_id' => $this->input->post( 'item_id' ) );
+
+						$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal main category updated successfully!', 'class' => 'info' ) );
+						echo $this->appraisal_model->updateAppraisalMainCategories( $db_data, $where );
+						break;
+					
+					case 'remove_main_cat':
+						$db_data = array( 'main_category_id' => $this->input->post( 'item_id' ) );
+						$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal main category deleted successfully!', 'class' => 'info' ) );
+						$this->appraisal_model->removeAppraisalMainCategories( $db_data );
+						break;
+					
+					
+					default:
+						# code...
+						break;
+				}
+			}
 		}
 	}
 

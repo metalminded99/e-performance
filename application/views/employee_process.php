@@ -78,7 +78,7 @@
                                         <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'complete')" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
 
                                         <?php } if( $proc['status'] != 'Rejected' && $proc['status'] != 'Completed' ) { ?>
-                                        <a onclick="$('#hproc_id').val(<?=$proc['proc_id']?>);$('#reject_modal').validationEngine();" title="Reject" href="#rejectModal" class="optlnk" data-toggle="modal" data-backdrop="static" data-keyboard="false"><i class="icon-exclamation-sign"></i></a>&nbsp;
+                                        <a onclick="$('#hproc_id').val(<?=$proc['proc_id']?>);$('#reject_modal').validationEngine();" title="Reject" href="#rejectModal" class="optlnk" data-toggle="modal" data-backdrop="static" data-keyboard="false"><i class="icon-minus-sign"></i></a>&nbsp;
                                         <?php } ?>
                                         
                                     </td>

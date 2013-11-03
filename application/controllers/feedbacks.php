@@ -2,19 +2,12 @@
 
 class Feedbacks extends CI_Controller {
 	protected $user_id;
-	protected $category;
 
 	public function __construct() {
 		parent::__construct();
 		$this->load->model( 'appraisal_model' );
 
 		$this->user_id = $this->session->userdata( 'user_id' );
-		$this->category = array(
-									'core'
-									,'perf'
-									,'skills'
-									,'abl'
-								);
 	}
 
 	public function index( $offset = 0 ) {
@@ -113,46 +106,48 @@ class Feedbacks extends CI_Controller {
 										);
 	}
 
-	public function feedback_question( $cat, $app_id, $assign = 0 ) {
+	public function feedback_question( $app_id, $assign = 0 ) {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 
-		if( $this->input->post() )
-			$this->save_feedback();
+		$step = $this->input->post( 'step' ) != '' ?  $this->input->post( 'step' ) : 0;
+		$cat = $this->appraisal_model->getAppraisalMainCategories();
 
-		$q_param = array( 
-							'appraisal_id'	=> $app_id
-							,'category'		=> $cat
-						);
+		if( $this->input->post() ){
+			$this->session->set_userdata( 'app_data-'.$this->input->post('cat'), $this->input->post() );
 
-		$questions = $this->appraisal_model->getFeedbackQuestion( $q_param );
-		if( !$questions ){
+			if( ($step+1) > count( $cat ) )
+				$this->save_feedback();
+		}
+
+		$_questions = array();
+		$sub_cat = $this->appraisal_model->getAppraisalSubCategories( array( 'main_cat_id' => $cat[$step]['main_category_id'] ) );
+		foreach ($sub_cat as $sc) {
+			$q_param = array( 
+								'appraisal_id'	=> $app_id
+								,'category'		=> $cat[$step]['main_category_id']
+								,'sub_category' => $sc['sub_category_id']
+							);
+
+			$questions = $this->appraisal_model->getFeedbackQuestion( $q_param );
+			if( count( $questions ) > 0 ) {
+				foreach ($questions as $question) {
+					$_questions[ $sc['sub_category_name'] ][] = $question;
+				}
+			}
+		}
+
+		if( empty($_questions) ){
 			$template_param['invalid']	= array(
 													'str' => '<i class="icon-ban-circle"></i> Feedback question not found! ' . anchor( base_url().'feedbacks', '<i class="icon-chevron-left"></i> back' )
 													,'class' => 'warning'
 												);
 		}
 
-		switch ( $cat ) {
-			case 'core':
-				$header = 'Core Competencies';
-				break;
-
-			case 'perf':
-				$header = 'Performance Output';
-				break;
-
-			case 'skills':
-				$header = 'Skills';
-				break;
-			
-			default:
-				$header = 'Abilities';
-				break;
-		}
-
-		$template_param['header']		= $header;
-		$template_param['questions']	= $questions;
+		$template_param['header']		= ucwords( $cat[$step]['main_category_name'] );
+		$template_param['questions']	= $_questions;
+		$template_param['step']			= $step + 1;
+		$template_param['cat']			= $cat[$step]['main_category_id'];
 
 		$template_param['content']		 = 'feedback_questions';
 		$this->template_library->render( 
@@ -165,9 +160,8 @@ class Feedbacks extends CI_Controller {
 	}
 
 	public function save_feedback() {
-		$cat_index	= array_search($this->uri->segment( 3 ), $this->category);
-		$app_id		= $this->uri->segment( 4 );
-		$assign_id	= $this->uri->segment( 5 );
+		$app_id		= $this->uri->segment( 3 );
+		$assign_id	= $this->uri->segment( 4 );
 		$q_param	= array();
 		$where		= array();
 		$feed_type	= $this->uri->segment( 2 );
@@ -195,58 +189,55 @@ class Feedbacks extends CI_Controller {
 				break;
 		}
 
-		foreach ( $this->input->post() as $key => $value ) {
-			$q_id = explode( '_', $key );
-			
-			if( $feed_type == 'self_feedback' ){
-				$q_param = array(
-									$u_field => $this->session->userdata('user_id')
-									,'appraisal_id' => $app_id
-									,'question_id' => $q_id[1]
-									,$field => $value
-								);
-			}else{
-				$assign_user = $this->appraisal_model->getAssignedEmployee( $assign_id, $app_id );
-				$q_param = array(
-									$field 			=> $value
-									,$u_field		=> $this->session->userdata('user_id')
-									,'user_id'		=> $assign_user[0]['user_id']
-									,'appraisal_id' => $app_id
-									,'question_id'	=> $q_id[1]
-								);
+		$cat = $this->appraisal_model->getAppraisalMainCategories();
+		foreach ($cat as $c) {			
+			foreach ( $this->session->userdata('app_data-'.$c['main_category_id']) as $key => $value ) {
+				if( preg_match('/question/', $key) ) {
+					$q_id = explode( '_', $key );
+					
+					if( $feed_type == 'self_feedback' ){
+						$q_param = array(
+											$u_field => $this->session->userdata('user_id')
+											,'appraisal_id' => $app_id
+											,'question_id' => $q_id[1]
+											,$field => $value
+										);
+					}else{
+						$assign_user = $this->appraisal_model->getAssignedEmployee( $assign_id, $app_id );
+						$q_param = array(
+											$field 			=> $value
+											,$u_field		=> $this->session->userdata('user_id')
+											,'user_id'		=> $assign_user[0]['user_id']
+											,'appraisal_id' => $app_id
+											,'question_id'	=> $q_id[1]
+										);
+					}
+
+					$this->appraisal_model->insertFeedbackForm( $q_param );
+				}
 			}
+		}		
 
-			$this->appraisal_model->insertFeedbackForm( $q_param );
+		if( $u_field != 'user_id' ){
+			$up_stats = array(
+								$u_field => $this->session->userdata('user_id')
+							 );
+		}else{
+			$up_stats = array(
+								$u_field => $this->session->userdata('user_id')
+								,'app_id' => $app_id
+							 );
 		}
-		
-		if( isset( $this->category[ $cat_index + 1 ] ) ){
-			if( $assign_id != '' )
-				redirect( base_url().'feedbacks/'.$feed_type.'/'.$this->category[ $cat_index + 1 ].'/'.$app_id.'/'.$assign_id );
-			else
-				redirect( base_url().'feedbacks/'.$feed_type.'/'.$this->category[ $cat_index + 1 ].'/'.$app_id );
-		}
-		else{
-			if( $u_field != 'user_id' ){
-				$up_stats = array(
-									$u_field => $this->session->userdata('user_id')
-								 );
-			}else{
-				$up_stats = array(
-									$u_field => $this->session->userdata('user_id')
-									,'app_id' => $app_id
-								 );
-			}
 
-			$this->appraisal_model->updateFeedbackStatus( $up_stats, $table );
+		$this->appraisal_model->updateFeedbackStatus( $up_stats, $table );
 
-			$log = array( 
-							'user_id'	=> $this->session->userdata( 'user_id' )
-							,'history'	=> $log
-						);
-			$this->template_library->insert_log( $log );
+		$log = array( 
+						'user_id'	=> $this->session->userdata( 'user_id' )
+						,'history'	=> $log
+					);
+		$this->template_library->insert_log( $log );
 
-			redirect( base_url().'feedbacks/thank_you' );
-		}
+		redirect( base_url().'feedbacks/thank_you' );
 	}
 
 	public function thank_you() {

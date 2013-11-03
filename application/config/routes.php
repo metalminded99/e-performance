@@ -127,9 +127,9 @@ $route['employees/info/360_feedback/delete'] = "employees/feedback_delete";
 
 $route['employees/info/performance/(:num)'] = "employees/performance/$1";
 
-$route['feedbacks/self_feedback/(:any)/(:num)'] = "feedbacks/feedback_question/$1/$2";
-$route['feedbacks/peer_feedback/(:any)/(:num)/(:num)'] = "feedbacks/feedback_question/$1/$2/$3";
-$route['feedbacks/mngr_feedback/(:any)/(:num)'] = "feedbacks/feedback_question/$1/$2";
+$route['feedbacks/self_feedback/(:num)'] = "feedbacks/feedback_question/$1";
+$route['feedbacks/peer_feedback/(:num)/(:num)'] = "feedbacks/feedback_question/$1/$2";
+$route['feedbacks/mngr_feedback/(:num)/(:num)'] = "feedbacks/feedback_question/$1/$2";
 
 $route['control_panel/(:any)'] = "admin/admin/$1";
 $route['404_override'] = 'not_found';

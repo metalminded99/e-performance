@@ -2,69 +2,18 @@
 <script src="<?=base_url().JS?>highcharts/modules/exporting.js"></script>
 <script type = "text/javascript" > 
 	var series_plot = [];
-	<?php if( !isset( $mngr_summary ) ){ ?>
-	
-	var self_score = <?=$self_score?>;
-	var peer_score = <?=$peer_score?>;
-	var manager_score = <?=$manager_score?>;
-
-	var self_plot = [];
-	if( self_score == 0 ) {
-		self_plot = [ 0, 0, 0, 0 ];
-	} else {
-		self_plot = [ parseFloat(self_score[2].ave), parseFloat(self_score[3].ave), parseFloat(self_score[1].ave), parseFloat(self_score[0].ave) ];
-	}
-
-	var peer_plot = [];
-	if( peer_score == 0 ) {
-		peer_plot = [ 0, 0, 0, 0 ];
-	} else {
-		peer_plot = [ parseFloat(peer_score[2].ave), parseFloat(peer_score[3].ave), parseFloat(peer_score[1].ave), parseFloat(peer_score[0].ave) ];
-	}
-
-	var mngr_plot = [];
-	if( manager_score == 0 ) {
-		mngr_plot = [ 0, 0, 0, 0 ];
-	} else {
-		mngr_plot = [ parseFloat(manager_score[2].ave), parseFloat(manager_score[3].ave), parseFloat(manager_score[1].ave), parseFloat(manager_score[0].ave) ];
-	}
-
-	series_plot = [{
-			            name: 'Self score',
-			            data: self_plot
-			        }, {
-			            name: 'Peer score',
-			            data: peer_plot
-			        }, {
-			            name: 'Manager score',
-			            data: mngr_plot
-			        }]
-
-	<?php } else { ?>
-		var mngr_summary = <?=$mngr_summary?>;
-		if( mngr_summary == 0 ) {
-			mngr_summary = [ 0, 0, 0, 0 ];
-			series_plot.push(
-								{
-									name	: ''
-									,data	: mngr_summary
-								}
-							);
-		} else {
-			$.each( mngr_summary, function( key, val ) {
-				series_plot.push(
-									{
-										name	: key
-										,data	: [
-													parseFloat(mngr_summary[key]['core'])
-													,parseFloat(mngr_summary[key]['perf'])
-													,parseFloat(mngr_summary[key]['abl'])
-													,parseFloat(mngr_summary[key]['skills'])
-												  ]
-									}
-								);
-			} );
-		}
+	<?php if( isset( $performance_summary ) ){ ?>
+	var perf_summary = <?=$performance_summary?>;
+	$.each( perf_summary, function( k, v ){
+		var perf_data = [];
+		$.each( v, function( i, a ){
+			perf_data.push( a );
+		});
+		series_plot = [{
+						name : k,
+						data : perf_data
+					  }];
+	});
 	<?php } ?>
 
 	function getProcessData( stats ) {
@@ -78,37 +27,130 @@
                 $.each( data, function( key, val ){
                 	pie_data.push( [ key, parseFloat(val) ] );
                 });
+                
+                var colors = Highcharts.getOptions().colors,
+		            categories = ['MSIE', 'Firefox', 'Chrome', 'Safari', 'Opera'],
+		            name = 'Browser brands',
+		            data = [{
+		                    y: 55.11,
+		                    color: colors[0],
+		                    drilldown: {
+		                        name: 'MSIE versions',
+		                        categories: ['MSIE 6.0', 'MSIE 7.0', 'MSIE 8.0', 'MSIE 9.0'],
+		                        data: [10.85, 7.35, 33.06, 2.81],
+		                        color: colors[0]
+		                    }
+		                }, {
+		                    y: 21.63,
+		                    color: colors[1],
+		                    drilldown: {
+		                        name: 'Firefox versions',
+		                        categories: ['Firefox 2.0', 'Firefox 3.0', 'Firefox 3.5', 'Firefox 3.6', 'Firefox 4.0'],
+		                        data: [0.20, 0.83, 1.58, 13.12, 5.43],
+		                        color: colors[1]
+		                    }
+		                }, {
+		                    y: 11.94,
+		                    color: colors[2],
+		                    drilldown: {
+		                        name: 'Chrome versions',
+		                        categories: ['Chrome 5.0', 'Chrome 6.0', 'Chrome 7.0', 'Chrome 8.0', 'Chrome 9.0',
+		                            'Chrome 10.0', 'Chrome 11.0', 'Chrome 12.0'],
+		                        data: [0.12, 0.19, 0.12, 0.36, 0.32, 9.91, 0.50, 0.22],
+		                        color: colors[2]
+		                    }
+		                }, {
+		                    y: 7.15,
+		                    color: colors[3],
+		                    drilldown: {
+		                        name: 'Safari versions',
+		                        categories: ['Safari 5.0', 'Safari 4.0', 'Safari Win 5.0', 'Safari 4.1', 'Safari/Maxthon',
+		                            'Safari 3.1', 'Safari 4.1'],
+		                        data: [4.55, 1.42, 0.23, 0.21, 0.20, 0.19, 0.14],
+		                        color: colors[3]
+		                    }
+		                }, {
+		                    y: 2.14,
+		                    color: colors[4],
+		                    drilldown: {
+		                        name: 'Opera versions',
+		                        categories: ['Opera 9.x', 'Opera 10.x', 'Opera 11.x'],
+		                        data: [ 0.12, 0.37, 1.65],
+		                        color: colors[4]
+		                    }
+		                }];
+		    
+		    
+		        // Build the data arrays
+		        var browserData = [];
+		        var versionsData = [];
+		        for (var i = 0; i < data.length; i++) {
+		    
+		            // add browser data
+		            browserData.push({
+		                name: categories[i],
+		                y: data[i].y,
+		                color: data[i].color
+		            });
+		    
+		            // add version data
+		            for (var j = 0; j < data[i].drilldown.data.length; j++) {
+		                var brightness = 0.2 - (j / data[i].drilldown.data.length) / 5 ;
+		                versionsData.push({
+		                    name: data[i].drilldown.categories[j],
+		                    y: data[i].drilldown.data[j],
+		                    color: Highcharts.Color(data[i].color).brighten(brightness).get()
+		                });
+		            }
+		        }
 
             	$('#process').highcharts({
 			        chart: {
-			            plotBackgroundColor: null,
-			            plotBorderWidth: null,
-			            plotShadow: false
-			        },
-			        title: {
-			            text: 'Process Status, 2013'
-			        },
-			        tooltip: {
-			    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-			        },
-			        plotOptions: {
-			            pie: {
-			                allowPointSelect: true,
-			                cursor: 'pointer',
-			                dataLabels: {
-			                    enabled: false
-			                },
-			                showInLegend: true
-			            }
-			        },
+		                type: 'pie'
+		            },
+		            title: {
+		                text: 'Browser market share, April, 2011'
+		            },
+		            yAxis: {
+		                title: {
+		                    text: 'Total percent market share'
+		                }
+		            },
+		            plotOptions: {
+		                pie: {
+		                    shadow: false,
+		                    center: ['50%', '50%']
+		                }
+		            },
+		            tooltip: {
+		        	    valueSuffix: '%'
+		            },
 			        credits: {
 			            enabled: false
 			        },
-			        series: [{
-			            type: 'pie',
-			            name: 'Process',
-			            data: pie_data
-			        }]
+		            series: [{
+		                name: 'Browsers',
+		                data: browserData,
+		                size: '60%',
+		                dataLabels: {
+		                    formatter: function() {
+		                        return this.y > 5 ? this.point.name : null;
+		                    },
+		                    color: 'white',
+		                    distance: -30
+		                }
+		            }, {
+		                name: 'Versions',
+		                data: versionsData,
+		                size: '80%',
+		                innerSize: '60%',
+		                dataLabels: {
+		                    formatter: function() {
+		                        // display only if larger than 1
+		                        return this.y > 1 ? '<b>'+ this.point.name +':</b> '+ this.y +'%'  : null;
+		                    }
+		                }
+		            }]
 			    });
             }
         });
@@ -201,51 +243,37 @@
         });
 
 		$('#compentency').highcharts({
-	        chart: {
-	            type: 'bar'
-	        },
 	        title: {
-	            text: 'Appraisal Summary'
-	        },
-	        subtitle: {
-	            text: 'Feedback scores'
-	        },
-	        xAxis: {
-	            categories: ['Core Competency', 'Performance Output', 'Abilities', 'Skills'],
-	            title: {
-	                text: null
-	            }
-	        },
-	        yAxis: {
-	            min			: 0,
-	            tInterval	: 1,
-				max			: 5,
-	            title: {
-	                text: 'Ratings (Average)',
-	                align: 'high'
-	            },
-	            labels: {
-	                overflow: 'justify'
-	            }
-	        },
-	        tooltip: {
-	            valueSuffix: ''
-	        },
-	        plotOptions: {
-	            bar: {
-	                dataLabels: {
-	                    enabled: true
-	                }
-	            }
-	        },
-	        legend: {
-	            backgroundColor: '#FFFFFF',
-                reversed: true
-	        },
+                text: 'Yearly Employee Performance Average',
+                x: -20 //center
+            },
+            xAxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            },
+            yAxis: {
+                title: {
+                    text: 'Scores'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: ''
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
 	        credits: {
 	            enabled: false
 	        },
-	        series: series_plot
+            series: series_plot
 	    });
 
 		$('#goals').highcharts({
@@ -357,7 +385,7 @@
 			<h1 class="page-title">Dashboard</h1>
 			<div class="row-fluid">
 				<!--- Pie Chart -->
-				<div class="block span6">
+				<div class="block span12">
 					<p class="block-heading">
 						Process Status
 					</p>
@@ -382,9 +410,11 @@
 						<div id="process" style="width: auto; height: 350px; margin: 0 auto"></div>
 					</div>
 				</div>
+			</div>
 
+			<div class="row-fluid">
 				<!--- Basic Bar Chart -->
-				<div class="block span6">
+				<div class="block span12">
 					<p class="block-heading" data-toggle="collapse" data-target="#chart-container">
 						Score Distribution
 					</p>
@@ -395,17 +425,19 @@
 			</div>
 			<div class="row-fluid">
 				<!--- Bar Chart -->
-				<div class="block span6">
+				<div class="block span12">
 					<p class="block-heading" data-toggle="collapse" data-target="#chart-container">
-						Competency Scores
+						Performance Scores
 					</p>
 					<div id="compentency-container" class="block-body collapse in">
 						<div id="compentency" style="width: auto; height: 350px; margin: 0 auto"></div>
 					</div>
 				</div>
+			</div>
 
+			<div class="row-fluid">
 				<!--- Stacked Bar Chart -->
-				<div class="block span6">
+				<div class="block span12">
 					<p class="block-heading" data-toggle="collapse" data-target="#chart-container">
 						Goal Status
 					</p>

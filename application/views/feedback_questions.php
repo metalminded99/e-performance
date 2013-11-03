@@ -16,6 +16,8 @@
                 <div class="block span12">
                     <?php if( isset( $questions ) ): ?>
                     <form action="" method="POST" id="frm_feedback">
+                        <input type = "hidden" name = "cat" value = "<?=$cat?>">
+                        <input type = "hidden" name = "step" value = "<?=isset($step) ? $step : '1' ?>">
                         <div class="block-heading" data-target="#widget1container">
                             <?=$header?>
                         </div>
@@ -23,23 +25,37 @@
                             <table id="tbl_questions" class="table">
                                 <thead>
                                     <th width="5%">#</th>
-                                    <th width="70%">Description</th>
+                                    <th width="20%">Category</th>
+                                    <th width="50%">Description</th>
                                     <th width="25%">Ratings</th>
                                 </thead>
                                 <tbody>
-                                    <?php for ($i=0; $i < count( $questions ); $i++) { ?>
+                                    <?php 
+                                        foreach ($questions as $key => $value) {
+                                    ?>
+                                    <tr>
+                                        <td style="background-color:#F5F583;"></td>
+                                        <td colspan="3" style="background-color:#F5F583;"><strong><em><?=ucwords($key)?></em></strong></td>
+                                    </tr>
+                                    <?php
+                                            for ($i=0; $i < count( $value ); $i++) { 
+                                    ?>
                                     <tr>
                                         <td><?=($i + 1)?></td>
-                                        <td><?=$questions[ $i ]['question']?></td>
+                                        <td></td>
+                                        <td><?=$value[ $i ]['question']?></td>
                                         <td>
-                                            <span class="badge badge-inverse">1&nbsp;<input type="radio" name="question_<?=$questions[ $i ]['question_id']?>" id="question_<?=$questions[ $i ]['question_id']?>" value="1" class="validate[required] radio"></span>
-                                            <span class="badge badge-important">2&nbsp;<input type="radio" name="question_<?=$questions[ $i ]['question_id']?>" id="question_<?=$questions[ $i ]['question_id']?>" value="2" class="validate[required] radio"></span>
-                                            <span class="badge badge-warning">3&nbsp;<input type="radio" name="question_<?=$questions[ $i ]['question_id']?>" id="question_<?=$questions[ $i ]['question_id']?>" value="3" class="validate[required] radio"></span>
-                                            <span class="badge badge-info">4&nbsp;<input type="radio" name="question_<?=$questions[ $i ]['question_id']?>" id="question_<?=$questions[ $i ]['question_id']?>" value="4" class="validate[required] radio"></span>
-                                            <span class="badge badge-success">5&nbsp;<input type="radio" name="question_<?=$questions[ $i ]['question_id']?>" id="question_<?=$questions[ $i ]['question_id']?>" value="5" class="validate[required] radio"></span>
+                                            <span class="badge badge-inverse">1&nbsp;<input type="radio" name="question_<?=$value[ $i ]['question_id']?>" id="question_<?=$value[ $i ]['question_id']?>" value="1" class="validate[required] radio"></span>
+                                            <span class="badge badge-important">2&nbsp;<input type="radio" name="question_<?=$value[ $i ]['question_id']?>" id="question_<?=$value[ $i ]['question_id']?>" value="2" class="validate[required] radio"></span>
+                                            <span class="badge badge-warning">3&nbsp;<input type="radio" name="question_<?=$value[ $i ]['question_id']?>" id="question_<?=$value[ $i ]['question_id']?>" value="3" class="validate[required] radio"></span>
+                                            <span class="badge badge-info">4&nbsp;<input type="radio" name="question_<?=$value[ $i ]['question_id']?>" id="question_<?=$value[ $i ]['question_id']?>" value="4" class="validate[required] radio"></span>
+                                            <span class="badge badge-success">5&nbsp;<input type="radio" name="question_<?=$value[ $i ]['question_id']?>" id="question_<?=$value[ $i ]['question_id']?>" value="5" class="validate[required] radio"></span>
                                         </td>
                                     </tr>
-                                    <?php } ?>
+                                    <?php
+                                            } 
+                                        }
+                                    ?>
                                 </tbody>
                             </table>
                         </div>

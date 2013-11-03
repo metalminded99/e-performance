@@ -46,9 +46,9 @@
                                     <td><?=$this->template_library->format_mysql_date( $feedback['date_assigned'], 'F d, Y' )?></td>
                                     <td>
                                         <?php if($feedback['status'] == 'Pending' ){ ?> 
-                                        <a href="<?=base_url()?>feedbacks/self_feedback/core/<?=$feedback['app_id']?>" title="Evaluate"><i class="icon-edit"></i></a> 
+                                        <a href="<?=base_url()?>feedbacks/self_feedback/<?=$feedback['app_id']?>" title="Evaluate" class="optlnk"><i class="icon-edit"></i></a> 
                                         <?php } else { ?>
-                                        <a href="javascript:void(0)" title="View Result" onclick="get_summary('<?=$feedback['app_id']?>');"><i class="icon-file"></i></a>
+                                        <a href="javascript:void(0)" title="View Result" onclick="get_summary('<?=$feedback['app_id']?>');" class="optlnk"><i class="icon-file"></i></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -72,25 +72,17 @@
                     </div>
                 </div>
                 
-                <div class="modal small hide fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal small hide fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 780px;margin-left: -390px;">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 id="myModalLabel">Feedback Summary</h3>
+                        <h3 id="myModalLabel">Feedback Summary (Average)</h3>
                     </div>
                     <div class="modal-body">
                         <table class="table table-bordered">
                             <thead>
-                                <th>Core</th>
-                                <th>Performance Output</th>
-                                <th>Abilities</th>
-                                <th>Skills</th>
                             </thead>
                             <tbody>
                                 <tr class="success">
-                                    <td id="core"></td>
-                                    <td id="perf"></td>
-                                    <td id="abl"></td>
-                                    <td id="skills"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -113,6 +105,7 @@
         <script type="text/javascript">
             $( document ).ready( function(){
                 $( "#frm_feedback" ).validationEngine();
+                $('.optlnk').tooltip();
             });
 
             function get_summary( app_id ){
@@ -124,9 +117,10 @@
             }
 
             function generate_summary( result ) {
-                $.each( result, function( i ) {
-                    $( 'td#' + result[i].category ).html( '' );
-                    $( 'td#' + result[i].category ).html( result[i].ave );
+                $.each( result, function( i, v ) {
+                    $('#summaryModal table thead').append( '<th>' + result[i]['main_category_name'] + '</th>' );
+                    $('#summaryModal table tbody tr').append( '<td>'+ result[i]['ave'] + '</td>' );
+                    console.log( result[i] );
                 });
                 $('#summaryModal').modal('show')
             }
