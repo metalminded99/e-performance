@@ -168,7 +168,7 @@ class My_goal extends CI_Controller {
 																				);
 		$where = array( 
 						 'user_id'	=> $this->user_id
-						,'status'	=> 'On-going'
+						,'status'	=> 'At Risk'
 					  );
 		$template_param['goals'] = $this->goal_model->getAllEmpGoal( 
 																		$offset

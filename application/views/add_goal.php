@@ -135,7 +135,7 @@
                                                     if( isset( $dept_goals ) ){
                                                         foreach ($dept_goals as $dept_goal) {
                                                 ?>
-                                                <option value="<?=$dept_goal['goal_id']?>" <?=$dept_goal['goal_id'] == $goals['dg_id'] ? 'selected="true"' : ''?>><?=$dept_goal['goal_title']?></option>
+                                                <option value="<?=$dept_goal['goal_id']?>" <?=$dept_goal['goal_id'] == @$goals['dg_id'] ? 'selected="true"' : ''?>><?=$dept_goal['goal_title']?></option>
                                                 <?php
                                                         }
                                                     }
