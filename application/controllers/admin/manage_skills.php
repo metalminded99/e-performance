@@ -16,6 +16,7 @@ class Manage_skills extends CI_Controller {
 		$data['pagination'] = $this->template_library->get_pagination(
 																		'control_panel/manage_skills' 
 																		,$this->skills_model->getTotalSkills( SKILLS )
+																		,'admin'
 																		,PER_PAGE
 																	 );
 

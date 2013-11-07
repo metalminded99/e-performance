@@ -18,6 +18,7 @@ class Manage_user extends CI_Controller {
 		$data['pagination'] = $this->template_library->get_pagination(
 																		'control_panel/manage_user' 
 																		,$this->manage_user_model->getTotalUsers()
+																		,'admin'
 																		,PER_PAGE
 																	 );
 		$data['users_list'] = $this->manage_user_model->getAllUsers( $offset, PER_PAGE );

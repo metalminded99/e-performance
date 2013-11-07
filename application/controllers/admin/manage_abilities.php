@@ -16,6 +16,7 @@ class Manage_Abilities extends CI_Controller {
 		$data['pagination'] = $this->template_library->get_pagination(
 																		'control_panel/manage_abilities' 
 																		,$this->abilities_model->getTotalAbilities( ABILITIES )
+																		,'admin'
 																		,PER_PAGE
 																	 );
 

@@ -1,5 +1,5 @@
 /*
-SQLyog Ultimate v11.11 (32 bit)
+SQLyog Community v10.3 
 MySQL - 5.5.34-0ubuntu0.12.04.1 : Database - eperformance
 *********************************************************************
 */
@@ -65,9 +65,11 @@ CREATE TABLE `tbl_appraisal` (
   PRIMARY KEY (`appraisal_id`),
   KEY `job_id` (`job_id`),
   CONSTRAINT `tbl_appraisal_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `tbl_jobs` (`job_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_appraisal` */
+
+insert  into `tbl_appraisal`(`appraisal_id`,`job_id`,`appraisal_title`,`appraisal_desc`,`date_created`) values (3,6,'test','12345','2013-11-07 13:20:16'),(4,7,'app 1','test app','2013-11-07 13:46:24');
 
 /*Table structure for table `tbl_appraisal_assignment` */
 
@@ -82,9 +84,11 @@ CREATE TABLE `tbl_appraisal_assignment` (
   PRIMARY KEY (`assign_id`),
   KEY `user_id` (`user_id`),
   KEY `app_id` (`app_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_appraisal_assignment` */
+
+insert  into `tbl_appraisal_assignment`(`assign_id`,`app_id`,`user_id`,`status`,`date_assigned`) values (1,3,9,'Completed','2013-11-07 13:27:51'),(2,4,6,'Pending','2013-11-07 13:46:39');
 
 /*Table structure for table `tbl_appraisal_main_categories` */
 
@@ -96,11 +100,11 @@ CREATE TABLE `tbl_appraisal_main_categories` (
   `job_id` int(11) NOT NULL,
   PRIMARY KEY (`main_category_id`),
   KEY `job_id` (`job_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_appraisal_main_categories` */
 
-insert  into `tbl_appraisal_main_categories`(`main_category_id`,`main_category_name`,`job_id`) values (1,'Core Competency',0),(6,'Performance Output',0),(7,'Skills',0),(8,'Abilities',0);
+insert  into `tbl_appraisal_main_categories`(`main_category_id`,`main_category_name`,`job_id`) values (1,'test',6),(2,'test  tests',6),(3,'test cat 1',7),(4,'test cat 2',7);
 
 /*Table structure for table `tbl_appraisal_mngr_assignment` */
 
@@ -117,6 +121,8 @@ CREATE TABLE `tbl_appraisal_mngr_assignment` (
 
 /*Data for the table `tbl_appraisal_mngr_assignment` */
 
+insert  into `tbl_appraisal_mngr_assignment`(`assign_id`,`manager_id`,`status`) values (1,8,'Pending'),(2,2,'Pending');
+
 /*Table structure for table `tbl_appraisal_peer_assignment` */
 
 DROP TABLE IF EXISTS `tbl_appraisal_peer_assignment`;
@@ -132,6 +138,8 @@ CREATE TABLE `tbl_appraisal_peer_assignment` (
 
 /*Data for the table `tbl_appraisal_peer_assignment` */
 
+insert  into `tbl_appraisal_peer_assignment`(`assign_id`,`peer_id`,`status`) values (1,10,'Pending'),(2,7,'Pending');
+
 /*Table structure for table `tbl_appraisal_questionaire` */
 
 DROP TABLE IF EXISTS `tbl_appraisal_questionaire`;
@@ -146,12 +154,12 @@ CREATE TABLE `tbl_appraisal_questionaire` (
   KEY `appraisal_id` (`appraisal_id`,`category`,`sub_category`),
   KEY `fk_tbl_appraisal_questionaire_1_idx` (`sub_category`),
   KEY `fk_tbl_appraisal_questionaire_2_idx` (`category`),
-  CONSTRAINT `fk_tbl_appraisal_questionaire_1` FOREIGN KEY (`sub_category`) REFERENCES `tbl_appraisal_sub_categories` (`sub_category_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tbl_appraisal_questionaire_2` FOREIGN KEY (`category`) REFERENCES `tbl_appraisal_main_categories` (`main_category_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `tbl_appraisal_questionaire_ibfk_1` FOREIGN KEY (`appraisal_id`) REFERENCES `tbl_appraisal` (`appraisal_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_appraisal_questionaire` */
+
+insert  into `tbl_appraisal_questionaire`(`question_id`,`appraisal_id`,`question`,`category`,`sub_category`) values (1,3,'asdasd',1,1),(2,3,'asdasd',1,1),(3,3,'asdasd',1,2),(4,3,'asdasdasd',1,2),(5,3,'sdasd',2,3),(6,3,'asdasd',2,3),(7,3,'asdasdasd',2,3),(8,4,'asdasdasd',3,4),(9,4,'sadasd',3,4),(10,4,'asdasdasda',3,5),(11,4,'sdas',3,5),(12,4,'sdasdasd',3,6),(13,4,'asdasd',3,6),(14,4,'sdasdasd',4,7),(15,4,'asdasd',4,7),(16,4,'asdasd',4,8),(17,4,'asdasd',4,8);
 
 /*Table structure for table `tbl_appraisal_result` */
 
@@ -176,7 +184,7 @@ CREATE TABLE `tbl_appraisal_result` (
 
 /*Data for the table `tbl_appraisal_result` */
 
-insert  into `tbl_appraisal_result`(`user_id`,`appraisal_id`,`question_id`,`self_score`,`peer_id`,`peer_score`,`manager_id`,`manager_score`,`date_submit`) values (6,4,26,2,NULL,NULL,2,2,'2013-11-02 19:27:26'),(6,4,27,4,NULL,NULL,2,3,'2013-11-02 19:27:26'),(6,4,28,4,NULL,NULL,2,4,'2013-11-02 19:27:26'),(6,4,29,3,NULL,NULL,2,5,'2013-11-02 19:27:26'),(6,4,30,3,NULL,NULL,2,2,'2013-11-02 19:27:26'),(6,4,31,3,NULL,NULL,2,4,'2013-11-02 19:27:26'),(6,4,32,5,NULL,NULL,2,1,'2013-11-02 19:27:26'),(6,4,33,3,NULL,NULL,2,3,'2013-11-02 19:27:26'),(6,4,34,2,NULL,NULL,2,5,'2013-11-02 19:27:26'),(6,4,35,4,NULL,NULL,2,4,'2013-11-02 19:27:27'),(7,4,26,NULL,NULL,NULL,2,1,'2013-11-04 12:19:02'),(7,4,27,NULL,NULL,NULL,2,2,'2013-11-04 12:19:02'),(7,4,28,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,29,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,30,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,31,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,32,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,33,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,34,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,35,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(6,5,36,NULL,NULL,NULL,2,2,'2013-11-05 08:59:53'),(6,5,37,NULL,NULL,NULL,2,3,'2013-11-05 08:59:53'),(6,5,38,NULL,NULL,NULL,2,5,'2013-11-05 08:59:54'),(6,5,39,NULL,NULL,NULL,2,2,'2013-11-05 08:59:54'),(6,5,40,NULL,NULL,NULL,2,3,'2013-11-05 08:59:54');
+insert  into `tbl_appraisal_result`(`user_id`,`appraisal_id`,`question_id`,`self_score`,`peer_id`,`peer_score`,`manager_id`,`manager_score`,`date_submit`) values (6,4,26,2,NULL,NULL,2,2,'2013-11-02 19:27:26'),(6,4,27,4,NULL,NULL,2,3,'2013-11-02 19:27:26'),(6,4,28,4,NULL,NULL,2,4,'2013-11-02 19:27:26'),(6,4,29,3,NULL,NULL,2,5,'2013-11-02 19:27:26'),(6,4,30,3,NULL,NULL,2,2,'2013-11-02 19:27:26'),(6,4,31,3,NULL,NULL,2,4,'2013-11-02 19:27:26'),(6,4,32,5,NULL,NULL,2,1,'2013-11-02 19:27:26'),(6,4,33,3,NULL,NULL,2,3,'2013-11-02 19:27:26'),(6,4,34,2,NULL,NULL,2,5,'2013-11-02 19:27:26'),(6,4,35,4,NULL,NULL,2,4,'2013-11-02 19:27:27'),(7,4,26,NULL,NULL,NULL,2,1,'2013-11-04 12:19:02'),(7,4,27,NULL,NULL,NULL,2,2,'2013-11-04 12:19:02'),(7,4,28,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,29,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,30,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,31,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,32,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,33,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,34,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(7,4,35,NULL,NULL,NULL,2,5,'2013-11-04 12:19:02'),(6,5,36,NULL,NULL,NULL,2,2,'2013-11-05 08:59:53'),(6,5,37,NULL,NULL,NULL,2,3,'2013-11-05 08:59:53'),(6,5,38,NULL,NULL,NULL,2,5,'2013-11-05 08:59:54'),(6,5,39,NULL,NULL,NULL,2,2,'2013-11-05 08:59:54'),(6,5,40,NULL,NULL,NULL,2,3,'2013-11-05 08:59:54'),(9,3,1,4,NULL,NULL,NULL,NULL,'2013-11-07 13:43:12'),(9,3,2,3,NULL,NULL,NULL,NULL,'2013-11-07 13:43:12'),(9,3,3,4,NULL,NULL,NULL,NULL,'2013-11-07 13:43:13'),(9,3,4,5,NULL,NULL,NULL,NULL,'2013-11-07 13:43:13'),(9,3,5,2,NULL,NULL,NULL,NULL,'2013-11-07 13:43:13'),(9,3,6,4,NULL,NULL,NULL,NULL,'2013-11-07 13:43:13'),(9,3,7,5,NULL,NULL,NULL,NULL,'2013-11-07 13:43:13');
 
 /*Table structure for table `tbl_appraisal_sub_categories` */
 
@@ -188,13 +196,12 @@ CREATE TABLE `tbl_appraisal_sub_categories` (
   `sub_category_name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`sub_category_id`),
   KEY `index2` (`main_cat_id`),
-  KEY `fk_tbl_appraisal_sub_categories_1_idx` (`main_cat_id`),
-  CONSTRAINT `fk_tbl_appraisal_sub_categories_1` FOREIGN KEY (`main_cat_id`) REFERENCES `tbl_appraisal_main_categories` (`main_category_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+  KEY `fk_tbl_appraisal_sub_categories_1_idx` (`main_cat_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_appraisal_sub_categories` */
 
-insert  into `tbl_appraisal_sub_categories`(`sub_category_id`,`main_cat_id`,`sub_category_name`) values (6,6,'Job Knowledge'),(7,6,'Quantity of Work'),(8,6,'Quality of Work'),(9,6,'Timeliness'),(10,7,'Judgement and Decision Making'),(11,7,'Active Listening'),(12,7,'Critical Thinking'),(13,8,'Written Comprehension'),(14,8,'Speech CLarity'),(15,8,'Problem Sensitivity'),(16,1,'Safe and Quality Nursing Care'),(17,1,'Management of Resources and Environment');
+insert  into `tbl_appraisal_sub_categories`(`sub_category_id`,`main_cat_id`,`sub_category_name`) values (1,1,'test 1'),(2,1,'test 2'),(3,2,'test test 1'),(4,3,'test 1'),(5,3,'test 2'),(6,3,'test 3'),(7,4,'test 4'),(8,4,'test 5');
 
 /*Table structure for table `tbl_department` */
 
@@ -335,11 +342,9 @@ CREATE TABLE `tbl_emp_journals` (
   PRIMARY KEY (`journal_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `tbl_emp_journals_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tbl_users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_emp_journals` */
-
-insert  into `tbl_emp_journals`(`journal_id`,`user_id`,`journal_title`,`journal_desc`,`date_created`,`modified_date`) values (1,6,'The quick brown fox','The quick brown fox jumps over the lazy fucking dog.','2013-07-04 10:21:37',NULL),(2,6,'received commendation manager','received kudos because of overtime.','2013-11-05 08:44:18',NULL),(3,8,'Happy day','Im so happy','2013-11-05 19:01:58',NULL);
 
 /*Table structure for table `tbl_emp_perf_output` */
 
@@ -406,11 +411,11 @@ CREATE TABLE `tbl_history` (
   PRIMARY KEY (`history_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `tbl_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tbl_users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_history` */
 
-insert  into `tbl_history`(`history_id`,`user_id`,`history`,`date_done`) values (1,2,'Created new department goal','2013-08-07 06:22:09'),(2,2,'Updated department goal','2013-08-07 06:23:57'),(3,2,'Deassigned peer to employee feedback','2013-08-08 10:55:26'),(4,2,'Assigned peer to employee feedback','2013-08-08 10:55:46'),(5,2,'Assigned peer to employee feedback','2013-08-08 10:57:05'),(6,2,'Assigned peer to employee feedback','2013-08-08 10:57:12'),(7,2,'Deassigned peer to employee feedback','2013-08-08 11:02:53'),(8,2,'Assigned peer to employee feedback','2013-08-08 11:04:47'),(9,2,'Deassigned peer to employee feedback','2013-08-08 11:05:03'),(10,2,'Assigned peer to employee feedback','2013-08-08 11:07:30'),(11,2,'Deassigned peer to employee feedback','2013-08-08 11:07:35'),(12,2,'Assigned peer to employee feedback','2013-08-08 11:07:41'),(13,2,'Assigned peer to employee feedback','2013-08-10 07:25:51'),(14,2,'Assigned peer to employee feedback','2013-08-10 07:26:23'),(15,2,'Assigned peer to employee feedback','2013-08-10 07:33:27'),(16,2,'Assigned peer to employee feedback','2013-08-10 07:33:33'),(17,2,'Assigned peer to employee feedback','2013-08-10 07:37:43'),(18,2,'Assigned peer to employee feedback','2013-08-10 07:37:49'),(19,6,'Evaluate self appraisal','2013-08-11 02:19:13'),(21,7,'Evaluate peer appraisal','2013-08-11 06:17:45'),(22,2,'Assigned peer to employee feedback','2013-08-17 03:18:10'),(23,2,'Evaluate employee appraisal','2013-08-17 03:51:21'),(24,7,'Evaluate self appraisal','2013-08-17 03:53:56'),(25,7,'Evaluate self appraisal','2013-08-17 04:11:39'),(26,2,'Evaluate employee appraisal','2013-08-17 04:12:54'),(27,2,'Evaluate employee appraisal','2013-08-17 07:29:05'),(28,6,'Evaluate peer appraisal','2013-08-17 07:58:50'),(29,2,'Change employee goal status to REJECTED','2013-08-28 15:53:49'),(30,2,'Change employee goal status to NOT STARTED','2013-08-28 15:53:59'),(31,2,'Assigned peer to employee feedback','2013-11-02 17:48:28'),(32,6,'Evaluate self appraisal','2013-11-02 19:23:35'),(33,6,'Evaluate self appraisal','2013-11-02 19:27:27'),(34,2,'Evaluate employee appraisal','2013-11-03 14:05:20'),(35,2,'Assigned peer to employee feedback','2013-11-04 12:18:15'),(36,2,'Evaluate employee appraisal','2013-11-04 12:19:02'),(37,2,'Created new department goal','2013-11-05 08:33:47'),(38,2,'Assigned peer to employee feedback','2013-11-05 08:46:44'),(39,2,'Assigned peer to employee feedback','2013-11-05 08:58:15'),(40,2,'Evaluate employee appraisal','2013-11-05 08:59:54'),(41,2,'Added new training to employee','2013-11-05 09:16:43'),(42,2,'Deleted employee training','2013-11-05 16:37:33'),(43,2,'Deleted employee training','2013-11-05 16:37:38'),(44,2,'Added new training to employee','2013-11-05 16:40:41'),(45,8,'Deleted department goal','2013-11-05 19:46:34'),(46,8,'Deleted department goal','2013-11-05 19:46:38'),(47,8,'Created new department goal','2013-11-05 19:49:35'),(48,8,'Created new department goal','2013-11-05 19:58:06'),(49,8,'Created new department goal','2013-11-05 20:03:51'),(50,8,'Created new department goal','2013-11-05 20:05:28'),(51,8,'Assigned peer to employee feedback','2013-11-06 10:14:30'),(52,8,'Assigned peer to employee feedback','2013-11-06 10:14:39');
+insert  into `tbl_history`(`history_id`,`user_id`,`history`,`date_done`) values (1,8,'Assigned peer to employee feedback','2013-11-07 13:27:52'),(2,9,'Evaluate self appraisal','2013-11-07 13:43:13'),(3,2,'Assigned peer to employee feedback','2013-11-07 13:46:39');
 
 /*Table structure for table `tbl_job_abilities` */
 
@@ -429,7 +434,7 @@ CREATE TABLE `tbl_job_abilities` (
 
 /*Data for the table `tbl_job_abilities` */
 
-insert  into `tbl_job_abilities`(`ability_id`,`job_id`,`active`,`date_added`) values (NULL,NULL,'Yes','2013-07-23 01:31:50'),(NULL,NULL,'Yes','2013-07-24 23:15:56'),(NULL,NULL,'Yes','2013-07-24 23:15:56'),(NULL,NULL,'Yes','2013-11-04 12:13:13'),(NULL,NULL,'Yes','2013-11-04 12:13:13');
+insert  into `tbl_job_abilities`(`ability_id`,`job_id`,`active`,`date_added`) values (NULL,NULL,'Yes','2013-07-23 01:31:50'),(NULL,NULL,'Yes','2013-07-24 23:15:56'),(NULL,NULL,'Yes','2013-07-24 23:15:56'),(NULL,NULL,'Yes','2013-11-04 12:13:13'),(NULL,NULL,'Yes','2013-11-04 12:13:13'),(4,7,'Yes','2013-11-07 13:23:08'),(5,7,'Yes','2013-11-07 13:23:08'),(6,7,'Yes','2013-11-07 13:23:08'),(7,7,'Yes','2013-11-07 13:23:08'),(8,7,'Yes','2013-11-07 13:23:08'),(9,7,'Yes','2013-11-07 13:23:08'),(10,7,'Yes','2013-11-07 13:23:08'),(11,7,'Yes','2013-11-07 13:23:08'),(12,7,'Yes','2013-11-07 13:23:08'),(13,7,'Yes','2013-11-07 13:23:08'),(14,7,'Yes','2013-11-07 13:23:08'),(15,7,'Yes','2013-11-07 13:23:09'),(16,7,'Yes','2013-11-07 13:23:09'),(17,7,'Yes','2013-11-07 13:23:09'),(18,7,'Yes','2013-11-07 13:23:09'),(19,7,'Yes','2013-11-07 13:23:09');
 
 /*Table structure for table `tbl_job_activities` */
 
@@ -448,7 +453,7 @@ CREATE TABLE `tbl_job_activities` (
 
 /*Data for the table `tbl_job_activities` */
 
-insert  into `tbl_job_activities`(`activity_id`,`job_id`,`active`,`date_added`) values (NULL,NULL,'Yes','2013-07-23 06:40:34'),(NULL,NULL,'Yes','2013-07-24 23:15:44'),(NULL,NULL,'Yes','2013-11-04 12:12:59'),(NULL,NULL,'Yes','2013-11-04 12:12:59');
+insert  into `tbl_job_activities`(`activity_id`,`job_id`,`active`,`date_added`) values (NULL,NULL,'Yes','2013-07-23 06:40:34'),(NULL,NULL,'Yes','2013-07-24 23:15:44'),(NULL,NULL,'Yes','2013-11-04 12:12:59'),(NULL,NULL,'Yes','2013-11-04 12:12:59'),(4,7,'Yes','2013-11-07 13:22:57'),(5,7,'Yes','2013-11-07 13:22:57'),(6,7,'Yes','2013-11-07 13:22:57'),(7,7,'Yes','2013-11-07 13:22:57'),(8,7,'Yes','2013-11-07 13:22:57'),(9,7,'Yes','2013-11-07 13:22:58');
 
 /*Table structure for table `tbl_job_duties` */
 
@@ -467,7 +472,7 @@ CREATE TABLE `tbl_job_duties` (
 
 /*Data for the table `tbl_job_duties` */
 
-insert  into `tbl_job_duties`(`duty_id`,`job_id`,`active`,`date_added`) values (NULL,NULL,'Yes','2013-07-23 06:40:28'),(NULL,NULL,'Yes','2013-07-24 23:15:35'),(NULL,NULL,'Yes','2013-07-24 23:15:35'),(NULL,NULL,'Yes','2013-11-04 12:12:50'),(NULL,NULL,'Yes','2013-11-04 12:12:50');
+insert  into `tbl_job_duties`(`duty_id`,`job_id`,`active`,`date_added`) values (NULL,NULL,'Yes','2013-07-23 06:40:28'),(NULL,NULL,'Yes','2013-07-24 23:15:35'),(NULL,NULL,'Yes','2013-07-24 23:15:35'),(NULL,NULL,'Yes','2013-11-04 12:12:50'),(NULL,NULL,'Yes','2013-11-04 12:12:50'),(4,7,'Yes','2013-11-07 13:22:53'),(5,7,'Yes','2013-11-07 13:22:53'),(6,7,'Yes','2013-11-07 13:22:53'),(7,7,'Yes','2013-11-07 13:22:53'),(8,7,'Yes','2013-11-07 13:22:53'),(9,7,'Yes','2013-11-07 13:22:53');
 
 /*Table structure for table `tbl_job_skills` */
 
@@ -486,7 +491,7 @@ CREATE TABLE `tbl_job_skills` (
 
 /*Data for the table `tbl_job_skills` */
 
-insert  into `tbl_job_skills`(`skill_id`,`job_id`,`active`,`date_added`) values (NULL,NULL,'Yes','2013-07-23 01:31:43'),(NULL,NULL,'Yes','2013-07-23 01:31:43'),(NULL,NULL,'Yes','2013-07-23 01:31:43'),(NULL,NULL,'Yes','2013-07-23 01:31:43'),(NULL,NULL,'Yes','2013-07-24 23:15:52'),(NULL,NULL,'Yes','2013-07-24 23:15:52'),(NULL,NULL,'Yes','2013-07-24 23:15:52'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06');
+insert  into `tbl_job_skills`(`skill_id`,`job_id`,`active`,`date_added`) values (NULL,NULL,'Yes','2013-07-23 01:31:43'),(NULL,NULL,'Yes','2013-07-23 01:31:43'),(NULL,NULL,'Yes','2013-07-23 01:31:43'),(NULL,NULL,'Yes','2013-07-23 01:31:43'),(NULL,NULL,'Yes','2013-07-24 23:15:52'),(NULL,NULL,'Yes','2013-07-24 23:15:52'),(NULL,NULL,'Yes','2013-07-24 23:15:52'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(NULL,NULL,'Yes','2013-11-04 12:13:06'),(9,7,'Yes','2013-11-07 13:23:01'),(10,7,'Yes','2013-11-07 13:23:01'),(11,7,'Yes','2013-11-07 13:23:01'),(12,7,'Yes','2013-11-07 13:23:02'),(13,7,'Yes','2013-11-07 13:23:02'),(14,7,'Yes','2013-11-07 13:23:02'),(15,7,'Yes','2013-11-07 13:23:02'),(16,7,'Yes','2013-11-07 13:23:02'),(17,7,'Yes','2013-11-07 13:23:02'),(18,7,'Yes','2013-11-07 13:23:02'),(19,7,'Yes','2013-11-07 13:23:02'),(20,7,'Yes','2013-11-07 13:23:02'),(21,7,'Yes','2013-11-07 13:23:02'),(22,7,'Yes','2013-11-07 13:23:02'),(23,7,'Yes','2013-11-07 13:23:02'),(24,7,'Yes','2013-11-07 13:23:02'),(25,7,'Yes','2013-11-07 13:23:02'),(26,7,'Yes','2013-11-07 13:23:02'),(27,7,'Yes','2013-11-07 13:23:02'),(28,7,'Yes','2013-11-07 13:23:03'),(29,7,'Yes','2013-11-07 13:23:03');
 
 /*Table structure for table `tbl_jobs` */
 
@@ -503,11 +508,11 @@ CREATE TABLE `tbl_jobs` (
   KEY `dept_id` (`dept_id`),
   KEY `job_title` (`job_title`),
   CONSTRAINT `tbl_jobs_ibfk_1` FOREIGN KEY (`dept_id`) REFERENCES `tbl_department` (`dept_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 /*Data for the table `tbl_jobs` */
 
-insert  into `tbl_jobs`(`job_id`,`dept_id`,`job_title`,`job_desc`,`date_added`) values (6,1,'Nurse','A person trained to care for the sick or infirm especially in a hospital','0000-00-00 00:00:00');
+insert  into `tbl_jobs`(`job_id`,`dept_id`,`job_title`,`job_desc`,`date_added`) values (6,1,'Nurse','A person trained to care for the sick or infirm especially in a hospital','0000-00-00 00:00:00'),(7,1,'Test','test','0000-00-00 00:00:00');
 
 /*Table structure for table `tbl_journal_comments` */
 
@@ -703,7 +708,7 @@ CREATE TABLE `tbl_users` (
 
 /*Data for the table `tbl_users` */
 
-insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-11-07 11:25:51',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test',' test ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,2,'2013-11-07 11:25:26',''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos','asdasdasd        ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,2,'2013-11-05 17:41:15',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','  asd','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,2,'2013-11-03 04:14:22',''),(8,'marcgwapo00','39911e864d61032151e9db601c1d76d0','2','Marc Esperanza','Fullon','Esperanza','        130 Melanie Marquez BFRV Las Pinas City      ','marcgwapo00@yahoo.com','8460052','09167125456','1989-10-27','Male','','','','','09175779072','Muriel F Esperanza',1,6,'2013-11-06 12:02:37','user/1383672413_810017.jpg'),(9,'botong09','827ccb0eea8a706c4c34a16891f84e7b','3','Carlos','S','Garcia','   99 san fernando st Laguna  ','botong09@yahoo.com','8729695','09158764908','1989-10-02','Male','','','','','8887546','Ema Garcia',1,6,'2013-11-05 20:04:11',''),(10,'patmalolos','827ccb0eea8a706c4c34a16891f84e7b','3','Patrick','G','Malolos','  87 st. Maria Clara Quezon City','patmalopatmalo@yahoo.com','8672918','09176784657','1989-01-10','Male','','','','','8477568','Mariel Malolos',1,6,NULL,''),(11,'Fral1992','827ccb0eea8a706c4c34a16891f84e7b','3','David','P','Turner','   3026 Comfort Court\r\nMadison, WI 53715 ','DavidPTurner@teleworm.us','8172357','0987123487','1987-05-08','Male','','','','','8923849','not available',1,6,NULL,''),(12,'Satte1989','827ccb0eea8a706c4c34a16891f84e7b','3','Warren','R','Bourque','  884 Spring Haven Trail\r\nRochelle Park, NJ 07662','WarrenRBourque@rhyta.com','8679345','09156789659','1979-04-11','Male','','','','','8976568','Rawa Borque',1,6,NULL,''),(13,'Thoulieve1981','827ccb0eea8a706c4c34a16891f84e7b','3','Jason ','C','Wilson','3079 Cunningham Court\r\nRoyal Oak, MI 48067','JasonCWilson@dayrep.com','84643928','0917568433','1981-08-25','Male','','','','','8568432','Rachel Wilson',1,6,NULL,''),(14,'Oplity','827ccb0eea8a706c4c34a16891f84e7b','3','Thomas','F','Reel','  2806 Formula Lane\r\nMc Kinney, TX 75069','ThomasPReel@armyspy.com','8093328','09287654738','1981-12-26','Male','','','','','9439485','Tammy Reel',1,6,NULL,''),(15,'Ristraid1986','827ccb0eea8a706c4c34a16891f84e7b','3','William ','T','Gay','  2704 Nicholas Street\r\nBrookville, KS 67425','WilliamTGay@jourrapide.com','8932948','09185464738','1986-11-23','Male','','','','','8948573','Mary Gay',1,6,NULL,''),(16,'Quitorger','827ccb0eea8a706c4c34a16891f84e7b','3','Whitney ','H','Ranson','  625 Horner Street\r\nYoungstown, OH 44503','WhitneyHRanson@dayrep.com','8657348','09175467384','1992-03-18','Female','','','','','89348573','Ramil Ranson',1,6,NULL,'');
+insert  into `tbl_users`(`user_id`,`uname`,`pword`,`lvl`,`fname`,`mname`,`lname`,`home_address`,`email`,`home_phone`,`mobile_phone`,`birthday`,`gender`,`tin_id`,`sss_id`,`pagibig_id`,`philhealth_id`,`emergency_phone`,`emergency_contact`,`department_id`,`job_id`,`last_login`,`avatar`) values (1,'admin','e6e061838856bf47e1de730719fb2609','1','Administrator','','','','','','','0000-00-00','','','','','','','',0,0,'2013-11-07 13:22:02',''),(2,'test','827ccb0eea8a706c4c34a16891f84e7b','2','test','test','test','  test  ','test@test.com','123456','12345','1993-06-01','Male','','','','','1321','test',1,7,'2013-11-07 13:44:00',''),(6,'malbitos','827ccb0eea8a706c4c34a16891f84e7b','3','Mark','test','Albitos',' asdasdasd         ','asdasdas@123.com','+123123','+123123','1990-06-13','Male','','','','','123123','Asdasd',1,7,'2013-11-07 13:46:47',''),(7,'jdelacruz','827ccb0eea8a706c4c34a16891f84e7b','3','Juan Miguel','Santo Domingo','Dela Cruz','   asd ','asd@asd.com','1231231','12312312','1958-06-10','Male','','','','','123123','klnfldsnflsdnf',1,7,'2013-11-03 04:14:22',''),(8,'marcgwapo00','827ccb0eea8a706c4c34a16891f84e7b','2','Marc Esperanza','Fullon','Esperanza','         130 Melanie Marquez BFRV Las Pinas City       ','marcgwapo00@yahoo.com','8460052','09167125456','1989-10-27','Male','','','','','09175779072','Muriel F Esperanza',1,6,'2013-11-07 13:42:23','user/1383672413_810017.jpg'),(9,'botong09','827ccb0eea8a706c4c34a16891f84e7b','3','Carlos','S','Garcia','    99 san fernando st Laguna   ','botong09@yahoo.com','8729695','09158764908','1989-10-02','Male','','','','','8887546','Ema Garcia',1,6,'2013-11-07 13:42:56',''),(10,'patmalolos','827ccb0eea8a706c4c34a16891f84e7b','3','Patrick','G','Malolos','   87 st. Maria Clara Quezon City ','patmalopatmalo@yahoo.com','8672918','09176784657','1989-01-10','Male','','','','','8477568','Mariel Malolos',1,6,'2013-11-07 13:42:01',''),(11,'Fral1992','827ccb0eea8a706c4c34a16891f84e7b','3','David','P','Turner','   3026 Comfort Court\r\nMadison, WI 53715 ','DavidPTurner@teleworm.us','8172357','0987123487','1987-05-08','Male','','','','','8923849','not available',1,6,NULL,''),(12,'Satte1989','827ccb0eea8a706c4c34a16891f84e7b','3','Warren','R','Bourque','  884 Spring Haven Trail\r\nRochelle Park, NJ 07662','WarrenRBourque@rhyta.com','8679345','09156789659','1979-04-11','Male','','','','','8976568','Rawa Borque',1,6,NULL,''),(13,'Thoulieve1981','827ccb0eea8a706c4c34a16891f84e7b','3','Jason ','C','Wilson','3079 Cunningham Court\r\nRoyal Oak, MI 48067','JasonCWilson@dayrep.com','84643928','0917568433','1981-08-25','Male','','','','','8568432','Rachel Wilson',1,6,NULL,''),(14,'Oplity','827ccb0eea8a706c4c34a16891f84e7b','3','Thomas','F','Reel','  2806 Formula Lane\r\nMc Kinney, TX 75069','ThomasPReel@armyspy.com','8093328','09287654738','1981-12-26','Male','','','','','9439485','Tammy Reel',1,6,NULL,''),(15,'Ristraid1986','827ccb0eea8a706c4c34a16891f84e7b','3','William ','T','Gay','  2704 Nicholas Street\r\nBrookville, KS 67425','WilliamTGay@jourrapide.com','8932948','09185464738','1986-11-23','Male','','','','','8948573','Mary Gay',1,6,NULL,''),(16,'Quitorger','827ccb0eea8a706c4c34a16891f84e7b','3','Whitney ','H','Ranson','  625 Horner Street\r\nYoungstown, OH 44503','WhitneyHRanson@dayrep.com','8657348','09175467384','1992-03-18','Female','','','','','89348573','Ramil Ranson',1,6,NULL,'');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

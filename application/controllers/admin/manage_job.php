@@ -17,6 +17,7 @@ class Manage_job extends CI_Controller {
 		$data['pagination'] = $this->template_library->get_pagination(
 																		'control_panel/manage_job' 
 																		,$this->job_model->getTotalJob()
+																		,'admin'
 																		,PER_PAGE
 																	 );
 

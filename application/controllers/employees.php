@@ -18,7 +18,7 @@ class Employees extends CI_Controller {
 
 		# Employee list
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'employees' 
+																					'employees/index' 
 																					,$this->employees_model->getTotalEmployees( array( 'job_id' => $this->user_job_id ) )
 																					,PER_PAGE
 																					,'user'

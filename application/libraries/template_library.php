@@ -55,9 +55,6 @@ class Template_library {
 			$config['cur_tag_open'] = '<span class="active">';
 			$config['cur_tag_close'] = '</span>';
 		}else{
-			$config['offset'] 			= $offset;
-			$config['uri_segment'] 		= 2;
-
 			$config['cur_tag_open'] 	= '<li class="active"><a href="#">';
 			$config['cur_tag_close'] 	= '</a></li>';
 			$config['prev_link'] 		= 'Prev';

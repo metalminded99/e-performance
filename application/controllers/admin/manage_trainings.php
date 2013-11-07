@@ -16,6 +16,7 @@ class Manage_Trainings extends CI_Controller {
 		$data['pagination'] = $this->template_library->get_pagination(
 																		'control_panel/manage_trainings' 
 																		,$this->trainings_model->getTotalTrainings()
+																		,'admin'
 																		,PER_PAGE
 																	 );
 
