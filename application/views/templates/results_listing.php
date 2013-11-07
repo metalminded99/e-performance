@@ -16,7 +16,7 @@
 			<tr>
 				<th scope="col">#</th>
 				<?php for($h = 0; $h < count( $th ); $h++) { ?>
-				<th scope="col"><?=$th[ $h ]?></th>
+				<th scope="col" <?=preg_match('/Description/', $th[ $h ]) ? 'style="width: 240px;"' : ''?>><?=$th[ $h ]?></th>
 				<?php } ?>
 				<th scope="col" style="width: 65px;">Action</th>
 			</tr>
@@ -38,7 +38,7 @@
 						if( !preg_match( '/id/', $result_keys[ $k ] ) ){
 				?>
 				
-				<td> <?=$this->template_library->shorten_words($result[ $result_keys[ $k ] ])?> </td>
+				<td> <?=$result[ $result_keys[ $k ] ]?> </td>
 
 				<?php 
 						}else{
@@ -47,8 +47,8 @@
 					}
 				 ?>
 				<td align = "center">
-					<a id="edit_<?=$id?>" href="#" class="table-icon edit" title="View/Edit"></a>
-					<a id="delete_<?=$id?>" href="#" class="table-icon delete" title="Delete"></a>
+					<a href="<?=base_url()?>control_panel/<?=$u_uri?>/<?=$id?>" class="table-icon edit" title="View/Edit"></a>
+					<a href="javascript:void(0);" onclick="delete_list('<?=$id?>');" class="table-icon delete" title="Delete"></a>
 				</td>
 			</tr>
 
@@ -74,20 +74,6 @@
 </div>
 
 <script type="text/javascript">
-	$( '.table-icon' ).click(function(){
-		var raw_id = $(this).prop('id');
-		var id = raw_id.split('_')
-		
-		if( id[0] == 'delete' ){
-			delete_list( id[1] );
-		}
-
-		if( id[0] == 'edit' ){
-			window.location = "http://localhost/e-performance/control_panel/<?=$u_uri?>/" + id[1];
-		}
-		
-	});
-
 	function delete_list( id ) {
 		var ans = confirm( 'Are you sure you want to delete this list?' );
 

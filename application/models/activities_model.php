@@ -8,6 +8,9 @@ class Activities_Model extends CI_Model {
     }    
     
     public function getAllActivities( $offset, $per_page, $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+        
         return $this->db
                         ->limit( $per_page, $offset )
                         ->get( ACTIVITIES )

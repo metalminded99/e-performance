@@ -87,6 +87,11 @@ $route['control_panel/manage_process'] = "admin/manage_process";
 $route['control_panel/manage_process/(:num)'] = "admin/manage_process/index/$1";
 $route['control_panel/manage_process/(:any)'] = "admin/manage_process/$1";
 
+# Admin manage process
+$route['control_panel/manage_news'] = "admin/manage_news";
+$route['control_panel/manage_news/(:num)'] = "admin/manage_news/index/$1";
+$route['control_panel/manage_news/(:any)'] = "admin/manage_news/$1";
+
 # Admin manage appraisal
 // $route['control_panel/manage_appraisal'] = "admin/manage_appraisal";
 // $route['control_panel/manage_appraisal/(:num)'] = "admin/manage_appraisal/index/$1";

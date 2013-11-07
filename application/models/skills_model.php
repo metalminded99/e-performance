@@ -8,6 +8,9 @@ class Skills_Model extends CI_Model {
     }    
     
     public function getAllSkills( $offset, $per_page, $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+        
         return $this->db
                         ->limit( $per_page, $offset )
                         ->get( SKILLS )

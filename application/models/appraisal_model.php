@@ -255,18 +255,23 @@ class Appraisal_Model extends CI_Model {
 
     public function getEmployeeFeedbackResult( $per_page, $offset, $user_id ) {
         return $this->db
-                        ->select( "a.appraisal_title, ar.self_score, ar.peer_score, ar.manager_score, ar.date_submit" )
+                        ->select( "a.appraisal_title, avg(ar.self_score) self_score, avg(ar.peer_score) peer_score, avg(ar.manager_score) manager_score, ar.date_submit", false )
                         ->from( APP_RESULT.' ar' )
                         ->join( APPRAISAL.' a', 'a.appraisal_id = ar.appraisal_id', 'left' )
                         ->where( array( 'ar.user_id' => $user_id ) )
+                        ->group_by( 'ar.user_id, a.appraisal_id' )
                         ->get()
                         ->result_array();
     }
 
     public function getAllEmployeeFeedbackResult( $user_id ) {
         return $this->db
+                        ->select( 'COUNT( DISTINCT user_id, appraisal_id ) AS  `numrows`', false )
                         ->where( array( 'user_id' => $user_id ) )
-                        ->count_all_results( APP_RESULT );
+                        ->group_by( 'user_id' )
+                        ->get( APP_RESULT )
+                        ->row()
+                        ->numrows;
     }
 
     public function getSelfFeedbackCount( $user_id ) {
@@ -374,11 +379,25 @@ class Appraisal_Model extends CI_Model {
             $this->db->where( $where );
 
         return $this->db
-                        ->select( 'mc.main_category_name, AVG( ar.'.$field.' ) ave' )
+                        ->select( 'mc.main_category_id, mc.main_category_name, AVG( ar.'.$field.' ) ave' )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
                         ->join( APP_MAIN_CAT.' mc', 'mc.main_category_id = aq.category', 'left' )
                         ->group_by( 'mc.main_category_id' )
+                        ->get()
+                        ->result_array();
+    }
+
+    public function getFeedbackSummarySubCat( $field, $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->select( 'sc.sub_category_name, AVG( ar.'.$field.' ) ave' )
+                        ->from( APP_RESULT.' ar' )
+                        ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+                        ->join( APP_SUB_CAT.' sc', 'sc.main_cat_id = aq.category', 'left' )
+                        ->group_by( 'sc.sub_category_id' )
                         ->get()
                         ->result_array();
     }

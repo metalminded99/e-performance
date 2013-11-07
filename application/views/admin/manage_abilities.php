@@ -28,11 +28,11 @@
 		</div>
 		<div class="element">
 			<label for="ability_name">Ability name <span class="red">(required)</span></label>
-			<input id="ability_name" name="ability_name" class="text validate[required]" value="<?=isset( $abilities['ability_name'] ) ? $abilities['ability_name'] : '' ?>"/>
+			<input id="ability_name" name="ability_name" class="text validate[required]" maxlength="100" value="<?=isset( $abilities['ability_name'] ) ? $abilities['ability_name'] : '' ?>"/>
 		</div>
 		<div class="element">
 			<label for="ability_desc">Ability description <span class="red">(required)</span></label>
-			<input id="ability_desc" name="ability_desc" class="text validate[required]" value="<?=isset( $abilities['ability_desc'] ) ? $abilities['ability_desc'] : '' ?>"/>
+			<input id="ability_desc" name="ability_desc" class="text validate[required]" maxlength="100" value="<?=isset( $abilities['ability_desc'] ) ? $abilities['ability_desc'] : '' ?>"/>
 		<div class="entry">
 			<button type="submit" class="add">Save</button> 
 			<button type="button" class="cancel">Cancel</button>

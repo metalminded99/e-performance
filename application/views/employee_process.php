@@ -12,20 +12,16 @@
             <div class="">
                 <ul class="nav nav-tabs">
                     <li class="<?=$this->uri->segment(2) == '' ? 'active' : ''?>">
-                        <a href="<?=base_url()?>process"><i class="icon-time"></i>&nbsp;Pending</a>
+                        <a href="<?=base_url()?>process"><i class="icon-time"></i>&nbsp;Pending <span class="badge badge-info"><?=$p_cnt?></span></a>
                     </li>
 
                     <li class="<?=$this->uri->segment(2) == 'on_going' ? 'active' : ''?>">
-                        <a href="<?=base_url()?>process/on_going"><i class="icon-road"></i>&nbsp;On-going</a>
+                        <a href="<?=base_url()?>process/on_going"><i class="icon-road"></i>&nbsp;On-going <span class="badge badge-info"><?=$og_cnt?></span></a>
                     </li>
 
                     <li class="<?=$this->uri->segment(2) == 'completed' ? 'active' : ''?>">
-                        <a href="<?=base_url()?>process/completed"><i class="icon-check"></i>&nbsp;Completed</a>
+                        <a href="<?=base_url()?>process/completed"><i class="icon-check"></i>&nbsp;Completed <span class="badge badge-success"><?=$co_cnt?></span></a>
                     </li>
-
-                    <li class="<?=$this->uri->segment(2) == 'rejected' ? 'active' : ''?>">
-                        <a href="<?=base_url()?>process/rejected"><i class="icon-minus-sign"></i>&nbsp;Rejected</a>
-                    </li> 
                 </ul>
             </div>
             <?php
@@ -76,11 +72,7 @@
                                         
                                         <?php } elseif( $proc['status'] == 'On-going' ) { ?>
                                         <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'complete')" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
-
-                                        <?php } if( $proc['status'] != 'Rejected' && $proc['status'] != 'Completed' ) { ?>
-                                        <a onclick="$('#hproc_id').val(<?=$proc['proc_id']?>);$('#reject_modal').validationEngine();" title="Reject" href="#rejectModal" class="optlnk" data-toggle="modal" data-backdrop="static" data-keyboard="false"><i class="icon-minus-sign"></i></a>&nbsp;
-                                        <?php } ?>
-                                        
+                                        <?php }?>
                                     </td>
                                 </tr>
                                 <?php
@@ -107,28 +99,6 @@
                     <ul>
                         <?=$pagination?>
                     </ul>
-                </div>
-
-                <div class="modal small hide fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <input type="hidden" id="hproc_id" name="hproc_id">
-                    <form id="reject_modal" onsubmit="return false;">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h3 id="myModalLabel">Reject Confirmation</h3>
-                        </div>
-                        <div class="modal-body">                                
-                                <p class="error-text"><i class="icon-warning-sign modal-icon"></i>Are you sure you want to reject this process?</p>
-                                <br/>
-                                <p class="text-center">
-                                    Please enter your comment here:
-                                    <textarea id="hproc_comment" class="text validate[required]" style="margin: 0px 0px 10px; width: 335px; height: 106px;resize: none;"></textarea>
-                                </p>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                            <button class="btn btn-danger" onclick="javascript:do_action($('#hproc_id').val(), 'reject', $('#hproc_comment').val())">Continue</button>
-                        </div>
-                    </form>
                 </div>
 
                 <div class="modal small hide fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

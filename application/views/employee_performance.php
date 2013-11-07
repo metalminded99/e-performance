@@ -32,9 +32,9 @@
                                 <tr>
                                     <td><?=$cnt?></td>
                                     <td><?=$this->template_library->shorten_words( $perf['appraisal_title'] )?></td>
-                                    <td><?=$perf['self_score']?></td>
-                                    <td><?=$perf['peer_score']?></td>
-                                    <td><?=$perf['manager_score']?></td>
+                                    <td><?=!is_null( $perf['self_score'] ) ? $perf['self_score'] : '-' ?></td>
+                                    <td><?=!is_null( $perf['peer_score'] ) ? $perf['peer_score'] : '-' ?></td>
+                                    <td><?=!is_null( $perf['manager_score'] ) ? $perf['manager_score'] : '-' ?></td>
                                     <td><?=$this->template_library->format_mysql_date( $perf['date_submit'], 'F d, Y' )?></td>
                                 </tr>
                                 <?php

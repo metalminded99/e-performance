@@ -62,11 +62,22 @@
                                                                 for ( $c = 0; $c < count( $questions ); $c++ ) {
                                                         ?>
                                                         <div class="q_box">
-                                                            <?php if( $c > 0 ) { ?> <span title="Delete" class="pull-right"><i class="icon-remove-sign"></i></span> <? } ?>
+                                                            <?php if( $c > 0 ) { ?> <div class="input_box_header"><span title="Delete" class="pull-right"><i class="icon-remove-sign"></i></span></div> <? } ?>
                                                             <textarea name="<?=$sub_input_name?>[]" class="span9 questions validate[groupRequired[core_v]]" style="resize:none;width: 100%;"><?=$questions[ $c ]['question']?></textarea>
-                                                        </div>
+                                                        </div>                                                        
                                                         <?php 
                                                                 }
+                                                        ?>
+                                                        <script type="text/javascript">
+                                                            $( document ).ready( function(){
+                                                                $('#<?=$sub_input_name?> .q_box span').die().live('click',function() {
+                                                                    var index = $(this).parent().parent().index();
+                                                                    
+                                                                    $("#<?=$sub_input_name?> .q_box").eq( index ).remove();
+                                                                });
+                                                            });
+                                                        </script>
+                                                        <?php
                                                             } 
                                                         ?>
                                                         <a href="javascript:void(0)" class="btn btn-mini btn-primary" onclick="addQuestion( '<?=$sub_input_name?>' );"><i class="icon-plus-sign"></i> Add more</a> 
@@ -134,8 +145,8 @@
 
             $( txt_htm ).insertAfter( "#"+e_name+" .q_box:nth-child("+e_index+")" );
 
-            $('#'+ e_name +' .q_box span').live('click',function() {
-                var index = $(this).index(this) + 1;
+            $('#'+ e_name +' .q_box span').die().live('click',function() {
+                var index = $(this).parent().parent().index();
                 
                 $("#"+ e_name +" .q_box").eq( index ).remove();
             });

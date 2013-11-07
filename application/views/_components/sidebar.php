@@ -1,18 +1,10 @@
 	<!-- Sidebar Start -->
 	<div id="sidebar">
-		<div class="box">
-			<div class="h_title">&#8250; Main control</div>
-			<ul id="home">
-				<li class="b1"><a class="icon view_page" href="<?=base_url()?>" target="_blank">Visit site</a></li>
-				<li class="b2"><a class="icon report" href="">Reports</a></li>
-			</ul>
-		</div>
 		
 		<div class="box">
 			<div class="h_title">&#8250; Manage content</div>
 			<ul>
-				<li class="b1"><a class="icon page" href="">News / Announcements</a></li>
-				<li class="b2"><a class="icon photo" href="">Gallery</a></li>
+				<li class="b1"><a class="icon page" href="<?=base_url()?>control_panel/manage_news">News / Announcements</a></li>
 			</ul>
 		</div>
 

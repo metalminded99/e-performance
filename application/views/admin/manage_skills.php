@@ -28,11 +28,11 @@
 		</div>
 		<div class="element">
 			<label for="skill_name">Skill name <span class="red">(required)</span></label>
-			<input id="skill_name" name="skill_name" class="text validate[required]" value="<?=isset( $skills['skill_name'] ) ? $skills['skill_name'] : '' ?>"/>
+			<input id="skill_name" name="skill_name" class="text validate[required]" maxlength="100" value="<?=isset( $skills['skill_name'] ) ? $skills['skill_name'] : '' ?>"/>
 		</div>
 		<div class="element">
 			<label for="skill_desc">Skill description <span class="red">(required)</span></label>
-			<input id="skill_desc" name="skill_desc" class="text validate[required]" value="<?=isset( $skills['skill_desc'] ) ? $skills['skill_desc'] : '' ?>"/>
+			<input id="skill_desc" name="skill_desc" class="text validate[required]" maxlength="100" value="<?=isset( $skills['skill_desc'] ) ? $skills['skill_desc'] : '' ?>"/>
 		<div class="entry">
 			<button type="submit" class="add">Save</button> 
 			<button type="button" class="cancel">Cancel</button>

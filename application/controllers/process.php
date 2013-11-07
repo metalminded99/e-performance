@@ -20,22 +20,35 @@ class Process extends CI_Controller {
 		$this->template_library->check_session( 'user' );
 
 		# Process list
+		$template_param['p_cnt']	  = $this->process_model->getTotalEmpProcess( 
+																					array( 
+																							'user_id' => $this->user_id 
+																							, 'status' => 'Pending'
+																						) 
+																				);
 		$template_param['pagination'] = $this->template_library->get_pagination(
 																					'process/lists' 
-																					,$this->process_model->getTotalEmpProcess( 
-																																array( 
-																																		'user_id' => $this->user_id 
-																																		, 'status' => 'Pending'
-																																	) 
-																															)
+																					,$template_param['p_cnt']
 																					,PER_PAGE
 																					,'user'
 																					,$offset
 																				);
 		$template_param['process'] = $this->process_model->getAllEmpProcess( $offset, PER_PAGE, array( 'user_id' => $this->user_id, 'status' => 'Pending' ) );
 		# Template meta data
-		$template_param['count'] = $offset;
-		$template_param['uri'] = '';
+		$template_param['og_cnt']			= $this->process_model->getTotalEmpProcess( 
+																							array( 
+																									'user_id' => $this->user_id 
+																									, 'status' => 'On-going'
+																								) 
+																						);
+		$template_param['co_cnt']			= $this->process_model->getTotalEmpProcess( 
+																							array( 
+																									'user_id' => $this->user_id 
+																									, 'status' => 'Completed'
+																								) 
+																						);
+		$template_param['count']			= $offset;
+		$template_param['uri'] 				= '';
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
 		$template_param['content']			= 'employee_process';
 		$this->template_library->render( 
@@ -52,6 +65,12 @@ class Process extends CI_Controller {
 		$this->template_library->check_session( 'user' );
 
 		# Process list
+		$template_param['og_cnt']			= $this->process_model->getTotalEmpProcess( 
+																							array( 
+																									'user_id' => $this->user_id 
+																									, 'status' => 'On-going'
+																								) 
+																						);
 		$template_param['pagination'] = $this->template_library->get_pagination(
 																					'process/on_going' 
 																					,$this->process_model->getTotalEmpProcess( array( 'user_id' => $this->user_id, 'status' => 'On-going' ) )
@@ -61,6 +80,18 @@ class Process extends CI_Controller {
 																				);
 		$template_param['process'] = $this->process_model->getAllEmpProcess( $offset, PER_PAGE, array( 'user_id' => $this->user_id, 'status' => 'On-going' ) );
 		# Template meta data
+		$template_param['p_cnt']	  	= $this->process_model->getTotalEmpProcess( 
+																					array( 
+																							'user_id' => $this->user_id 
+																							, 'status' => 'Pending'
+																						) 
+																				);
+		$template_param['co_cnt']		= $this->process_model->getTotalEmpProcess( 
+																							array( 
+																									'user_id' => $this->user_id 
+																									, 'status' => 'Completed'
+																								) 
+																						);
 		$template_param['count'] = $offset;
 		$template_param['uri'] = 'on_going';
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
@@ -79,6 +110,12 @@ class Process extends CI_Controller {
 		$this->template_library->check_session( 'user' );
 
 		# Process list
+		$template_param['co_cnt']			= $this->process_model->getTotalEmpProcess( 
+																							array( 
+																									'user_id' => $this->user_id 
+																									, 'status' => 'Completed'
+																								) 
+																						);
 		$template_param['pagination'] = $this->template_library->get_pagination(
 																					'process/completed' 
 																					,$this->process_model->getTotalEmpProcess( array( 'user_id' => $this->user_id, 'status' => 'Completed' ) )
@@ -88,35 +125,20 @@ class Process extends CI_Controller {
 																				);
 		$template_param['process'] = $this->process_model->getAllEmpProcess( $offset, PER_PAGE, array( 'user_id' => $this->user_id, 'status' => 'Completed' ) );
 		# Template meta data
+		$template_param['p_cnt']	  = $this->process_model->getTotalEmpProcess( 
+																					array( 
+																							'user_id' => $this->user_id 
+																							, 'status' => 'Pending'
+																						) 
+																				);
+		$template_param['og_cnt']			= $this->process_model->getTotalEmpProcess( 
+																							array( 
+																									'user_id' => $this->user_id 
+																									, 'status' => 'On-going'
+																								) 
+																						);
 		$template_param['count'] = $offset;
 		$template_param['uri'] = 'completed';
-		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
-		$template_param['content']			= 'employee_process';
-		$this->template_library->render( 
-											$template_param 
-											,'user_header'
-											,'user_top'
-											,'user_footer'
-											,'' 
-										);
-	}
-
-	public function rejected( $offset = 0 ) {
-		# Check user's session
-		$this->template_library->check_session( 'user' );
-
-		# Process list
-		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'process/rejected' 
-																					,$this->process_model->getTotalEmpProcess( array( 'user_id' => $this->user_id, 'status' => 'Rejected' ) )
-																					,PER_PAGE
-																					,'user'
-																					,($this->uri->segment(2)) ? $this->uri->segment(2) : 0
-																				);
-		$template_param['process'] = $this->process_model->getAllEmpProcess( $offset, PER_PAGE, array( 'user_id' => $this->user_id, 'status' => 'Rejected' ) );
-		# Template meta data
-		$template_param['count'] = $offset;
-		$template_param['uri'] = 'rejected';
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
 		$template_param['content']			= 'employee_process';
 		$this->template_library->render( 
@@ -164,15 +186,6 @@ class Process extends CI_Controller {
 
 			if( isset( $up ) ){
 				$this->process_model->updateEmpProcess( $this->input->post('proc_id'), $this->session->userdata('user_id'), $up );
-				if( isset($comment) )
-					$this->process_model->insertEmpProcessComment( 
-																	array_merge( 
-																					 array( 'proc_id' => $this->input->post('proc_id') )
-																					,array( 'user_id' => $this->session->userdata('user_id') )
-																					,$comment
-																					,$up 
-																				) 
-																 );
 
 				$this->session->set_flashdata( 'msg', $msg );
 			}

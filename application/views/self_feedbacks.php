@@ -72,20 +72,13 @@
                     </div>
                 </div>
                 
-                <div class="modal small hide fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 780px;margin-left: -390px;">
+                <div class="modal small hide fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width: 780px;margin-left: -390px;margin-top: -290px;">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                         <h3 id="myModalLabel">Feedback Summary (Average)</h3>
                     </div>
                     <div class="modal-body">
-                        <table class="table table-bordered">
-                            <thead>
-                            </thead>
-                            <tbody>
-                                <tr class="success">
-                                </tr>
-                            </tbody>
-                        </table>
+                    
                     </div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
@@ -110,18 +103,10 @@
 
             function get_summary( app_id ){
                 $.post( '<?=base_url()?>feedbacks/get_feedback_summary', { 'app_id' : app_id, 'cat' : '<?=$category?>'  }, function(data) {
-                    generate_summary(data);
+                    $('#summaryModal .modal-body').html(data);
+                    $('#summaryModal').modal('show');
                 },
-                    'json'
+                    'html'
                 );
-            }
-
-            function generate_summary( result ) {
-                $.each( result, function( i, v ) {
-                    $('#summaryModal table thead').append( '<th>' + result[i]['main_category_name'] + '</th>' );
-                    $('#summaryModal table tbody tr').append( '<td>'+ result[i]['ave'] + '</td>' );
-                    console.log( result[i] );
-                });
-                $('#summaryModal').modal('show')
             }
         </script>

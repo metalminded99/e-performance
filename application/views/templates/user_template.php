@@ -345,7 +345,20 @@
 					Process task
 				</p>
 				<p class="stat">
-					<span class="number"><?=$trainings_noti?></span>Training
+					<?php 
+						if( $trainings_noti > 0 ) {
+					?>
+					<a href="<?=base_url()?>my_trainings">
+						<span class="number"><?=$trainings_noti?></span>
+					</a>
+					<?php 
+						} else {
+					?>
+					<span class="number">0</span>
+					<?php
+						} 
+					?>
+					Training
 				</p>
 				<p class="stat">
 					<?php 

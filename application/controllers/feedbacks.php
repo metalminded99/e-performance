@@ -2,12 +2,14 @@
 
 class Feedbacks extends CI_Controller {
 	protected $user_id;
+	protected $user_job_id;
 
 	public function __construct() {
 		parent::__construct();
 		$this->load->model( 'appraisal_model' );
 
 		$this->user_id = $this->session->userdata( 'user_id' );
+		$this->user_job_id = $this->session->userdata( 'job_id' );
 	}
 
 	public function index( $offset = 0 ) {
@@ -111,7 +113,7 @@ class Feedbacks extends CI_Controller {
 		$this->template_library->check_session( 'user' );
 
 		$step = $this->input->post( 'step' ) != '' ?  $this->input->post( 'step' ) : 0;
-		$cat = $this->appraisal_model->getAppraisalMainCategories();
+		$cat = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
 
 		if( $this->input->post() ){
 			$this->session->set_userdata( 'app_data-'.$this->input->post('cat'), $this->input->post() );
@@ -218,16 +220,10 @@ class Feedbacks extends CI_Controller {
 			}
 		}		
 
-		if( $u_field != 'user_id' ){
-			$up_stats = array(
-								$u_field => $this->session->userdata('user_id')
-							 );
-		}else{
-			$up_stats = array(
-								$u_field => $this->session->userdata('user_id')
-								,'app_id' => $app_id
-							 );
-		}
+		$up_stats = array(
+							$u_field => $this->session->userdata('user_id')
+							,'app_id' => $app_id
+						 );
 
 		$this->appraisal_model->updateFeedbackStatus( $up_stats, $table );
 
@@ -281,7 +277,16 @@ class Feedbacks extends CI_Controller {
 									$user				=> $this->session->userdata( 'user_id' )
 									,'aq.appraisal_id'	=> $this->input->post( 'app_id' )
 								 );
-			echo json_encode( $this->appraisal_model->getFeedbackSummary( $field, $result_param ) );
+
+			$main_cat = $this->appraisal_model->getFeedbackSummary( $field, $result_param );
+			foreach ($main_cat as $mc) {
+				$where = array_merge( $result_param, array( 'main_cat_id' => $mc['main_category_id'] ) );
+				$sub_cat = $this->appraisal_model->getFeedbackSummarySubCat( $field, $where );
+				foreach ($sub_cat as $sc) {
+					$data['summary'][ $mc['main_category_name'] ][ $mc['ave'] ][] = $sc;
+				}
+			}
+			echo $this->load->view( 'templates/appraisal_summary', $data, true );
 		}
 		else
 			return $this->appraisal_model->getFeedbackSummary( $field );

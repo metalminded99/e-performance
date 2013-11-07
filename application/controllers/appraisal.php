@@ -51,7 +51,7 @@ class Appraisal extends CI_Controller {
 		$this->template_library->check_session( 'user' );
 
 		# Appraisal list
-		$template_param['main_cat'] = $this->appraisal_model->getAppraisalMainCategories();
+		$template_param['main_cat'] = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
 
 		# Template meta data
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
@@ -73,7 +73,7 @@ class Appraisal extends CI_Controller {
 			$step = $this->input->post( 'step' );
 			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
 
-			$cat = $this->appraisal_model->getAppraisalMainCategories();
+			$cat = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
 			if( $step <= count( $cat ) )
 				$template_param['cat'] = $cat[ ( $step - 1 ) ];
 			else
@@ -98,7 +98,7 @@ class Appraisal extends CI_Controller {
 			$db_data = $this->session->userdata( 'app_data-title' );
 			$this->session->unset_userdata('app_data-title');
 
-			$cat = $this->appraisal_model->getAppraisalMainCategories();
+			$cat = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
 			foreach ($cat as $val) {
 				array_push( $db_data, $this->session->userdata( 'app_data-'.$val['main_category_id'] ) );
 				$this->session->unset_userdata('app_data-'.$val['main_category_id'] );
@@ -129,7 +129,7 @@ class Appraisal extends CI_Controller {
 			$step = $this->input->post( 'step' );
 			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
 
-			$cat = $this->appraisal_model->getAppraisalMainCategories();
+			$cat = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
 			if( $step <= count( $cat ) ){
 				$template_param['cat'] = $cat[ ( $step - 1 ) ];
 			}
@@ -170,7 +170,10 @@ class Appraisal extends CI_Controller {
 			if( $action != '' ){ 
 				switch ( $action ) {
 					case 'add_main_cat':
-						$db_data = array('main_category_name' => $this->input->post( 'sub_cat' ));
+						$db_data = array(
+											'main_category_name' => $this->input->post( 'sub_cat' )
+											,'job_id' => $this->user_job_id
+										);
 						$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New appraisal main category has been added successfully!', 'class' => 'info' ) );
 						echo $this->appraisal_model->addAppraisalMainCategories( $db_data );
 						break;
