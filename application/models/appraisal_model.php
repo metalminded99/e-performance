@@ -13,6 +13,7 @@ class Appraisal_Model extends CI_Model {
 
         return $this->db
                         ->limit( $per_page, $offset )
+                        ->order_by( 'date_created', 'desc' )
                         ->get( APPRAISAL )
                         ->result_array();
 
@@ -108,14 +109,27 @@ class Appraisal_Model extends CI_Model {
 
         for( $i = 0; $i < count( $db_param ); $i ++ ){
             foreach ($db_param[$i] as $key => $value) {
+                if( preg_match( '/sub/', $key ) ) {
+                    if( !preg_match( '/question/', $key ) ) {
+                        $main_cat = explode('_', $key);
+                        for( $q = 0; $q < count( $db_param[$i][$key] ); $q++ ){
+                            $q_param = array(
+                                                'appraisal_id'          => $app_id
+                                                ,'main_cat_id'          => end( $main_cat )
+                                                ,'sub_category_name'    => $db_param[$i][$key][0]
+                                            );
+                            $this->db->insert( APP_SUB_CAT, $q_param );
+                            $sub_cat = $this->db->insert_id();
+                        }
+                    }
+                }
                 if( preg_match( '/question/', $key ) ) {
-                    $sub_cat = explode('_', $key);
                     for( $q = 0; $q < count( $db_param[$i][$key] ); $q++ ){
                         $q_param = array(
                                             'appraisal_id'  => $app_id
                                             ,'question'     => $db_param[$i][$key][$q]
                                             ,'category'     => $db_param[$i]['module']
-                                            ,'sub_category' => end( $sub_cat )
+                                            ,'sub_category' => $sub_cat
                                         );
                         $this->db->insert( APP_QUESTION, $q_param );
                     }
@@ -141,17 +155,32 @@ class Appraisal_Model extends CI_Model {
                 ->update( APPRAISAL, $app );
 
         $this->db->delete( APP_QUESTION, array( 'appraisal_id' => $app_id ) );
+        $this->db->delete( APP_SUB_CAT, array( 'appraisal_id' => $app_id ) );
         
         for( $i = 0; $i < count( $db_param ); $i ++ ){
             foreach ($db_param[$i] as $key => $value) {
+                if( preg_match( '/sub/', $key ) ) {
+                    if( !preg_match( '/question/', $key ) ) {
+                        $main_cat = explode('_', $key);
+                        for( $q = 0; $q < count( $db_param[$i][$key] ); $q++ ){
+                            $q_param = array(
+                                                'appraisal_id'          => $app_id
+                                                ,'main_cat_id'          => end( $main_cat )
+                                                ,'sub_category_name'    => $db_param[$i][$key][0]
+                                            );
+                            $this->db->insert( APP_SUB_CAT, $q_param );
+                            $sub_cat = $this->db->insert_id();
+                        }
+                    }
+                }
+
                 if( preg_match( '/question/', $key ) ) {
-                    $sub_cat = explode('_', $key);
                     for( $q = 0; $q < count( $db_param[$i][$key] ); $q++ ){
                         $q_param = array(
                                             'appraisal_id'  => $app_id
                                             ,'question'     => $db_param[$i][$key][$q]
                                             ,'category'     => $db_param[$i]['module']
-                                            ,'sub_category' => end( $sub_cat )
+                                            ,'sub_category' => $sub_cat
                                         );
                         $this->db->insert( APP_QUESTION, $q_param );
                     }
@@ -197,6 +226,7 @@ class Appraisal_Model extends CI_Model {
                                 APP_MNGR_ASSIGN
                                 ,array(
                                         'assign_id'     => $assign_id
+                                        ,'app_id'   => $db_data['app_id']
                                         ,'manager_id'   => $db_data['manager_id']
                                         ,'status'       => $db_data['status']
                                       ) 
@@ -211,6 +241,7 @@ class Appraisal_Model extends CI_Model {
                                         APP_PEER_ASSIGN
                                         ,array(
                                                 'assign_id' => $assign_id
+                                                ,'app_id'   => $db_data['app_id']
                                                 ,'peer_id'  => $db_data['peer_id']
                                                 ,'status'   => $db_data['status']
                                               ) 
@@ -295,7 +326,7 @@ class Appraisal_Model extends CI_Model {
     public function getFeedbackQuestion( $q_param ) {
         return $this->db
                         ->where( $q_param )
-                        ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = q.sub_category', 'left' )
+                        ->join( APP_SUB_CAT.' sc', 'q.sub_category = sc.sub_category_id', 'left' )
                         ->get( APP_QUESTION.' q' )
                         ->result_array();
     }
@@ -423,7 +454,10 @@ class Appraisal_Model extends CI_Model {
                         ->result_array();
     }
 
-    public function getPerformanceSummary() {
+    public function getPerformanceSummary( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+        
         return $this->db
                         ->select( "year(date_submit)dsy, month(date_submit) dsm, avg(self_score) sc, avg(peer_score)ps, avg(manager_score) ms", false )
                         ->group_by( 'year(date_submit), month(date_submit)' )

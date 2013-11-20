@@ -43,6 +43,26 @@
     $( '#date_start' ).change( function(){
         $( '#date_end' ).val('');
     } );
+
+    function PrintElem(elem, title)
+    {
+        Popup($('#'+elem).html(), title);
+    }
+
+    function Popup(data, title) 
+    {
+        var mywindow = window.open('', 'my div', 'height=400,width=800');
+        mywindow.document.write('<html><head><title>'+title+'</title>');
+        mywindow.document.write('<link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>bootstrap/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>bootstrap/bootstrap-responsive.min.css"><link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>theme.css">');
+        mywindow.document.write('</head><body style="background:#fff;">');
+        mywindow.document.write('<div clas="span12" style="background:#688bdb;"><img src="<?=base_url().IMG?>logo.png"></div>');
+        mywindow.document.write(data);
+        mywindow.document.write('</body></html>');
+
+        mywindow.print();
+
+        return true;
+    }
 </script>
 <div class="container-fluid">
     <div class="row-fluid">
@@ -120,39 +140,53 @@
                             <div class="clearfix"></div>
                         </form>
 
-                        <?php if( isset($emp_dev_plans) ) { ?>
-                        <table id="tbl_goals" class="table table-bordered" style="font-size: 12px;">
-                            <thead>
-                                <th>Employee</th>
-                                <th>Training Title</th>
-                                <th>Description</th>
-                                <th>Date Start</th>
-                                <th>Date End</th>
-                                <th>Status</th>
-                            </thead>
-                            <tbody>
-                                <?php 
-                                    if( !empty( $emp_dev_plans ) ){
-                                        foreach ($emp_dev_plans as $dev_plan) {
-                                ?>
-                                <tr>
-                                    <td><?=$dev_plan['full_name']?></td>
-                                    <td><?=$dev_plan['training_title']?></td>
-                                    <td><?=$dev_plan['training_desc']?></td>
-                                    <td><?=$dev_plan['start_date']?></td>
-                                    <td><?=$dev_plan['end_date']?></td>
-                                    <td><?=$dev_plan['status']?></td>
-                                </tr>
-                                <?php 
-                                        }
-                                    }else{
-                                ?>
-                                <tr>
-                                    <td colspan="6">No records found.</td>
-                                </tr>
-                                <? } ?>
-                            </tbody>
-                        </table>
+                        <?php 
+                            if( isset($emp_dev_plans) ) { 
+                                if( !empty( $emp_dev_plans ) ){
+                        ?>
+                        <div class="pull-right" style="margin-bottom:5px;">
+                            <a href="javascript:PrintElem('reports-container', 'Process Report');" class="btn btn-small btn-info"><i class="icon-print"></i> Print</a>
+                        </div>
+                        <?php 
+                                }
+                        ?>
+                        <div id="reports-container">
+                            <h2>Development Plans Report</h2>
+
+                            <h5>Development Plans AS OF: <u><?=$this->template_library->format_mysql_date( $this->input->get('date_start1'), 'M d, Y' )?> - <?=$this->template_library->format_mysql_date( $this->input->get('date_end2'), 'M d, Y' )?></u></h5>
+                            <table id="tbl_goals" class="table table-bordered" style="font-size: 12px;">
+                                <thead>
+                                    <th>Employee</th>
+                                    <th>Training Title</th>
+                                    <th>Description</th>
+                                    <th>Date Start</th>
+                                    <th>Date End</th>
+                                    <th>Status</th>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                        if( !empty( $emp_dev_plans ) ){
+                                            foreach ($emp_dev_plans as $dev_plan) {
+                                    ?>
+                                    <tr>
+                                        <td><?=$dev_plan['full_name']?></td>
+                                        <td><?=$dev_plan['training_title']?></td>
+                                        <td><?=$dev_plan['training_desc']?></td>
+                                        <td><?=$dev_plan['start_date']?></td>
+                                        <td><?=$dev_plan['end_date']?></td>
+                                        <td><?=$dev_plan['status']?></td>
+                                    </tr>
+                                    <?php 
+                                            }
+                                        }else{
+                                    ?>
+                                    <tr>
+                                        <td colspan="6">No records found.</td>
+                                    </tr>
+                                    <? } ?>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="clearfix"></div>
                         <? } ?>
                     </div>

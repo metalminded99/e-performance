@@ -25,21 +25,6 @@
                 <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
                 <a id="add_btn" href="#addModal" class="btn btn-primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"><i class="icon-plus"></i>Add Training</a>
                 <? } ?>
-                <div id="action" class="btn-group" style="display:none;">
-                    <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
-                        <li><a href="#" onclick="do_action( 'In Progress' );">Re-open</a></li>
-                        <li><a href="#" onclick="do_action( 'Completed' );">Completed</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#" onclick="do_action( 'Cancelled' );">Cancel</a></li>
-
-                        <?php } if( $this->session->userdata( 'lvl' ) == 3 ) { ?>
-                        <li><a href="#" onclick="do_action( 'In Progress' );">Accept</a></li>
-                        <li><a href="#" onclick="do_action( 'For Approval' );">Completed</a></li>                      
-                        <?php } ?>
-                    </ul>
-                </div>
                 <div class="btn-group"></div>
             </div>
             <div class="row-fluid">
@@ -50,38 +35,39 @@
                     <div id="widget1container" class="block-body">
                         <table id="tbl_dev_plans" class="table">
                             <thead>
-                                <th><input type="checkbox" id="select_all"></th>
-                                <th>Training Title</th>
-                                <th>Description</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Status</th>
-                                <th></th>
+                                <th width="2%">#</th>
+                                <th width="20%">Training Title</th>
+                                <th width="40%">Description</th>
+                                <th width="10%">Start Date</th>
+                                <th width="10%">End Date</th>
+                                <th width="10%">Status</th>
+                                <th width="8%"></th>
                             </thead>
                             <tbody>
                                 <?php
                                     if( count( $dev_plans ) > 0 ){
+                                        $cnt = $this->uri->segment(5) != '' ? $this->uri->segment(5) : 0;
                                         foreach ( $dev_plans as $dev_plan ) {
+                                            $cnt++;
                                 ?>
                                 <tr>
-                                    <td><input type="checkbox" name="dev_plan[]" value="<?=$dev_plan['training_id']?>"></td>
-                                    <td><?=$this->template_library->shorten_words( $dev_plan['training_title'] )?></td>
-                                    <td><?=$this->template_library->shorten_words( $dev_plan['training_desc'] )?></td>
+                                    <td><?=$cnt?></td>
+                                    <td><?=$dev_plan['training_title']?></td>
+                                    <td><?=$dev_plan['training_desc']?></td>
                                     <td><?=!is_null($dev_plan['date_start']) ? $this->template_library->format_mysql_date( $dev_plan['date_start'], 'F d, Y' ) : ''?></td>
                                     <td><?=$this->template_library->format_mysql_date( $dev_plan['date_end'], 'F d, Y' )?></td>
                                     <td><?=$dev_plan['status']?></td>
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
                                     <td>
-                                        <a id="<?=$dev_plan['training_id']?>" title="Update" class="update_btn" href="#addModal" role="button" data-toggle="modal"><i class="icon-edit"></i></a>
-                                        &nbsp;
-                                        <a id="<?=$dev_plan['training_id']?>" title="Remove" class="del_btn" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
+                                        <a id="<?=$dev_plan['training_id']?>" title="Update" class="update_btn optlnk" href="#addModal" role="button" data-toggle="modal"><i class="icon-edit"></i></a>&nbsp;
+                                        <a id="<?=$dev_plan['training_id']?>" title="Remove" class="del_btn optlnk" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
                                     </td>
                                     <? } ?>
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 3 ) { ?>
                                     <td>
-                                        <a id="<?=$dev_plan['training_id']?>" title="View details" class="view_btn" href="#viewModal" role="button" data-toggle="modal"><i class="icon-file"></i></a>
+                                        <a id="<?=$dev_plan['training_id']?>" title="View details" class="view_btn optlnk" href="#viewModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>
                                     </td>
                                     <? } ?>
 
@@ -236,6 +222,8 @@
             var json_trainings = <?=$trainings?>;
 
             $( document ).ready( function() {                
+                $('.optlnk').tooltip();
+
                 <?php if(isset($save_url)) { ?> 
                 $( "#frm_dev_plan" ).validationEngine(); 
 
@@ -288,24 +276,6 @@
                 });
             }
             <? } ?>
-
-            $('#select_all').click( function() {
-                var all = $(this).prop('checked');
-                toggle_checkbox( $('#tbl_dev_plans tr td input[type=checkbox]'), all );
-                if( all ){
-                    $('#action').show();
-                }else{
-                    $('#action').hide();
-                }
-            });
-
-            $('#tbl_dev_plans tr td input[type=checkbox]').click( function() {
-                if( $(this).prop( 'checked' ) ){
-                    $('#action').show();
-                }else{
-                    $('#action').hide();
-                }
-            });
 
             <?php if( isset( $user_id ) ){ ?>
             function do_action( action ){

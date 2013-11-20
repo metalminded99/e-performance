@@ -166,4 +166,17 @@ class Goal_Model extends CI_Model {
                         ->result_array();
     }
 
+    public function getGoalSummary( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->select( 'dg.goal_title, eg.status, count(*) total ', FALSE )
+                        ->where( 'eg.status is not null', null )
+                        ->group_by( 'dg.goal_id, eg.status' )
+                        ->join( EMP_GOALS.' eg', 'eg.dept_goal_id = dg.goal_id', 'left' )
+                        ->get( DEPT_GOALS.' dg' )
+                        ->result_array();
+    }
+
 }

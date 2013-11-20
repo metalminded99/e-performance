@@ -25,7 +25,7 @@ class Appraisal extends CI_Controller {
 		}
 		# Appraisal list
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'appraisal' 
+																					'appraisal/index' 
 																					,$this->appraisal_model->getTotalAppraisal( array( 'job_id' => $this->user_job_id ) )
 																					,PER_PAGE
 																					,'user'
@@ -51,7 +51,7 @@ class Appraisal extends CI_Controller {
 		$this->template_library->check_session( 'user' );
 
 		# Appraisal list
-		$template_param['main_cat'] = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
+		$template_param['main_cat'] = $this->appraisal_model->getAppraisalMainCategories( );
 
 		# Template meta data
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
@@ -73,7 +73,7 @@ class Appraisal extends CI_Controller {
 			$step = $this->input->post( 'step' );
 			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
 
-			$cat = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
+			$cat = $this->appraisal_model->getAppraisalMainCategories();
 			if( $step <= count( $cat ) )
 				$template_param['cat'] = $cat[ ( $step - 1 ) ];
 			else
@@ -98,11 +98,12 @@ class Appraisal extends CI_Controller {
 			$db_data = $this->session->userdata( 'app_data-title' );
 			$this->session->unset_userdata('app_data-title');
 
-			$cat = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
+			$cat = $this->appraisal_model->getAppraisalMainCategories( );
 			foreach ($cat as $val) {
 				array_push( $db_data, $this->session->userdata( 'app_data-'.$val['main_category_id'] ) );
 				$this->session->unset_userdata('app_data-'.$val['main_category_id'] );
 			}
+
 			$this->appraisal_model->saveNewAppraisal( $db_data );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> New appraisal has been added successfully!', 'class' => 'info' ) );
 		}elseif( $action == 'edit' ) {
@@ -129,9 +130,15 @@ class Appraisal extends CI_Controller {
 			$step = $this->input->post( 'step' );
 			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
 
-			$cat = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
+			$cat = $this->appraisal_model->getAppraisalMainCategories( );
 			if( $step <= count( $cat ) ){
 				$template_param['cat'] = $cat[ ( $step - 1 ) ];
+				$template_param['subs'] = $this->appraisal_model->getFeedbackQuestion( 
+																						array( 
+																								'q.category' => $cat[ ( $step - 1 ) ]['main_category_id'] 
+																								,'sc.appraisal_id' => $app_id
+																							) 
+																					);
 			}
 			else
 				$this->save_appraisal( 'edit', $app_id );

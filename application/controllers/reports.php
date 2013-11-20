@@ -122,8 +122,7 @@ class Reports extends CI_Controller {
 		$this->load->model( 'process_model' );
 
 		if($this->input->get()){
-			$where = "p.start_date between '".$this->input->get('start_date1')."' AND '".$this->input->get('start_date2')."'";
-			$where .= "AND p.end_date between '".$this->input->get('end_date1')."' AND '".$this->input->get('end_date2')."'";
+			$where = "ep.date_assigned between '".$this->input->get('date_assinged')." 00:00:00' AND '".$this->input->get('date_assinged2')." 23:59:59'";
 
 			if( $this->input->get('proc_title') ){
 				$where .= " AND p.proc_title = '%".addslashes( $this->input->get('proc_title') )."%'";
@@ -142,6 +141,8 @@ class Reports extends CI_Controller {
 
 				$where .= "AND ep.date_accomplised between '".$this->input->get('date_accomplised1')."' AND '".$ac2."'";
 			}
+
+			$where .= 'AND u.job_id = '. $this->user_job_id;
 
 			$report = $this->process_model->getEmpProcessReport( 
 																	$where

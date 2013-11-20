@@ -71,7 +71,7 @@ class Dev_Plan_Model extends CI_Model {
     public function getEmpDevPlanReminder( $user_id ) {
         $where = array( 
                         'user_id' => $user_id
-                        ,'status' => 'For Approval'
+                        ,'status' => 'Pending'
                       );
 
         return $this->db

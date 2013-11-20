@@ -370,7 +370,7 @@ class Employees extends CI_Controller {
 																					,'U.lvl > '		=> 2
 																				  ) 
 																		   );
-		$template_param['appraisals'] = $this->appraisal_model->getAllAppraisal( $offset, PER_PAGE, array( 'job_id' => $this->user_job_id ) );
+		$template_param['appraisals'] = $this->appraisal_model->getAllAppraisal( 0, 10000, array( 'job_id' => $this->user_job_id ) );
 
 		$data['active'] = 'feedback';
 		$data['user_id'] = $user_id;

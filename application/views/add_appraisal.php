@@ -25,83 +25,76 @@
                                 <label for="appraisal_desc">Description <span class="red">(required)</span></label>
                                 <textarea id="appraisal_desc" name="appraisal_desc" row="10" class="span9 text validate[required]" style="resize:none;"/><?=isset( $appraisal[0]['appraisal_desc'] ) ? $appraisal[0]['appraisal_desc'] : '' ?></textarea>
                             </div>
-                            <?php } ?>
-
                             <?php 
-                                if( $step > 1 ) {
-                            ?>
-                                    <h3>Step <?=$step?>: <?=$cat['main_category_name']?></h3>
-                            <?php
-                                    $sub_cat = $this->appraisal_model->getAppraisalSubCategories( array( 'main_cat_id' => $cat['main_category_id'] ) );
-                                    if( count( $sub_cat ) > 0 ) {
-                            ?>
-                                        <div class="row-fluid">
-                            <?php
-                                        foreach ($sub_cat as $sub) {
-                                            if( preg_match('/update/', current_url()) ){
-                                                $questions = $this->appraisal_model->getAppraisalQuestion(
-                                                                                                             $this->uri->segment(3)
-                                                                                                            ,$cat['main_category_id']
-                                                                                                            ,$sub['sub_category_id']
-                                                                                                        );
-                                            }
-                                            $sub_input_name = 'question_'. $cat['main_category_id'] .'_'. $sub['sub_category_id'];
-                            ?>
-                                            <div class="block span6">
-                                                <div class="block-heading" data-target="#widget2container">
-                                                    <?=ucwords( $sub['sub_category_name'] )?>
-                                                </div>
-                                                <div id="widget2container" class="block-body">
-                                                    <div id="<?=$sub_input_name?>">
-                                                        <?php if( !isset( $questions ) || count( $questions ) == 0 ){ ?>
-                                                        <div class="q_box">
-                                                            <textarea name="<?=$sub_input_name?>[]" class="span9 questions validate[groupRequired[core_v]]" style="resize:none;width: 100%;"></textarea>
-                                                        </div>
-                                                        <?php 
-                                                            } else { 
-                                                                for ( $c = 0; $c < count( $questions ); $c++ ) {
-                                                        ?>
-                                                        <div class="q_box">
-                                                            <?php if( $c > 0 ) { ?> <div class="input_box_header"><span title="Delete" class="pull-right"><i class="icon-remove-sign"></i></span></div> <? } ?>
-                                                            <textarea name="<?=$sub_input_name?>[]" class="span9 questions validate[groupRequired[core_v]]" style="resize:none;width: 100%;"><?=$questions[ $c ]['question']?></textarea>
-                                                        </div>                                                        
-                                                        <?php 
-                                                                }
-                                                        ?>
-                                                        <script type="text/javascript">
-                                                            $( document ).ready( function(){
-                                                                $('#<?=$sub_input_name?> .q_box span').die().live('click',function() {
-                                                                    var index = $(this).parent().parent().index();
-                                                                    
-                                                                    $("#<?=$sub_input_name?> .q_box").eq( index ).remove();
-                                                                });
-                                                            });
-                                                        </script>
-                                                        <?php
-                                                            } 
-                                                        ?>
-                                                        <a href="javascript:void(0)" class="btn btn-mini btn-primary" onclick="addQuestion( '<?=$sub_input_name?>' );"><i class="icon-plus-sign"></i> Add more</a> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                            <?php
-                                        }
-                            ?>
-                                         </div>
-                            <?php
-                                    } else {
-                            ?>
-                                        <div class="alert alert-block">
-                                            <h4>Notice!</h4>
-                                            There's no sub category for <strong><?=$cat['main_category_name']?></strong>.
-                                            <p>
-                                                <a href="<?=base_url()?>appraisal/categories" target="_blank">Manage your sub category here</a>
-                                            </p>
-                                        </div>
-                            <?php
-                                    }
                                 } 
+                                
+                                if( $step > 1 ) {
+                                    $main_cat = strtolower( str_replace(' ', '_', $cat['main_category_name'] ) );
                             ?>
+                            <h3>Step <?=$step?>: <?=$cat['main_category_name']?></h3>
+                            <div class="btn-toolbar">
+                                <a href="javascript:void(0);" onclick="addSubCategory();" class="btn btn-primary btn-small">
+                                    <i class="icon-plus"></i> Add Sub Category
+                                </a>
+                                <div class="btn-group"></div>
+                            </div>
+                            <table class="table table-hover">
+                                <thead>
+                                    <th>Sub Category</th>
+                                    <th>Questions</th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                        if( count( @$subs ) > 0 ){ 
+                                            $old = '';
+                                            $cnt = 0;
+                                            foreach ($subs as $sub) {
+                                    ?>
+                                    <tr>
+                                        <?php if( $old != $sub['sub_category_name'] ) { $cnt++; ?>
+                                        <td class="sub_row">
+                                            <input type="text" value="<?=$sub['sub_category_name']?>" class="sub_cat validate[required]" name="<?=$main_cat?>_sub_<?=$sub['sub_category_id']?>_<?=$cat['main_category_id']?>[]"/>
+                                        </td>
+                                        <?php } else { ?>
+                                        <td></td>
+                                        <?php } ?>
+                                        <td>
+                                            <textarea name="<?=$main_cat?>_sub_<?=$sub['sub_category_id']?>_question_<?=$cat['main_category_id']?>[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_<?=$sub['sub_category_id']?>_question_<?=$cat['main_category_id']?>]]"><?=$sub['question']?></textarea>
+                                        </td>
+
+                                        <?php if( $old != $sub['sub_category_name'] ) { ?>
+                                        <td>
+                                            <?php if( $cnt > 1 ) { ?>
+                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('<?=@$main_cat?>_sub_<?=$sub['sub_category_id']?>_question_<?=@$cat['main_category_id']?>',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>&nbsp;
+
+                                            <a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest($(this).parent().parent().index(), 1);"><i class="icon-remove"></i></a>
+                                            <?php } else { ?>
+                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('<?=$main_cat?>_sub_<?=$sub['sub_category_id']?>_question_<?=$cat['main_category_id']?>',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>
+                                            <?php } ?>
+                                        </td>
+                                        <?php } else { ?>
+                                        <td>
+                                            <a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest($(this).parent().parent().index(), 0);"><i class="icon-remove-sign"></i></a>
+                                        </td>
+                                        <?php } ?>
+                                    </tr>
+                                    <?php $old = $sub['sub_category_name']; } } else { ?>
+                                    <tr>
+                                        <td class="sub_row">
+                                            <input type="text" value="" class="sub_cat validate[required]" name="<?=$main_cat?>_sub_1_<?=$cat['main_category_id']?>[]" placeholder="New Sub Category"/>
+                                        </td>
+                                        <td>
+                                            <textarea name="<?=$main_cat?>_sub_1_question_<?=$cat['main_category_id']?>[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_1_question_<?=$cat['main_category_id']?>]]"></textarea>
+                                        </td>
+                                        <td>
+                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('<?=$main_cat?>_sub_1_question_<?=$cat['main_category_id']?>',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>
+                                        </td>
+                                    </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                            <?php } ?>
                             <div class="modal-footer">
                                 <div class="pull-right">
                                     <button class="btn btn-mini btn-primary" type="button" onclick="cancel();">
@@ -125,6 +118,15 @@
     <script type="text/javascript">
         $( document ).ready( function(){
             $( "#frm_appraisal" ).validationEngine();
+            
+            $('.optlnk').tooltip();
+
+            $('.slider').slider({
+                 min            : 0
+                ,max            : 100
+                ,orientation    : 'horizontal'
+                ,step           : 5
+            });
 
             $( "#tabs" ).tabs();
 
@@ -137,19 +139,56 @@
 
                 return false;
             });
+
+            $('.sub_cat').focus();
         });
 
-        function addQuestion( e_name ){
-            var txt_htm = '<div class="q_box"><div class="input_box_header"><span title="Delete" class="pull-right"><i class="icon-remove-sign"></i></span></div><textarea name="'+e_name+'[]" class="span9 questions validate[groupRequired['+e_name+']]" style="resize:none;width: 100%;"></textarea></div>';
-            var e_index = $("#" +e_name+ " .q_box").length;
+        function addSubCategory( ){
+            console.log($('table tr').find('td.sub_row:eq').index());
+            var i = $('table tr').length;
+            var _i = i;
+            i--;
+            var txt_htm = '<tr><td class="sub_row"><input type="text" value="" class="sub_cat validate[required]" name="<?=@$main_cat?>_sub_'+_i+'_<?=@$cat['main_category_id']?>[]" placeholder="New Sub Category"/></td><td><textarea name="<?=@$main_cat?>_sub_'+_i+'_question_<?=@$cat['main_category_id']?>[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_'+_i+'_question_<?=@$cat['main_category_id']?>]]"></textarea></td><td><a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion(\'<?=@$main_cat?>_sub_'+_i+'_question_<?=@$cat['main_category_id']?>\',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>&nbsp;<a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest($(this).parent().parent().index(), 1);"><i class="icon-remove"></i></a></td></tr>';
 
-            $( txt_htm ).insertAfter( "#"+e_name+" .q_box:nth-child("+e_index+")" );
+            $( txt_htm ).insertAfter( "table tr:eq("+i+")" );
+            $('.optlnk').tooltip();
+        }
 
-            $('#'+ e_name +' .q_box span').die().live('click',function() {
-                var index = $(this).parent().parent().index();
-                
-                $("#"+ e_name +" .q_box").eq( index ).remove();
-            });
+        function addQuestion( e_name, parent ){
+            parent++;
+            var txt_htm = '<tr><td></td><td><textarea name="'+e_name+'[]" class="questions validate[groupRequired['+e_name+']]" style="resize:none;width: 350px;height: 40px;"></textarea></td><td><a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest($(this).parent().parent().index(), 0);"><i class="icon-remove-sign"></i></a></td></tr>';
+
+            $( txt_htm ).insertAfter( "table tr:eq("+parent+")" );
+
+            $('.optlnk').tooltip();
+        }
+
+        function remove_quest( parent, sub ){
+            var ans = confirm('Remove this item?');
+            parent++;
+            if( ans ){
+                if( sub ){
+                    var l = $('table tr').length - 1;
+                    if( parent != l ){
+                        var _diff = 0;
+                        for (var i = parent; i <= l; i++) {
+                            if( i != parent ){
+                                _diff++;
+                                if( $('table tr:eq('+i+') td:eq(0)').attr('class') == 'sub_row' )
+                                    break;
+                            }
+                        }
+
+                        for (var d = _diff - 1; d >= 0; d--) {
+                            $('table tr:eq('+parent+')').remove();
+                        };
+                    }else{
+                        $('table tr:eq('+parent+')').remove();
+                    }
+                } else {
+                    $('table tr:eq('+parent+')').remove();
+                }
+            }
         }
 
         function cancel() {

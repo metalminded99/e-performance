@@ -1,6 +1,6 @@
 <div class="row-fluid">
   <div class="block span6">
-    <?php $news_cnt = count( $news ); ?>
+    <?php $news_cnt = count( @$news ); ?>
     <div class="block-heading" data-target="#tablewidget">News <?php if( $news_cnt > 0 ) { ?> <span class="label label-warning">+<?=$news_cnt?></span> <?php } ?></div>
     <div id="tablewidget" class="block-body">
       <table class="table">

@@ -113,7 +113,7 @@ class Feedbacks extends CI_Controller {
 		$this->template_library->check_session( 'user' );
 
 		$step = $this->input->post( 'step' ) != '' ?  $this->input->post( 'step' ) : 0;
-		$cat = $this->appraisal_model->getAppraisalMainCategories( array( 'job_id' => $this->user_job_id ) );
+		$cat = $this->appraisal_model->getAppraisalMainCategories();
 
 		if( $this->input->post() ){
 			$this->session->set_userdata( 'app_data-'.$this->input->post('cat'), $this->input->post() );
@@ -126,7 +126,7 @@ class Feedbacks extends CI_Controller {
 		$sub_cat = $this->appraisal_model->getAppraisalSubCategories( array( 'main_cat_id' => $cat[$step]['main_category_id'] ) );
 		foreach ($sub_cat as $sc) {
 			$q_param = array( 
-								'appraisal_id'	=> $app_id
+								'q.appraisal_id'=> $app_id
 								,'category'		=> $cat[$step]['main_category_id']
 								,'sub_category' => $sc['sub_category_id']
 							);

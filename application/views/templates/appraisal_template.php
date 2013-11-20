@@ -7,14 +7,6 @@
         
         <div class="span9">
             <h2 class="page-title">Job Appraisal for <i><?=$this->session->userdata( 'job_title' )?></i></h2>
-            <ul class="nav nav-pills">
-                <li <?=$this->uri->segment(1) == 'appraisal' && $this->uri->segment(2) == '' ? 'class="active"' : '' ?>>
-                    <a href="<?=base_url()?>appraisal">Appraisals</a>
-                </li>
-                <li <?=$this->uri->segment(2) == 'categories' ? 'class="active"' : '' ?>>
-                    <a href="<?=base_url()?>appraisal/categories">Categories</a>
-                </li>
-            </ul>
 			<div class="btn-toolbar">
 				<a href="<?=base_url()?>appraisal/add" class="btn btn-primary" data-toggle="modal"><i class="icon-plus"></i>Add new appraisal</a>
 				<div class="btn-group"></div>

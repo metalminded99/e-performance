@@ -5,27 +5,27 @@ class Manage_News extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 
-		$this->load->model( 'duties_model' );
+		$this->load->model( 'news_model' );
 	}
 
 	public function index( $offset = 0 ) {
 		# Check user's session
 		$this->template_library->check_session( );
 
-		# Duties list
+		# News list
 		$data['pagination'] = $this->template_library->get_pagination(
 																		'control_panel/manage_news' 
-																		,$this->duties_model->getTotalDuties( DUTIES )
+																		,$this->news_model->getTotalNews( DUTIES )
 																		,'admin'
 																		,PER_PAGE
 																	 );
 
-		$data['h_title'] = 'Manage Duties';
-		$data['listing'] = $this->duties_model->getAllDuties( $offset, PER_PAGE );
+		$data['h_title'] = 'Manage News';
+		$data['listing'] = $this->news_model->getAllNews( $offset, PER_PAGE, array( 'active' => 1 ) );
 		$data['th'] = array(
-								'Duty Code'
-								,'Duty Name'
-								,'Duty Description'
+								,'News Title'
+								,'Content'
+								,'Status'
 								,'Date Added'
 							);
 		$data['add_button'] = anchor(
@@ -51,7 +51,7 @@ class Manage_News extends CI_Controller {
 		if( $this->input->post() )
 			$this->save_duty( 'add' );
 
-		# Duties form
+		# News form
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
 		$template_param['main_content'] = $this->load->view( 'admin/manage_news', '', true );
 		$template_param['content'] = 'templates/admin_template';
@@ -69,8 +69,8 @@ class Manage_News extends CI_Controller {
 		if( $this->input->post() )
 			$this->save_duty( 'edit' );
 
-		# Duties form
-		$duties = $this->duties_model->getAllDuties( 0, 1, array( 'duty_id' => $duty_id ) );
+		# News form
+		$duties = $this->news_model->getAllNews( 0, 1, array( 'duty_id' => $duty_id ) );
 		$data['duties'] = $duties[0];
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
 		$template_param['main_content'] = $this->load->view( 'admin/manage_news', $data, true );
@@ -82,10 +82,10 @@ class Manage_News extends CI_Controller {
 
 	public function save_duty( $action ) {
 		if( $action == 'add' ) {
-			$this->duties_model->saveNewDuty( $this->input->post() );
+			$this->news_model->saveNewDuty( $this->input->post() );
 			$this->session->set_flashdata( 'message', array('str' => 'New duty has been added successfully!', 'class' => 'n_ok' ) );
 		}elseif( $action == 'edit' ) {
-			$this->duties_model->updateDuty( $this->input->post() );
+			$this->news_model->updateDuty( $this->input->post() );
 			$this->session->set_flashdata( 'message', array('str' => 'Duty has been updated successfully!', 'class' => 'n_ok' ) );
 		}
 
@@ -94,7 +94,7 @@ class Manage_News extends CI_Controller {
 
 	public function delete_duty() {
 		if( $this->input->is_ajax_request() ) {
-			$this->duties_model->deleteDuty( array( 'duty_id' => $this->input->post( 'id' ) ) );
+			$this->news_model->deleteDuty( array( 'duty_id' => $this->input->post( 'id' ) ) );
 			echo "Duty deleted successfully!";
 		}
 	}

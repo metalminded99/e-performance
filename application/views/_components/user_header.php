@@ -15,6 +15,8 @@
     <link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>bootstrap-datetimepicker.min.css" />
     <link rel="stylesheet" href="<?=base_url().CSS?>font-awesome/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>validationEngine.jquery.css">
+    <link rel="stylesheet" type="text/css" href="<?=base_url().CSS?>slider.css">
+
 
     <script src="<?=base_url().JS?>jquery-1.8.3.min.js" type="text/javascript"></script>
     <script src="<?=base_url().JS?>common.js" type="text/javascript"></script>

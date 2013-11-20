@@ -9,6 +9,6 @@
 	    <?php endif; ?>
 
 	    <script src="<?=base_url().JS?>bootstrap.js"></script>
-
+	    <script type="text/javascript" src="<?=base_url().JS?>bootstrap-slider.js"></script>
 	</body>
 </html>

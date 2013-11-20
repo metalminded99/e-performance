@@ -7,9 +7,11 @@ class News_Model extends CI_Model {
         $this->load->database();
     }    
     
-    public function getActiveNews( ){
+    public function getAllNews( $offset, $per_page, $where = null ){
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+        
         return $this->db
-                        ->where( array( 'active' => 1 ) )
                         ->get( NEWS )
                         ->result_array();
     }
