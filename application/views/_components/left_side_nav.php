@@ -30,6 +30,7 @@
 				<li><a href="<?=base_url()?>reports/emp_goals">Employee Goals</a></li>
 				<li><a href="<?=base_url()?>reports/dev_plans">Development Plans</a></li>
 				<li><a href="<?=base_url()?>reports/process">Process</a></li>
+				<li><a href="<?=base_url()?>reports/appraisal">Appraisal</a></li>
 			</ul>
 			<?php } ?>
 

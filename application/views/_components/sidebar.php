@@ -36,7 +36,6 @@
 			<div class="h_title">&#8250; Manage Job Attributes</div>
 			<ul>
 				<li class="b1"><a class="icon job" href="<?=base_url()?>control_panel/manage_abilities">Show abilities</a></li>
-				<li class="b1"><a class="icon job" href="<?=base_url()?>control_panel/manage_activities">Show activities</a></li>
 				<li class="b1"><a class="icon job" href="<?=base_url()?>control_panel/manage_duties">Show duties</a></li>
 				<li class="b1"><a class="icon job" href="<?=base_url()?>control_panel/manage_skills">Show skills</a></li>
 			</ul>

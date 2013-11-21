@@ -161,7 +161,7 @@
                         ?>
                         <div class="clearfix"></div>
                     </div>
-                </div>
+                </div>   
                 <div class="block span6">
                     <div class="block-heading" data-target="#widget6container">
                         Abilities Info
@@ -185,12 +185,12 @@
                         ?>
                         <div class="clearfix"></div>                
                     </div>
-                </div>
+                </div>             
             </div>
             <div class="row-fluid">
                 <div class="block span6">
                     <div class="block-heading" data-target="#widget7container">
-                        Duties &amp; Responsibilities Info
+                        Duties, Responsibilities Info &amp; Activities
                     </div>
                     <div id="widget7container" class="block-body">
                         <?php 
@@ -212,29 +212,6 @@
                         <div class="clearfix"></div>
                     </div>
                 </div>
-                <div class="block span6">
-                    <div class="block-heading" data-target="#widget8container">
-                        Activities Info
-                    </div>
-                    <div id="widget8container" class="block-body">
-                        <?php 
-                            if( isset( $activities ) ){
-                                if( count( $activities ) ){
-                                    for ($a = 0; $a < count( $activities ); $a++) { 
-                        ?>
-                        <label class="label label-info"><?=$activities[ $a ]['activity_code']?> - <?=$activities[ $a ]['activity_name']?></label>
-                        <p><?=$activities[ $a ]['activity_desc']?></p>
-                        <?php
-                                    }
-                                }else{
-                        ?>
-                        <label class="label">No activities available</label>
-                        <?php
-                                }
-                            }
-                        ?>
-                        <div class="clearfix"></div>                     
-                    </div>
-                </div>
+                
             </div>
         </div>

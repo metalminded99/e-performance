@@ -296,8 +296,8 @@ class Appraisal_Model extends CI_Model {
     }
 
     public function getAllEmployeeFeedbackResult( $user_id ) {
-        return $this->db
-                        ->select( 'COUNT( DISTINCT user_id, appraisal_id ) AS  `numrows`', false )
+        return @$this->db
+                        ->select( 'COUNT( DISTINCT user_id, appraisal_id ) AS  numrows', false )
                         ->where( array( 'user_id' => $user_id ) )
                         ->group_by( 'user_id' )
                         ->get( APP_RESULT )
@@ -464,6 +464,41 @@ class Appraisal_Model extends CI_Model {
                         ->order_by( 'year(date_submit), month(date_submit)', 'asc' )
                         ->get( APP_RESULT )
                         ->result_array();
+    }
+
+    public function getSubmittedAppraisal( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+        
+        return $this->db
+                        ->select( 'ar.appraisal_id, a.appraisal_title' )
+                        ->join( APPRAISAL.' a', 'a.appraisal_id = ar.appraisal_id', 'left' )
+                        ->group_by( 'ar.appraisal_id' )
+                        ->get( APP_RESULT.' ar' );
+    }
+
+    public function getSubmittedAppraisalUsers( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+        
+        return $this->db
+                        ->select( 'ar.appraisal_id, CONCAT( u.fname, \' \', u.lname ) full_name', false )
+                        ->join( USER.' u', 'u.user_id = ar.user_id', 'left' )
+                        ->group_by( 'ar.appraisal_id' )
+                        ->get( APP_RESULT.' ar' );
+    }
+
+    public function getSubmittedAppraisalResults( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+        
+        return $this->db
+                        ->select( 'mc.main_category_name, sc.sub_category_name, aq.question, ar.self_score, ar.peer_score, ar.manager_score' )
+                        ->join( APP_MAIN_CAT.' mc', 'mc.main_category_id = aq.category', 'left' )
+                        ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = aq.sub_category', 'left' )
+                        ->join( APP_RESULT.' ar', 'aq.question_id = ar.question_id', 'left' )
+                        ->order_by( 'mc.main_category_id', 'asc' )
+                        ->get( APP_QUESTION.' aq' );
     }
 
 }

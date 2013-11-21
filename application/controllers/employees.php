@@ -64,6 +64,13 @@ class Employees extends CI_Controller {
 	public function info( $user_id ) {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
+		$this->load->model( 'succession_model' );
+
+		if( $this->input->post() ){
+			$this->succession_model->setEmployeeSuccession( $this->input->post(), $user_id );
+			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Employee\'s succession plan has been updated successfully!', 'class' => 'info' ) );
+			redirect( base_url().'employees/info/'.$user_id );
+		}
 
 		# Employee job attribute
 		$this->load->model( 'skills_model' );
@@ -73,8 +80,10 @@ class Employees extends CI_Controller {
 
 		$template_param['skills']		= $this->skills_model->getAllJobSkills( 0, 1000, array( 'job_id' => $this->user_job_id ) );
 		$template_param['abilities']	= $this->abilities_model->getAllJobAbilities( 0, 1000, array( 'job_id' => $this->user_job_id ) );
-		$template_param['activities']	= $this->activities_model->getAllJobActivities( 0, 1000, array( 'job_id' => $this->user_job_id ) );
 		$template_param['duties']		= $this->duties_model->getAllJobDuties( 0, 1000, array( 'job_id' => $this->user_job_id ) );
+		$template_param['succ_cat']		= $this->succession_model->getAllSuccessionCat();
+		$template_param['succ_plan']	= $this->succession_model->getEmployeeSuccession( array( 'user_id' => $user_id ) );
+
 		$data['active'] = 'info';
 		$data['user_id'] = $user_id;
 		$template_param['emp_menu'] = $this->load->view( '_components/emp_menu', $data, true );

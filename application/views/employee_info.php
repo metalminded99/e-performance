@@ -74,6 +74,111 @@
             </div>
             <div class="row-fluid">
                 <div class="block span6">
+                    <div class="block-heading" data-target="#widget8container">
+                        Succession Planning
+                    </div>
+                    <div id="widget8container" class="block-body">
+                        <?php
+                            if( $this->session->flashdata( 'message' ) ): 
+                                $msg = $this->session->flashdata( 'message' );
+                        ?>
+                            <div class="alert alert-<?=$msg['class']?>">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <?=$msg['str']?>
+                            </div>
+                        <?php 
+                            endif;
+
+                            $potential = '<option value="">----------------</option>';
+                            $timing = '<option value="">----------------</option>';
+                            $risk = '<option value="">----------------</option>';
+                            $reason = '<option value="">----------------</option>';
+                            foreach ($succ_cat as $sc) {
+                                switch ($sc['type']) {
+                                    case 'potential':
+                                        if( @$succ_plan[0]['potential'] == $sc['id'] )
+                                            $selected = 'selected="true"';
+                                        else
+                                            $selected = '';
+
+                                        $potential .= '<option value="'.$sc['id'].'" '.$selected.'>'.$sc['desc'].'</option>';
+                                        break;
+                                    
+                                    case 'timing':
+                                        if( @$succ_plan[0]['timing'] == $sc['id'] )
+                                            $selected = 'selected="true"';
+                                        else
+                                            $selected = '';
+
+                                        $timing .= '<option value="'.$sc['id'].'" '.$selected.'>'.$sc['desc'].'</option>';
+                                        break;
+                                    
+                                    case 'risk':
+                                        if( @$succ_plan[0]['risk_of_leaving'] == $sc['id'] )
+                                            $selected = 'selected="true"';
+                                        else
+                                            $selected = '';
+
+                                        $risk .= '<option value="'.$sc['id'].'" '.$selected.'>'.$sc['desc'].'</option>';
+                                        break;
+                                    
+                                    case 'reason':
+                                        if( @$succ_plan[0]['reason_for_leaving'] == $sc['id'] )
+                                            $selected = 'selected="true"';
+                                        else
+                                            $selected = '';
+
+                                        $reason .= '<option value="'.$sc['id'].'" '.$selected.'>'.$sc['desc'].'</option>';
+                                        break;
+                                    
+                                    default:
+                                        # code...
+                                        break;
+                                }
+                            }
+                        ?>
+                        <form id="succ_plan" action="" method="POST" onsubmit="return:false;">
+                            <label class="label label-info">Potential for promotion:</label>
+                            <p>
+                                <select name="potential" class="span12 validate[required]">
+                                    <?=$potential?>
+                                </select>
+                            </p>
+                            <label class="label label-info">Timing of next promotion:</label>
+                            <p>
+                                <select name="timing" class="span12 validate[required]">
+                                    <?=$timing?>
+                                </select>
+                            </p>
+                            <label class="label label-info">Risk of leaving:</label>
+                            <p>
+                                <select name="risk_of_leaving" class="span12 validate[required]">
+                                    <?=$risk?>
+                                </select>
+                            </p>
+                            <label class="label label-info">Reason for leaving:</label>
+                            <p>
+                                <select name="reason_for_leaving" class="span12 validate[required]">
+                                    <?=$reason?>
+                                </select>
+                            </p>
+
+                            <div class="pull-right">
+                                <button class="btn btn-small btn-primary" type="submit">Save</button>
+                            </div>
+                        </form>
+                        <script type="text/javascript" src="<?=base_url().JS?>languages/jquery.validationEngine-en.js"></script>
+                        <script type="text/javascript" src="<?=base_url().JS?>jquery.validationEngine.js"></script>
+                        <script type="text/javascript" src="<?=base_url().JS?>jquery-ui.js"></script>
+                        <script type="text/javascript">
+                            $( document ).ready( function(){
+                                $( "#succ_plan" ).validationEngine();
+                            });
+                        </script>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="block span6">
                     <div class="block-heading" data-target="#widget5container">
                         Skills Info
                     </div>
@@ -96,7 +201,9 @@
                         ?>
                         <div class="clearfix"></div>
                     </div>
-                </div>
+                </div>                
+            </div>
+            <div class="row-fluid">
                 <div class="block span6">
                     <div class="block-heading" data-target="#widget6container">
                         Abilities Info
@@ -121,8 +228,6 @@
                         <div class="clearfix"></div>                
                     </div>
                 </div>
-            </div>
-            <div class="row-fluid">
                 <div class="block span6">
                     <div class="block-heading" data-target="#widget7container">
                         Duties &amp; Responsibilities Info
@@ -145,30 +250,6 @@
                             }
                         ?>
                         <div class="clearfix"></div>
-                    </div>
-                </div>
-                <div class="block span6">
-                    <div class="block-heading" data-target="#widget8container">
-                        Activities Info
-                    </div>
-                    <div id="widget8container" class="block-body">
-                        <?php 
-                            if( isset( $activities ) ){
-                                if( count( $activities ) ){
-                                    for ($a = 0; $a < count( $activities ); $a++) { 
-                        ?>
-                        <label class="label label-info"><?=$activities[ $a ]['activity_code']?> - <?=$activities[ $a ]['activity_name']?></label>
-                        <p><?=$activities[ $a ]['activity_desc']?></p>
-                        <?php
-                                    }
-                                }else{
-                        ?>
-                        <label class="label">No activities available</label>
-                        <?php
-                                }
-                            }
-                        ?>
-                        <div class="clearfix"></div>                     
                     </div>
                 </div>
             </div>

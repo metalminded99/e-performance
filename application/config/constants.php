@@ -80,6 +80,9 @@ define('EMP_PROCESS_COM', 'tbl_emp_proc_comment');
 define('JOURNALS'		, 'tbl_emp_journals');
 define('DEV_PLAN'		, 'tbl_emp_development');
 
+define('SUCC_PLAN'		, 'tbl_succession_plan');
+define('SUCC_MAST'		, 'tbl_succession_master');
+
 /*
 |------------------------------------------------------------------------------
 | Path

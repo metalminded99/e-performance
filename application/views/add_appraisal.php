@@ -55,14 +55,13 @@
                                         <?php if( $old != $sub['sub_category_name'] ) { $cnt++; ?>
                                         <td class="sub_row">
                                             <input type="text" value="<?=$sub['sub_category_name']?>" class="sub_cat validate[required]" name="<?=$main_cat?>_sub_<?=$sub['sub_category_id']?>_<?=$cat['main_category_id']?>[]"/>
-                                        </td>
+                                        </td>                                        
                                         <?php } else { ?>
                                         <td></td>
                                         <?php } ?>
                                         <td>
                                             <textarea name="<?=$main_cat?>_sub_<?=$sub['sub_category_id']?>_question_<?=$cat['main_category_id']?>[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_<?=$sub['sub_category_id']?>_question_<?=$cat['main_category_id']?>]]"><?=$sub['question']?></textarea>
                                         </td>
-
                                         <?php if( $old != $sub['sub_category_name'] ) { ?>
                                         <td>
                                             <?php if( $cnt > 1 ) { ?>

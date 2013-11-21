@@ -8,4 +8,7 @@
     <li <?=$active == 'proc' ? 'class="active"' : '' ?>>
         <a href="<?=base_url()?>reports/process">Process</a>
     </li>
+    <li <?=$active == 'appraisal' ? 'class="active"' : '' ?>>
+        <a href="<?=base_url()?>reports/appraisal">Appraisal</a>
+    </li>
 </ul>

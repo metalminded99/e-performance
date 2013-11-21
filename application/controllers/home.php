@@ -119,13 +119,13 @@ class Home extends CI_Controller {
 
 		$this->load->model( 'skills_model' );
 		$this->load->model( 'abilities_model' );
-		$this->load->model( 'activities_model' );
+		$this->load->model( 'succession_model' );
 		$this->load->model( 'duties_model' );
 
 		$template_param['skills']		= $this->skills_model->getAllJobSkills( 0, 1000, array( 'job_id' => $this->session->userdata( 'job_id' ) ) );
 		$template_param['abilities']	= $this->abilities_model->getAllJobAbilities( 0, 1000, array( 'job_id' => $this->session->userdata( 'job_id' ) ) );
-		$template_param['activities']	= $this->activities_model->getAllJobActivities( 0, 1000, array( 'job_id' => $this->session->userdata( 'job_id' ) ) );
 		$template_param['duties']		= $this->duties_model->getAllJobDuties( 0, 1000, array( 'job_id' => $this->session->userdata( 'job_id' ) ) );
+		$template_param['succ_plan']	= $this->succession_model->getEmployeeSuccessionDetails( $this->session->userdata( 'user_id' ) );
 
 		$template_param['left_side_nav']			= $this->load->view( '_components/left_side_nav', '', true );
 		$template_param['content']					= 'acct_setting';

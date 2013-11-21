@@ -166,6 +166,64 @@ class Reports extends CI_Controller {
 										);
 	}
 
+	public function appraisal() {
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+		$this->load->model( 'appraisal_model' );
+
+		if($this->input->get()){
+			$ap_where = $where = "date_submit between '".$this->input->get('date_submitted')." 00:00:00' AND '".$this->input->get('date_submitted2')." 23:59:59'";
+
+			if( $this->input->get('appraisal_title') ){
+				$ap_where .= "AND a.appraisal_title like '%".addslashes( $this->input->get('appraisal_title') )."%'";
+			}
+			if( $this->input->get('lname') ){
+				$where .= " AND u.lname like '%".addslashes( $this->input->get('lname') )."%'";
+			}
+			if( $this->input->get('fname') ){
+				$where .= " AND u.fname like '%".addslashes( $this->input->get('fname') )."%'";
+			}
+
+			$results = array();
+			$apps = $this->appraisal_model->getSubmittedAppraisal( $ap_where );
+			if( $apps->num_rows() > 0 ){
+				foreach ($apps->result_array() as $app) {
+					$app_users = $this->appraisal_model->getSubmittedAppraisalUsers( $where );
+					if ( $app_users->num_rows() > 0 ) {
+						foreach ($app_users->result_array() as $app_user) {
+							$app_results = $this->appraisal_model->getSubmittedAppraisalResults( array( 'ar.appraisal_id' => $app['appraisal_id'] ) );
+							if( $app_results->num_rows() > 0 ){
+								foreach ($app_results->result_array() as $app_result) {
+									$results[ $app['appraisal_title'] ][ $app_user['full_name'] ][ $app_result['main_category_name'] ][ $app_result['sub_category_name'] ][] = array( 
+																					$app_result['question'] => array( 
+																									 'self' => $app_result['self_score'] 
+																									,'peer' => $app_result['peer_score'] 
+																									,'mngr' => $app_result['manager_score'] 
+																									) 
+																					);
+								}
+							}
+						}
+					}
+				}
+			}
+			$template_param['appraisals'] = $results;
+		}
+
+		# Template meta data
+		$data['active']						= 'appraisal';
+		$template_param['emp_menu']			= $this->load->view( '_components/report_menu', $data, true );
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']			= 'reports_appraisal';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
+	}
+
 }
 
 /* End of file appraisal.php */
