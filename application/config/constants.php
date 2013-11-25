@@ -65,6 +65,15 @@ define('APP_RESULT'		, 'tbl_appraisal_result');
 define('APP_MAIN_CAT'	, 'tbl_appraisal_main_categories');
 define('APP_SUB_CAT'	, 'tbl_appraisal_sub_categories');
 
+define('APP_TRAINING'			, 'tbl_appraisal_training');
+define('APP_TRAINING_QUESTION'	, 'tbl_appraisal_training_questionaire');
+define('APP_TRAINING_ASSIGN'	, 'tbl_appraisal_training_assignment');
+// define('APP_PEER_ASSIGN', 'tbl_appraisal_peer_assignment');
+// define('APP_MNGR_ASSIGN', 'tbl_appraisal_mngr_assignment');
+define('APP_TRAINING_RESULT'	, 'tbl_appraisal_training_result');
+define('APP_TRAINING_MAIN_CAT'	, 'tbl_appraisal_training_main_categories');
+define('APP_TRAINING_SUB_CAT'	, 'tbl_appraisal_training_sub_categories');
+
 define('EMP_GOALS'		, 'tbl_emp_goals');
 define('EMP_GOALS_COM'	, 'tbl_emp_goal_comments');
 define('DEPT_GOALS'		, 'tbl_dept_goals');

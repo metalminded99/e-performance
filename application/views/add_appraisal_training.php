@@ -49,23 +49,7 @@
                                                     }
                                                 }
                                             }
-
-                                            switch ($step) {
-                                                case 3:
-                                                    $_d = 10;
-                                                    break;
-                                                case 4:
-                                                    $_d = 5;
-                                                    break;
-                                                case 5:
-                                                    $_d = 0;
-                                                    break;
-                                                
-                                                default:
-                                                    # code...
-                                                    break;
-                                            }
-                                            $max  = (100 - $total_perc) - $_d;
+                                            $max  = 100 - $total_perc;
 
                                             $perc = range(5, $max, 5);
                                         }
@@ -74,7 +58,7 @@
 
                                         for( $i = 0; $i < count( $perc ); $i++ ){
                                     ?>
-                                    <option value="<?=$perc[$i]?>" <?=$cat['percentage'] == $perc[$i] ? 'selected' : ''?>><?=$perc[$i]?>%</option>
+                                    <option value="<?=$perc[$i]?>"><?=$perc[$i]?>%</option>
                                     <?php } ?>
                                 </select>
                             </h3>

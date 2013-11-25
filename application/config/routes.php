@@ -136,6 +136,8 @@ $route['feedbacks/self_feedback/(:num)'] = "feedbacks/feedback_question/$1";
 $route['feedbacks/peer_feedback/(:num)/(:num)'] = "feedbacks/feedback_question/$1/$2";
 $route['feedbacks/mngr_feedback/(:num)/(:num)'] = "feedbacks/feedback_question/$1/$2";
 
+$route['appraisal/training/add'] = "appraisal/training_add";
+
 $route['control_panel/(:any)'] = "admin/admin/$1";
 $route['404_override'] = 'not_found';
 

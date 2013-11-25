@@ -1,3 +1,4 @@
+<h3>Overall Score: <?=$overall?>%</h3>
 <div class="accordion" id="summary-accordion">
     <?php 
         $cnt = 0;

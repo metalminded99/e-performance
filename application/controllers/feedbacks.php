@@ -277,15 +277,19 @@ class Feedbacks extends CI_Controller {
 									$user				=> $this->session->userdata( 'user_id' )
 									,'aq.appraisal_id'	=> $this->input->post( 'app_id' )
 								 );
-
+			$overall = 0;
 			$main_cat = $this->appraisal_model->getFeedbackSummary( $field, $result_param );
 			foreach ($main_cat as $mc) {
 				$where = array_merge( $result_param, array( 'main_cat_id' => $mc['main_category_id'] ) );
 				$sub_cat = $this->appraisal_model->getFeedbackSummarySubCat( $field, $where );
 				foreach ($sub_cat as $sc) {
-					$data['summary'][ $mc['main_category_name'] ][ $mc['ave'] ][] = $sc;
+					$mc_perc = $mc['percentage'] / 100;
+					$percentage = ((($mc['ave'] / 5) * 100) * $mc_perc);
+					$overall += $percentage;
+					$data['summary'][ $mc['main_category_name'] ][ $percentage ."% out of " .$mc['percentage']. "%" ][] = $sc;
 				}
 			}
+			$data['overall'] = $overall;
 			echo $this->load->view( 'templates/appraisal_summary', $data, true );
 		}
 		else

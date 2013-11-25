@@ -46,6 +46,42 @@ class Appraisal extends CI_Controller {
 										);
 	}
 
+	public function training( $offset = 0 ) {
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+		$this->load->library('user_agent');
+		if( $this->agent->is_referral() ) {
+			if( preg_match( '/update/', $this->agent->referrer() ) ) {
+				$this->session->unset_userdata('app_data-title');
+				$cat = $this->appraisal_model->getTrainingAppraisalMainCategories();
+				foreach ($cat as $val) {
+					$this->session->unset_userdata('app_data-'.$val['main_category_id'] );
+				}
+			}
+		}
+		# Appraisal list
+		$template_param['pagination'] = $this->template_library->get_pagination(
+																					'appraisal/training' 
+																					,$this->appraisal_model->getTotalTrainingAppraisal( )
+																					,PER_PAGE
+																					,'user'
+																					,($this->uri->segment(2)) ? $this->uri->segment(2) : 0
+								 												);
+		$template_param['appraisals'] = $this->appraisal_model->getAllTrainingAppraisal( $offset, PER_PAGE );
+
+		# Template meta data
+		$template_param['counter']	= $offset;
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']			= 'templates/appraisal_training_template';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
+	}
+
 	public function categories( ) {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
@@ -74,7 +110,37 @@ class Appraisal extends CI_Controller {
 			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
 
 			$cat = $this->appraisal_model->getAppraisalMainCategories();
-			if( $step <= count( $cat ) )
+			$template_param['cat_cnt'] = count( $cat );
+			if( $step <= $template_param['cat_cnt'] )
+				$template_param['cat'] = $cat[ ( $step - 1 ) ];
+			else
+				$this->save_appraisal( 'add' );
+		}
+
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['step'] = @$step != '' ? $step + 1 : 1;
+		$template_param['action'] = 'Add New Appraisal';
+		$template_param['content']= 'add_appraisal';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
+	}
+
+	public function training_add() {
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+		$this->load->model( 'dev_plans_model' );
+		if( $this->input->post() ){
+			$step = $this->input->post( 'step' );
+			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
+
+			$cat = $this->appraisal_model->getTrainingAppraisalMainCategories();
+			$template_param['cat_cnt'] = count( $cat );
+			if( $step <= $template_param['cat_cnt'] )
 				$template_param['cat'] = $cat[ ( $step - 1 ) ];
 			else
 				$this->save_appraisal( 'add' );
@@ -130,7 +196,7 @@ class Appraisal extends CI_Controller {
 			$step = $this->input->post( 'step' );
 			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
 
-			$cat = $this->appraisal_model->getAppraisalMainCategories( );
+			$cat = $this->appraisal_model->getAppraisalMainCategories( $app_id );
 			if( $step <= count( $cat ) ){
 				$template_param['cat'] = $cat[ ( $step - 1 ) ];
 				$template_param['subs'] = $this->appraisal_model->getFeedbackQuestion( 

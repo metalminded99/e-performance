@@ -26,13 +26,19 @@ class Appraisal_Model extends CI_Model {
         return $this->db->count_all_results( APPRAISAL );
     }
 
-    public function getAppraisalMainCategories( $where = null, $offset = null, $per_page = 1000 ) {
+    public function getAppraisalMainCategories( $app_id = null, $where = null, $offset = null, $per_page = 1000 ) {
         if( !is_null( $where ) )
             $this->db->where( $where );
 
+        if( !is_null( $app_id ) ){
+            $this->db
+                     ->where( 'ap.appraisal_id', $app_id )
+                     ->join( 'tbl_appraisal_percentage ap', 'ap.main_cat_id = mc.main_category_id', 'left' );
+        }
+
         return $this->db
                         ->limit( $per_page, $offset )
-                        ->get( APP_MAIN_CAT )
+                        ->get( APP_MAIN_CAT.' mc' )
                         ->result_array();
     }
 
@@ -103,11 +109,18 @@ class Appraisal_Model extends CI_Model {
         unset($db_param[ 'job_id' ]);
         unset($db_param[ 'module' ]);
         unset($db_param[ 'step' ]);
-
+        
         $this->db->insert( APPRAISAL, $app );
         $app_id = $this->db->insert_id();
 
         for( $i = 0; $i < count( $db_param ); $i ++ ){
+            $perc = array(
+                             'appraisal_id' => $app_id
+                            ,'main_cat_id'  => $db_param[$i]['module']
+                            ,'percentage' => $db_param[$i]['percentage']
+                         );
+            $this->db->insert( 'tbl_appraisal_percentage', $perc );
+
             foreach ($db_param[$i] as $key => $value) {
                 if( preg_match( '/sub/', $key ) ) {
                     if( !preg_match( '/question/', $key ) ) {
@@ -409,12 +422,13 @@ class Appraisal_Model extends CI_Model {
         if( !is_null( $where ) )
             $this->db->where( $where );
 
-        return $this->db
-                        ->select( 'mc.main_category_id, mc.main_category_name, AVG( ar.'.$field.' ) ave' )
+         return $this->db
+                        ->select( 'mc.main_category_id, mc.main_category_name, SUM( ar.'.$field.' ) ave, ap.percentage' )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
                         ->join( APP_MAIN_CAT.' mc', 'mc.main_category_id = aq.category', 'left' )
-                        ->group_by( 'mc.main_category_id' )
+                        ->join( 'tbl_appraisal_percentage ap', 'ap.main_cat_id = mc.main_category_id and ap.appraisal_id = '.@$where['aq.appraisal_id'], 'left' )
+                        ->group_by( 'mc.main_category_id, aq.appraisal_id' )
                         ->get()
                         ->result_array();
     }
@@ -427,7 +441,7 @@ class Appraisal_Model extends CI_Model {
                         ->select( 'sc.sub_category_name, AVG( ar.'.$field.' ) ave' )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
-                        ->join( APP_SUB_CAT.' sc', 'sc.main_cat_id = aq.category', 'left' )
+                        ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = aq.sub_category', 'left' )
                         ->group_by( 'sc.sub_category_id' )
                         ->get()
                         ->result_array();
@@ -499,6 +513,78 @@ class Appraisal_Model extends CI_Model {
                         ->join( APP_RESULT.' ar', 'aq.question_id = ar.question_id', 'left' )
                         ->order_by( 'mc.main_category_id', 'asc' )
                         ->get( APP_QUESTION.' aq' );
+    }
+
+    public function getAllTrainingAppraisal( $offset, $per_page, $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->limit( $per_page, $offset )
+                        ->order_by( 'date_created', 'desc' )
+                        ->get( APP_TRAINING )
+                        ->result_array();
+
+    }
+
+    public function getTotalTrainingAppraisal( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db->count_all_results( APP_TRAINING );
+    }
+
+    public function getTrainingAppraisalMainCategories( $where = null, $offset = null, $per_page = 1000 ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->limit( $per_page, $offset )
+                        ->get( APP_TRAINING_MAIN_CAT )
+                        ->result_array();
+    }
+
+    public function getTrainingAppraisalSubCategories( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->get( APP_TRAINING_SUB_CAT )
+                        ->result_array();
+    }
+
+    public function addTrainingAppraisalMainCategories( $db_param ) {
+        $this->db->insert( APP_TRAINING_MAIN_CAT, $db_param );
+        return $this->db->insert_id();
+    }
+
+    public function addTrainingAppraisalSubCategories( $db_param ) {
+        $this->db->insert( APP_TRAINING_SUB_CAT, $db_param );
+        return $this->db->insert_id();
+    }
+
+    public function removeTrainingAppraisalSubCategories( $db_param ) {
+        $this->db->delete( APP_TRAINING_SUB_CAT, $db_param );
+        return true;
+    }
+
+    public function removeTrainingAppraisalMainCategories( $db_param ) {
+        $this->db->delete( APP_TRAINING_MAIN_CAT, $db_param );
+        return true;
+    }
+
+    public function updateTrainingAppraisalSubCategories( $db_param, $where ) {
+        $this->db
+                ->where( $where )
+                ->update( APP_TRAINING_SUB_CAT, $db_param );
+        return true;
+    }
+
+    public function updateTrainingAppraisalMainCategories( $db_param, $where ) {
+        $this->db
+                ->where( $where )
+                ->update( APP_TRAINING_MAIN_CAT, $db_param );
+        return true;
     }
 
 }

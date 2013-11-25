@@ -50,8 +50,7 @@
 				$new = $this->uri->segment(3, 0);
 				if( $new != 'new_job' ) { 
 			?>
-			<li><a href="#dandr">Duties &amp; Responsibilty</a></li>
-			<li><a href="#act">Activities</a></li>
+			<li><a href="#dandr">Duties, Responsibilty &amp;Activities</a></li>
 			<li><a href="#skills">Skills</a></li>
 			<li><a href="#abl">Abilities</a></li>
 			<?php } ?>
@@ -130,67 +129,6 @@
 						$('#select_all_duties').click( function() {
 							var all = $(this).prop('checked');
 							toggle_checkbox( $('#tbl_duties input[type=checkbox]'), all );
-						});
-					</script>
-					
-					<div class="entry">
-						<button type="submit" class="add">Save</button> 
-						<button type="button" class="cancel">Cancel</button>
-					</div>
-					<?php
-						} else { 
-					?>
-						<div class="n_warning">
-							<p>No skills available. Manage skills <a href="<?=base_url()?>control_panel/manage_skills">here</a></p>
-						</div>
-					<?php } ?>					
-				</form>
-			</div>
-		</div>
-		<div id="act">
-			<div class="element">
-				<form id="frm_job_act" action="<?=base_url()?>control_panel/manage_job/update_act" method="post">
-					<?=isset( $job['job_id'] ) ? form_hidden( 'job_id', $job['job_id'] ) : ''?>
-					<?php 
-						if( isset( $activities ) && count( $activities ) > 0 ) {
-					?>
-					<table id="tbl_activities" style="width:100%;margin-left:0;table-layout: fixed;">
-						<tr>
-							<th align="left" style="width: 3%">
-								<input type="checkbox" id="select_all_activities">
-							</th>
-							<th align="left" style="width: 25%">
-								Activity Name
-							</th>
-							<th align="left">
-								Description
-							</th>
-						</tr>
-					<?php
-							foreach ( $activities as $activity ) {								
-								if( $this->template_library->check_array_value_exist( $act_attributes, $activity['activity_id'] ) )
-									$s_check = "checked";
-								else
-									$s_check = "";
-
-								echo '<tr>
-									  <td>
-										<input type="checkbox" class="validate[minCheckbox[1]]" value="'.$activity['activity_id'].'" name="activities[]" id="'.$activity['activity_id'].'" '.$s_check.'>
-									  </td>
-									  <td v-align="top">'
-									  .$activity['activity_name']. 
-									  '</td>
-									  <td style="word-wrap: break-word">'
-									  .$activity['activity_desc'].
-									'</td>
-								</tr>';
-							}
-					?>
-					</table>
-					<script type="text/javascript">
-						$('#select_all_activities').click( function() {
-							var all = $(this).prop('checked');
-							toggle_checkbox( $('#tbl_activities input[type=checkbox]'), all );
 						});
 					</script>
 					

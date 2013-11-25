@@ -64,9 +64,6 @@ class Manage_job extends CI_Controller {
 		$data['abilities']				= $this->abilities_model->getAllAbilities( 0, 1000 );
 		$data['abilities_attributes']	= array();
 
-		$data['activities']				= $this->activities_model->getAllActivities( 0, 1000 );
-		$data['act_attributes']			= array();
-
 		$data['duties']					= $this->duties_model->getAllDuties( 0, 1000 );
 		$data['duties_attributes']		= array();
 
@@ -99,9 +96,6 @@ class Manage_job extends CI_Controller {
 
 		$data['abilities']				= $this->abilities_model->getAllAbilities( 0, 1000 );
 		$data['abilities_attributes']	= $this->abilities_model->getAllJobAbilities( 0, 1000, array( 'job_id' => $job_id ) );
-
-		$data['activities']				= $this->activities_model->getAllActivities( 0, 1000 );
-		$data['act_attributes']			= $this->activities_model->getAllJobActivities( 0, 1000, array( 'job_id' => $job_id ) );
 
 		$data['duties']					= $this->duties_model->getAllDuties( 0, 1000 );
 		$data['duties_attributes']		= $this->duties_model->getAllJobDuties( 0, 1000, array( 'job_id' => $job_id ) );
