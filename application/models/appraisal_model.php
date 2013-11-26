@@ -422,12 +422,15 @@ class Appraisal_Model extends CI_Model {
         if( !is_null( $where ) )
             $this->db->where( $where );
 
-         return $this->db
+        if(isset($where['aq.appraisal_id'] ))
+            $this->db->where('ap.appraisal_id', $where['aq.appraisal_id']);
+
+          return $this->db
                         ->select( 'mc.main_category_id, mc.main_category_name, SUM( ar.'.$field.' ) ave, ap.percentage' )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
                         ->join( APP_MAIN_CAT.' mc', 'mc.main_category_id = aq.category', 'left' )
-                        ->join( 'tbl_appraisal_percentage ap', 'ap.main_cat_id = mc.main_category_id and ap.appraisal_id = '.@$where['aq.appraisal_id'], 'left' )
+                        ->join( 'tbl_appraisal_percentage ap', 'ap.main_cat_id = mc.main_category_id', 'left' )
                         ->group_by( 'mc.main_category_id, aq.appraisal_id' )
                         ->get()
                         ->result_array();
