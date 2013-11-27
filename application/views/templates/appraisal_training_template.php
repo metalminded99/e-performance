@@ -16,7 +16,7 @@
 			</ul>
             <h2 class="page-title">Job Appraisal for <i><?=$this->session->userdata( 'job_title' )?></i></h2>
 			<div class="btn-toolbar">
-				<a href="<?=base_url()?>appraisal/add" class="btn btn-primary" data-toggle="modal"><i class="icon-plus"></i>Add new appraisal</a>
+				<a href="<?=base_url()?>appraisal/training/add" class="btn btn-primary" data-toggle="modal"><i class="icon-plus"></i>Add new appraisal</a>
 				<div class="btn-group"></div>
 			</div>
 			<div class="well">

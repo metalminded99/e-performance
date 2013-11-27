@@ -133,23 +133,18 @@ class Appraisal extends CI_Controller {
 	public function training_add() {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
-		$this->load->model( 'dev_plans_model' );
 		if( $this->input->post() ){
 			$step = $this->input->post( 'step' );
-			$this->session->set_userdata( 'app_data-'.$this->input->post('module'), $this->input->post() );
+			$this->session->set_userdata( 't_app_data-'.$step, $this->input->post() );
 
-			$cat = $this->appraisal_model->getTrainingAppraisalMainCategories();
-			$template_param['cat_cnt'] = count( $cat );
-			if( $step <= $template_param['cat_cnt'] )
-				$template_param['cat'] = $cat[ ( $step - 1 ) ];
-			else
-				$this->save_appraisal( 'add' );
+			if( $step > 1 )
+				$this->save_appraisal( 'add_training' );
 		}
 
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
 		$template_param['step'] = @$step != '' ? $step + 1 : 1;
-		$template_param['action'] = 'Add New Appraisal';
-		$template_param['content']= 'add_appraisal';
+		$template_param['action'] = 'Add New Training Appraisal';
+		$template_param['content']= 'add_appraisal_training';
 		$this->template_library->render( 
 											$template_param 
 											,'user_header'
@@ -181,6 +176,15 @@ class Appraisal extends CI_Controller {
 				array_push( $db_data, $this->session->userdata( 'app_data-'.$val['main_category_id'] ) );
 				$this->session->unset_userdata('app_data-'.$val['main_category_id'] );
 			}
+			$this->appraisal_model->updateAppraisal( $app_id, $db_data );
+			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );
+		}elseif( $action == 'add_training' ) {
+			echo "<pre>";
+			print_r($_SESSION);
+			exit();
+			$db_data = $this->session->userdata( 't_app_data-title' );
+			// $this->session->unset_userdata('t_app_data-title');
+
 			$this->appraisal_model->updateAppraisal( $app_id, $db_data );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );
 		}

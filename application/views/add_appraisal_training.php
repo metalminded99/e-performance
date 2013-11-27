@@ -1,3 +1,33 @@
+<style type="text/css">
+    .mc-controls{
+        position: relative;
+        top: -41px;
+        width: 120px;
+        height: 5px;
+        left: 63%;
+    }
+
+    .sc-controls{
+        position: relative;
+        top: -41px;
+        width: 120px;
+        height: 5px;
+        left: 63%;
+    }
+
+    .q-controls{
+        position: relative;
+        top: -97px;
+        width: 12px;
+        height: 10px;
+        left: 64.7%;
+    }
+
+    .q-input{
+        height:70px;
+        resize:none;
+    }
+</style>
 <div class="container-fluid">
     <div class="row-fluid">
 
@@ -14,7 +44,6 @@
                         <form id="frm_appraisal" action="" method="POST">
                             <input type = "hidden" name = "job_id" value = "<?=$this->session->userdata( 'job_id' )?>">
                             <input type = "hidden" name = "step" value = "<?=isset($step) ? $step : '1' ?>">
-                            <input type = "hidden" name = "module" value = "<?=isset($cat['main_category_id']) ? $cat['main_category_id'] : 'title' ?>">
 
                             <?php if( $step == 1 ) { ?>
                             <div class="element">
@@ -29,40 +58,11 @@
                                 } 
                                 
                                 if( $step > 1 ) {
-                                    $main_cat = strtolower( str_replace(' ', '_', $cat['main_category_name'] ) );
                             ?>
                             <h3>
-                                Step <?=$step?>: <?=$cat['main_category_name']?>
-                                &nbsp;
-                                <select id="percentage" name="percentage" style="width:77px;" class="validate[required]">
-                                    <option value="">------</option>
-                                    <?php
-                                        if( @$step > 2 ){
-                                            $_sess = array_keys($_SESSION);
-                                            $total_perc = 0;
-                                            for( $s = 0; $s < count( $_sess ); $s++ ){
-                                                if( preg_match('/app_data/', $_sess[$s]) ) {
-                                                    $app_data = explode('-', $_sess[$s]);
-                                                    $app_id  = end( $app_data );
-                                                    if( is_numeric( $app_id ) ){
-                                                        $total_perc += $_SESSION['app_data-'.$app_id]['percentage'];
-                                                    }
-                                                }
-                                            }
-                                            $max  = 100 - $total_perc;
-
-                                            $perc = range(5, $max, 5);
-                                        }
-                                        else
-                                            $perc = range(5, 75, 5);
-
-                                        for( $i = 0; $i < count( $perc ); $i++ ){
-                                    ?>
-                                    <option value="<?=$perc[$i]?>"><?=$perc[$i]?>%</option>
-                                    <?php } ?>
-                                </select>
+                                Step <?=$step?>: Creating questions
                             </h3>
-                            <div class="btn-toolbar">
+                            <!-- <div class="btn-toolbar">
                                 <a href="javascript:void(0);" onclick="addSubCategory();" class="btn btn-primary btn-small">
                                     <i class="icon-plus"></i> Add Sub Category
                                 </a>
@@ -84,22 +84,22 @@
                                     <tr>
                                         <?php if( $old != $sub['sub_category_name'] ) { $cnt++; ?>
                                         <td class="sub_row">
-                                            <input type="text" value="<?=$sub['sub_category_name']?>" class="sub_cat validate[required]" name="<?=$main_cat?>_sub_<?=$sub['sub_category_id']?>_<?=$cat['main_category_id']?>[]"/>
+                                            <input type="text" value="<?=$sub['sub_category_name']?>" class="sub_cat validate[required]" name="_sub_<?=$sub['sub_category_id']?>[]"/>
                                         </td>                                        
                                         <?php } else { ?>
                                         <td></td>
                                         <?php } ?>
                                         <td>
-                                            <textarea name="<?=$main_cat?>_sub_<?=$sub['sub_category_id']?>_question_<?=$cat['main_category_id']?>[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_<?=$sub['sub_category_id']?>_question_<?=$cat['main_category_id']?>]]"><?=$sub['question']?></textarea>
+                                            <textarea name="_sub_<?=$sub['sub_category_id']?>_question_[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_<?=$sub['sub_category_id']?>_question_]]"><?=$sub['question']?></textarea>
                                         </td>
                                         <?php if( $old != $sub['sub_category_name'] ) { ?>
                                         <td>
                                             <?php if( $cnt > 1 ) { ?>
-                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('<?=@$main_cat?>_sub_<?=$sub['sub_category_id']?>_question_<?=@$cat['main_category_id']?>',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>&nbsp;
+                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('_sub_<?=$sub['sub_category_id']?>_question_',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>&nbsp;
 
                                             <a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest($(this).parent().parent().index(), 1);"><i class="icon-remove"></i></a>
                                             <?php } else { ?>
-                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('<?=$main_cat?>_sub_<?=$sub['sub_category_id']?>_question_<?=$cat['main_category_id']?>',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>
+                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('_sub_<?=$sub['sub_category_id']?>_question_',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>
                                             <?php } ?>
                                         </td>
                                         <?php } else { ?>
@@ -111,18 +111,63 @@
                                     <?php $old = $sub['sub_category_name']; } } else { ?>
                                     <tr>
                                         <td class="sub_row">
-                                            <input type="text" value="" class="sub_cat validate[required]" name="<?=$main_cat?>_sub_1_<?=$cat['main_category_id']?>[]" placeholder="New Sub Category"/>
+                                            <input type="text" value="" class="sub_cat validate[required]" name="_sub_1_[]" placeholder="New Sub Category"/>
                                         </td>
                                         <td>
-                                            <textarea name="<?=$main_cat?>_sub_1_question_<?=$cat['main_category_id']?>[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_1_question_<?=$cat['main_category_id']?>]]"></textarea>
+                                            <textarea name="_sub_1_question_[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_1_question_]]"></textarea>
                                         </td>
                                         <td>
-                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('<?=$main_cat?>_sub_1_question_<?=$cat['main_category_id']?>',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>
+                                            <a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion('_sub_1_question_',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>
                                         </td>
                                     </tr>
                                     <?php } ?>
                                 </tbody>
-                            </table>
+                            </table> -->
+
+                            <div id="container">
+                                <button class="btn btn-small btn-primary" type="button" onclick="addMainCategory();"><i class="icon-plus-sign"></i> Add Main Category</button>
+                                <br/>
+                                <div class="form-container">
+                                    <div class="mc-container">
+                                        <div class="mc-form">
+                                            <label style="font-weight">Main Category</label>
+                                            <input type="text" name="training_mc[]" class="span6 mc-input validate[required]">
+                                            &nbsp;
+                                            <select name="percentage[]" style="width:77px;" class="validate[required]">
+                                                <option value="">------</option>
+                                                <?php
+                                                    $perc = range(5, 100, 5);
+
+                                                    for( $i = 0; $i < count( $perc ); $i++ ){
+                                                ?>
+                                                <option value="<?=$perc[$i]?>"><?=$perc[$i]?>%</option>
+                                                <?php } ?>
+                                            </select>
+                                            <div class="mc-controls">
+                                                <a href="javascript:void(0)" onclick="addSubCategory($(this).parent().parent().parent().parent().index());" class="btn optlnk" title="Add sub category"><i class="icon-plus"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="sc-container">
+                                        <div class="sc-form">
+                                            <label style="font-weight">Sub Category</label>
+                                            <input type="text" name="sub_c_1_1[]" class="span7 sc-input validate[required]">
+                                            <div class="sc-controls">
+                                                <a href="javascript:void(0)" onclick="addQuestion($(this).parent().parent().parent().parent().index(), $(this).parent().parent().parent().index());" class="btn optlnk" title="Add question"><i class="icon-plus-sign"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="q-container">
+                                            <label style="font-weight">Questions</label>
+                                            <div class="q-form">
+                                                <div class="question">
+                                                    <textarea name="quest_1_1[]" class="span8 q-input validate[required]"></textarea>
+                                                    <div class="q-controls">&nbsp;</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <?php } ?>
                             <div class="modal-footer">
                                 <div class="pull-right">
@@ -172,51 +217,62 @@
             $('.sub_cat').focus();
         });
 
-        function addSubCategory( ){
-            console.log($('table tr').find('td.sub_row:eq').index());
-            var i = $('table tr').length;
-            var _i = i;
-            i--;
-            var txt_htm = '<tr><td class="sub_row"><input type="text" value="" class="sub_cat validate[required]" name="<?=@$main_cat?>_sub_'+_i+'_<?=@$cat['main_category_id']?>[]" placeholder="New Sub Category"/></td><td><textarea name="<?=@$main_cat?>_sub_'+_i+'_question_<?=@$cat['main_category_id']?>[]" style="resize:none;width: 350px;height: 40px;" class="validate[groupRequired[sub_'+_i+'_question_<?=@$cat['main_category_id']?>]]"></textarea></td><td><a title="Add question" class="optlnk" href="javascript:void(0);" role="button" onclick="addQuestion(\'<?=@$main_cat?>_sub_'+_i+'_question_<?=@$cat['main_category_id']?>\',$(this).parent().parent().index());"><i class="icon-plus-sign"></i></a>&nbsp;<a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest($(this).parent().parent().index(), 1);"><i class="icon-remove"></i></a></td></tr>';
+        function addMainCategory( ){
+            var sq_index = $( ".form-container:last .sc-container:last" ).index() + 1;
+            var sc_htm = '<div class="form-container"><hr><div class="mc-container"><div class="mc-form"><label style="font-weight">Main Category</label><input type="text" name="training_mc[]" class="span6 mc-input validate[required]">&nbsp;<select name="percentage[]" style="width:77px;" class="validate[required]"><option value="">------</option><?php $perc = range(5, 100, 5);for( $i = 0; $i < count( $perc ); $i++ ){?><option value="<?=$perc[$i]?>"><?=$perc[$i]?>%</option><?php } ?></select><div class="mc-controls"><a href="javascript:void(0)" onclick="addSubCategory($(this).parent().parent().parent().parent().index());" class="btn optlnk" title="Add sub category"><i class="icon-plus"></i></a> &nbsp; <a href="javascript:void(0)" onclick="removeMain( $(this).parent().parent().parent().parent().index() );" class="btn optlnk" title="Remove"><i class="icon-trash"></i></a></div></div></div><div class="sc-container"><div class="sc-form"><label style="font-weight">Sub Category</label><input type="text" name="sub_c_'+sq_index+'_1[]" class="span7 sc-input validate[required]"><div class="sc-controls"><a href="javascript:void(0)" onclick="addQuestion($(this).parent().parent().parent().parent().index(), $(this).parent().parent().parent().index());" class="btn optlnk" title="Add question"><i class="icon-plus-sign"></i></a></div></div><div class="q-container"><label style="font-weight">Questions</label><div class="q-form"><div class="question"><textarea name="quest_'+sq_index+'_1[]" class="span8 q-input validate[required]"></textarea><div class="q-controls">&nbsp;</div></div></div></div></div></div>';
 
-            $( txt_htm ).insertAfter( "table tr:eq("+i+")" );
+            $( sc_htm ).insertAfter( ".form-container:last" );
             $('.optlnk').tooltip();
         }
 
-        function addQuestion( e_name, parent ){
-            parent++;
-            var txt_htm = '<tr><td></td><td><textarea name="'+e_name+'[]" class="questions validate[groupRequired['+e_name+']]" style="resize:none;width: 350px;height: 40px;"></textarea></td><td><a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest($(this).parent().parent().index(), 0);"><i class="icon-remove-sign"></i></a></td></tr>';
+        function addSubCategory( parent ){
+            parent -= 2;
+            var sq_index = $( ".form-container:eq("+parent+") .sc-container:last" ).index();
+            var s_index = $('.form-container:eq('+parent+') .sc-container').length + 1;
+            var sc_htm = '<div class="sc-container"><div class="sc-form"><label style="font-weight">Sub Category</label><input type="text" name="sub_c_'+sq_index+'_'+s_index+'[]" class="span7 sc-input validate[required]"><div class="sc-controls"><a href="javascript:void(0)" onclick="addQuestion($(this).parent().parent().parent().parent().index(), $(this).parent().parent().parent().index());" class="btn optlnk" title="Add question"><i class="icon-plus-sign"></i></a> &nbsp; <a href="javascript:void(0)" onclick="removeSub( $(this).parent().parent().parent().index() );" class="btn optlnk" title="Remove"><i class="icon-trash"></i></a></div></div><div class="q-container"><label style="font-weight">Questions</label><div class="q-form"><div class="question"><textarea name="quest_'+sq_index+'_'+s_index+'[]" class="span8 q-input validate[required]"></textarea><div class="q-controls">&nbsp;</div></div></div></div></div>';
 
-            $( txt_htm ).insertAfter( "table tr:eq("+parent+")" );
+            $( sc_htm ).insertAfter( ".form-container:eq("+parent+") .sc-container:last" );
+            $('.optlnk').tooltip();
+        }
+
+        function addQuestion(parent, q_parent){
+            parent -= 2;
+            if( parent > 0 )
+                q_parent -= 2;
+            else
+                q_parent--;
+            var sq_index = $( ".form-container:eq("+parent+") .sc-container:last" ).index();
+            var s_index = $('.form-container:eq('+parent+') .sc-container').length;
+            var q_htm = '<div class="question"><textarea name="quest_'+sq_index+'_'+s_index+'[]" class="span8 q-input validate[required]"></textarea><div class="q-controls"><a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest( $(this).parent().parent().parent().parent().parent().index(), $(this).index() );"><i class="icon-remove-sign"></i></a></div></div>';
+
+            $( q_htm ).insertAfter( ".form-container:eq("+parent+") .q-form:eq("+q_parent+") .question:last" );
 
             $('.optlnk').tooltip();
         }
 
-        function remove_quest( parent, sub ){
-            var ans = confirm('Remove this item?');
-            parent++;
+        function remove_quest( parent, q_index ){
+            parent--;
+            q_index++;
+            
+            var ans = confirm('Delete this question?');
+            if( ans )
+                $('.sc-container:eq('+parent+') .q-container .q-form .question:eq('+q_index+')').remove();
+        }
+
+        function removeSub(index) {
+            index--;
+            var ans = confirm('Deleting sub category will also delete the question under it. Proceed?');
             if( ans ){
-                if( sub ){
-                    var l = $('table tr').length - 1;
-                    if( parent != l ){
-                        var _diff = 0;
-                        for (var i = parent; i <= l; i++) {
-                            if( i != parent ){
-                                _diff++;
-                                if( $('table tr:eq('+i+') td:eq(0)').attr('class') == 'sub_row' )
-                                    break;
-                            }
-                        }
+                $('.sc-container:eq('+index+')').remove();
+            }
+        }
 
-                        for (var d = _diff - 1; d >= 0; d--) {
-                            $('table tr:eq('+parent+')').remove();
-                        };
-                    }else{
-                        $('table tr:eq('+parent+')').remove();
-                    }
-                } else {
-                    $('table tr:eq('+parent+')').remove();
-                }
+        function removeMain(index) {
+            index -= 2;
+
+            var ans = confirm('Deleting main category will also delete the sub category and question under it. Proceed?');
+            if( ans ){
+                $('.form-container:eq('+index+')').remove();
             }
         }
 

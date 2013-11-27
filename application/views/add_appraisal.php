@@ -74,7 +74,7 @@
 
                                         for( $i = 0; $i < count( $perc ); $i++ ){
                                     ?>
-                                    <option value="<?=$perc[$i]?>" <?=$cat['percentage'] == $perc[$i] ? 'selected' : ''?>><?=$perc[$i]?>%</option>
+                                    <option value="<?=$perc[$i]?>" <?=@$cat['percentage'] == $perc[$i] ? 'selected' : ''?>><?=$perc[$i]?>%</option>
                                     <?php } ?>
                                 </select>
                             </h3>
