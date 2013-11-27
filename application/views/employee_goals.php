@@ -1,3 +1,15 @@
+<?php 
+    $module = $this->uri->segment(1);
+    $cnt = $this->uri->segment(5)!= '' ? $this->uri->segment(5) : 0;
+    if( $module == 'employees' ){
+        $uri = base_url().'employees/info/goals/'.$this->uri->segment(4).'/';
+        if( $this->uri->total_segments() == 5 )
+            $cnt = $this->uri->segment(6) != '' ? $this->uri->segment(6) : 0;
+    }
+    else{
+        $uri = base_url().'my_goal/';
+    }
+?>
 <script type="text/javascript" src="<?=base_url().JS?>languages/jquery.validationEngine-en.js"></script>
 <script type="text/javascript" src="<?=base_url().JS?>jquery.validationEngine.js"></script>
 <div class="container-fluid">
@@ -39,34 +51,34 @@
             <div class="row-fluid">
                 <div class="block span12">
                     <div id="widget1container" class="block-body">
-                        <?php if( $this->session->userdata('lvl') == 3 ) { ?>
                         <div class="">
                             <ul class="nav nav-tabs">
-                                <li class="<?=$this->uri->segment(2) == '' ? 'active' : ''?>">
-                                    <a href="<?=base_url()?>my_goal"><i class="icon-time"></i>&nbsp;Pending <span class="badge badge-info"><?=$p_cnt?></span></a>
+                                <li class="<?=$this->uri->segment(2) == '' || $this->uri->segment(5) == '' ? 'active' : ''?>">
+                                    <a href="<?=$uri?>"><i class="icon-time"></i>&nbsp;Pending <span class="badge badge-info"><?=$p_cnt?></span></a>
                                 </li>
 
-                                <li class="<?=$this->uri->segment(2) == 'on_going' ? 'active' : ''?>">
-                                    <a href="<?=base_url()?>my_goal/on_going"><i class="icon-road"></i>&nbsp;On-going <span class="badge badge-info"><?=$og_cnt?></span></a>
+                                <li class="<?=$this->uri->segment(2) == 'on_going' || $this->uri->segment(5) == 'on_going' ? 'active' : ''?>">
+                                    <a href="<?=$uri?>on_going"><i class="icon-road"></i>&nbsp;On-going <span class="badge badge-info"><?=$og_cnt?></span></a>
                                 </li>
 
-                                <li class="<?=$this->uri->segment(2) == 'completed' ? 'active' : ''?>">
-                                    <a href="<?=base_url()?>my_goal/completed"><i class="icon-check"></i>&nbsp;Completed <span class="badge badge-success"><?=$co_cnt?></span></a>
+                                <li class="<?=$this->uri->segment(2) == 'completed' || $this->uri->segment(5) == 'completed' ? 'active' : ''?>">
+                                    <a href="<?=$uri?>completed"><i class="icon-check"></i>&nbsp;Completed <span class="badge badge-success"><?=$co_cnt?></span></a>
                                 </li>
 
-                                <li class="<?=$this->uri->segment(2) == 'warning' ? 'active' : ''?>">
-                                    <a href="<?=base_url()?>my_goal/warning"><i class="icon-bullhorn"></i>&nbsp;Warning <span class="badge badge-warning"><?=$w_cnt?></span></a>
+                                <li class="<?=$this->uri->segment(2) == 'warning' || $this->uri->segment(5) == 'warning' ? 'active' : ''?>">
+                                    <a href="<?=$uri?>warning"><i class="icon-bullhorn"></i>&nbsp;Warning <span class="badge badge-warning"><?=$w_cnt?></span></a>
                                 </li>
 
-                                <li class="<?=$this->uri->segment(2) == 'at_risk' ? 'active' : ''?>">
-                                    <a href="<?=base_url()?>my_goal/at_risk"><i class="icon-fire"></i>&nbsp;At Risk <span class="badge badge-important"><?=$ar_cnt?></span></a>
+                                <li class="<?=$this->uri->segment(2) == 'at_risk' || $this->uri->segment(5) == 'at_risk' ? 'active' : ''?>">
+                                    <a href="<?=$uri?>at_risk"><i class="icon-fire"></i>&nbsp;At Risk <span class="badge badge-important"><?=$ar_cnt?></span></a>
                                 </li>
 
-                                <li class="<?=$this->uri->segment(2) == 'rejected' ? 'active' : ''?>">
-                                    <a href="<?=base_url()?>my_goal/rejected"><i class="icon-thumbs-down"></i>&nbsp;Rejected <span class="badge badge-important"><?=$r_cnt?></span></a>
+                                <li class="<?=$this->uri->segment(2) == 'rejected' || $this->uri->segment(5) == 'rejected' ? 'active' : ''?>">
+                                    <a href="<?=$uri?>rejected"><i class="icon-thumbs-down"></i>&nbsp;Rejected <span class="badge badge-important"><?=$r_cnt?></span></a>
                                 </li>
                             </ul>
                         </div>
+                        <?php if( $this->session->userdata('lvl') == 3 ) { ?>
                         <div class="pull-right">
                             <a href="<?=base_url()?>my_goal/add" class="btn btn-small btn-primary"><i class="icon-plus"></i>&nbsp;Add Goal</a>
                         </div>
@@ -84,7 +96,6 @@
                             <tbody>
                                 <?php
                                     if( count( $goals ) > 0 ){
-                                        $cnt = $this->uri->segment(5) != '' ? $this->uri->segment(5) : 0;
                                         foreach ( $goals as $goal ) {
                                             $cnt++;
                                 ?>

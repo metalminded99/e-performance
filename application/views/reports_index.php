@@ -101,12 +101,9 @@
                                 <label for="status">Status (Optional)</label>
                                 <select id="status" name="status">
                                     <option value="All">All</option>
-                                    <option value="In Progress">In Progress</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="On-going">On-going</option>
                                     <option value="Completed">Completed</option>
-                                    <option value="Not Started">Not Started</option>
-                                    <option value="Late">Late</option>
-                                    <option value="Unapproved">Unapproved</option>
-                                    <option value="Rejected">Rejected</option>
                                 </select>
                             </div>
                             <div class="element">
@@ -116,7 +113,6 @@
                                     <option value="lname">Last Name</option>
                                     <option value="fname">First Name</option>
                                     <option value="percentage">Percentage</option>
-                                    <option value="date_approved">Date Approved</option>
                                 </select>
                                 <select id="order" name="order">
                                     <option value="asc">Ascending</option>
@@ -150,7 +146,6 @@
                                     <th>Goal Title</th>
                                     <th>Description</th>
                                     <th>Due Date</th>
-                                    <th>Date Approved</th>
                                     <th>Percentage</th>
                                     <th>Status</th>
                                 </thead>
@@ -164,7 +159,6 @@
                                         <td><?=$goal['goal_title']?></td>
                                         <td><?=$goal['goal_desc']?></td>
                                         <td><?=$goal['due']?></td>
-                                        <td><?=$goal['approved']?></td>
                                         <td><?=$goal['percentage']?>%</td>
                                         <td><?=$goal['status']?></td>
                                     </tr>

@@ -116,10 +116,12 @@ $route['appraisal/(:num)'] = "appraisal/index/$1";
 $route['employees/info/goals/(:num)'] = "employees/goals/$1";
 $route['employees/info/goals/(:num)/(:num)'] = "employees/goals/$1/$2";
 $route['employees/info/goals/update'] = "employees/goal_update";
+$route['employees/info/goals/(:num)/(:any)'] = "employees/goals/$1";
 
 $route['employees/info/dev_plan/(:num)'] = "employees/dev_plan/$1";
 $route['employees/info/dev_plan/(:num)/(:num)'] = "employees/dev_plan/$1/$2";
 $route['employees/info/dev_plan/update'] = "employees/dev_plan_update";
+$route['employees/info/dev_plan/(:num)/(:any)'] = "employees/dev_plan/$1";
 
 $route['employees/info/journals/(:num)'] = "employees/journals/$1";
 $route['employees/info/journals/(:num)/(:num)'] = "employees/journals/$1/$2";

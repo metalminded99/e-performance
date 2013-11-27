@@ -113,10 +113,9 @@
                                 <label for="status">Status (Optional)</label>
                                 <select id="status" name="status">
                                     <option value="All">All</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Completed">Completed</option>
                                     <option value="Pending">Pending</option>
-                                    <option value="Cancelled">Cancelled</option>
+                                    <option value="On-going">On-going</option>
+                                    <option value="Completed">Completed</option>
                                 </select>
                             </div>
                             <div class="element">
@@ -156,12 +155,12 @@
                             <h5>Development Plans AS OF: <u><?=$this->template_library->format_mysql_date( $this->input->get('date_start1'), 'M d, Y' )?> - <?=$this->template_library->format_mysql_date( $this->input->get('date_end2'), 'M d, Y' )?></u></h5>
                             <table id="tbl_goals" class="table table-bordered" style="font-size: 12px;">
                                 <thead>
-                                    <th>Employee</th>
-                                    <th>Training Title</th>
-                                    <th>Description</th>
-                                    <th>Date Start</th>
-                                    <th>Date End</th>
-                                    <th>Status</th>
+                                    <th width="15%">Employee</th>
+                                    <th width="20%">Training Title</th>
+                                    <th width="38%">Description</th>
+                                    <th width="11%">Date Start</th>
+                                    <th width="11%">Date End</th>
+                                    <th width="5%">Status</th>
                                 </thead>
                                 <tbody>
                                     <?php 

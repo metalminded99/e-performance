@@ -26,24 +26,7 @@
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <?=$msg['str']?>
                 </div>
-            <?php 
-                endif;
-
-                if( $this->session->userdata( 'lvl' ) == 2 ) {
-            ?>
-            <div class="btn-toolbar">
-                <div id="action" class="btn-group" style="display:none;">
-                    <button class="btn btn-inverse dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" onclick="do_action( 'Not Started' );">Approve</a></li>
-                        <li><a href="#" onclick="do_action( 'Completed' );">Completed</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#" onclick="do_action( 'Rejected' );">Rejected</a></li>
-                    </ul>
-                </div>
-                <div class="btn-group"></div>
-            </div>
-            <? } ?>
+            <?php endif; ?>
             <div class="row-fluid">
                 <div class="block span12">
                     <div class="block-heading" data-target="#widget1container">

@@ -14,7 +14,7 @@
 			        <a href="<?=base_url()?>appraisal/training">Training Appraisal</a>
 			    </li>
 			</ul>
-            <h2 class="page-title">Job Appraisal for <i><?=$this->session->userdata( 'job_title' )?></i></h2>
+            <h2 class="page-title">Training Appraisal</h2>
 			<div class="btn-toolbar">
 				<a href="<?=base_url()?>appraisal/training/add" class="btn btn-primary" data-toggle="modal"><i class="icon-plus"></i>Add new appraisal</a>
 				<div class="btn-group"></div>

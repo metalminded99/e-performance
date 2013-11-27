@@ -134,15 +134,13 @@ class Appraisal extends CI_Controller {
 		# Check user's session
 		$this->template_library->check_session( 'user' );
 		if( $this->input->post() ){
-			$step = $this->input->post( 'step' );
-			$this->session->set_userdata( 't_app_data-'.$step, $this->input->post() );
+			$this->session->set_userdata( 't_app_data', $this->input->post() );
 
-			if( $step > 1 )
-				$this->save_appraisal( 'add_training' );
+			$this->save_appraisal( 'add_training' );
 		}
-
+		$this->load->model('trainings_model');
+		$template_param['trainings'] = $this->trainings_model->getAllTrainings( 0, 10000 );
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
-		$template_param['step'] = @$step != '' ? $step + 1 : 1;
 		$template_param['action'] = 'Add New Training Appraisal';
 		$template_param['content']= 'add_appraisal_training';
 		$this->template_library->render( 

@@ -8,7 +8,7 @@ class Employees extends CI_Controller {
 		parent::__construct();
 		$this->load->model( 'employees_model' );
 
-		$this->user_id		= $this->session->userdata( 'user_id' );
+		$user_id		= $this->session->userdata( 'user_id' );
 		$this->user_job_id	= $this->session->userdata( 'job_id' );
 	}
 
@@ -110,9 +110,52 @@ class Employees extends CI_Controller {
 
 		# Employee goals
 		$this->load->model( 'goal_model' );
+		$template_param['p_cnt']	= $this->goal_model->getTotalEmpGoal( $user_id, 'Pending' );
+		$template_param['og_cnt']	= $this->goal_model->getTotalEmpGoal( $user_id, 'On-going' );
+		$template_param['co_cnt']	= $this->goal_model->getTotalEmpGoal( $user_id, 'Completed' );
+		$template_param['w_cnt']	= $this->goal_model->getTotalEmpGoal( $user_id, 'Warning' );
+		$template_param['ar_cnt']	= $this->goal_model->getTotalEmpGoal( $user_id, 'At Risk' );
+		$template_param['r_cnt']	= $this->goal_model->getTotalEmpGoal( $user_id, 'Rejected' );
+		switch ($this->uri->segment(5)) {
+			case 'on_going':
+				$g_cnt = $template_param['og_cnt'];
+				$page_url = 'employees/info/goals/'.$user_id.'/on_going';
+				$status = 'On-going';
+				break;
+			
+			case 'completed':
+				$g_cnt = $template_param['co_cnt'];
+				$page_url = 'employees/info/goals/'.$user_id.'/completed';
+				$status = 'Completed';
+				break;
+			
+			case 'warning':
+				$g_cnt = $template_param['w_cnt'];
+				$page_url = 'employees/info/goals/'.$user_id.'/warning';
+				$status = 'Warning';
+				break;
+			
+			case 'at_risk':
+				$g_cnt = $template_param['ar_cnt'];
+				$page_url = 'employees/info/goals/'.$user_id.'/at_risk';
+				$status = 'At Risk';
+				break;
+			
+			case 'rejected':
+				$g_cnt = $template_param['r_cnt'];
+				$page_url = 'employees/info/goals/'.$user_id.'/rejected';
+				$status = 'Rejected';
+				break;
+			
+			default:
+				$g_cnt = $template_param['p_cnt'];
+				$page_url = 'employees/info/goals/'.$user_id.'';
+				$status = 'Pending';
+				break;
+		}
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'employees/info/goals/'.$user_id 
-																					,$this->goal_model->getTotalEmpGoal( $user_id )
+																					$page_url 
+																					,$g_cnt
 																					,PER_PAGE
 																					,'user'
 																					,($this->uri->segment(5)) ? $this->uri->segment(5) : 0
@@ -120,7 +163,7 @@ class Employees extends CI_Controller {
 
 		$template_param['goals']	= $this->goal_model->getAllEmpGoal( 
 																		$offset
-																		, PER_PAGE, array( 'user_id' => $user_id )
+																		, PER_PAGE, array( 'user_id' => $user_id, 'status' => $status )
 																		, "goal_id, goal_title, goal_desc, DATE_FORMAT(due_date,'%b %e, %Y') due_date, DATE_FORMAT(date_created,'%b %e, %Y') date_created, status, percentage, days_to_remind, deliverables, success_measure, DATE_FORMAT(date_approved,'%b %e, %Y') date_approved" 
 																	  );
 
@@ -128,7 +171,7 @@ class Employees extends CI_Controller {
 		$data['user_id'] = $user_id;
 		$template_param['emp_menu'] = $this->load->view( '_components/emp_menu', $data, true );
 
-		# Template meta data
+		# Template meta data	
 		$template_param['user_id']			= $user_id;
 		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
 		$template_param['content']			= 'employee_goals';
@@ -184,15 +227,38 @@ class Employees extends CI_Controller {
 		$template_param['trainings'] = json_encode( $t );
 
 		# Employee dev plan
+		$template_param['p_cnt']	= $this->dev_plan_model->getTotalDevPlan( $user_id, 'Pending' );
+		$template_param['og_cnt']	= $this->dev_plan_model->getTotalDevPlan( $user_id, 'On-going' );
+		$template_param['co_cnt']	= $this->dev_plan_model->getTotalDevPlan( $user_id, 'Completed' );
+		$template_param['c_cnt']	= $this->dev_plan_model->getTotalDevPlan( $user_id, 'Cancelled' );
+		switch ($this->uri->segment(5)) {
+			case 'on_going':
+				$g_cnt = $template_param['og_cnt'];
+				$page_url = 'employees/info/dev_plan/'.$user_id.'/on_going';
+				$status = 'On-going';
+				break;
+			
+			case 'completed':
+				$g_cnt = $template_param['co_cnt'];
+				$page_url = 'employees/info/dev_plan/'.$user_id.'/completed';
+				$status = 'Completed';
+				break;
+
+			default:
+				$g_cnt = $template_param['p_cnt'];
+				$page_url = 'employees/info/dev_plan/'.$user_id.'';
+				$status = 'Pending';
+				break;
+		}
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'employees/info/dev_plan/'.$user_id 
-																					,$this->dev_plan_model->getTotalDevPlan( $user_id )
+																					$page_url
+																					,$g_cnt
 																					,PER_PAGE
 																					,'user'
 																					,($this->uri->segment(5)) ? $this->uri->segment(5) : 0
 																				);
 		$dev_plans = array();
-		$trainings = $this->dev_plan_model->getAllDevPlan( $offset, PER_PAGE, array( 'user_id' => $user_id ) );
+		$trainings = $this->dev_plan_model->getAllDevPlan( $offset, PER_PAGE, array( 'user_id' => $user_id, 'status' => $status ) );
 		if( count( $trainings ) > 0 ){
 			for ($i=0; $i < count( $trainings ); $i++) { 
 				$t_skills['t_skills'] = $this->dev_plan_model->getDevPlanSkills( $trainings[ $i ]['training_id'] );

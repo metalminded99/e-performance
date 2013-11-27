@@ -6,14 +6,14 @@
         <!-- left side nav END -->
         
         <div class="span9">
-        	<!-- <ul class="nav nav-pills">
+        	<ul class="nav nav-pills">
 			    <li <?=$this->uri->segment(2) == '' ? 'class="active"' : '' ?>>
 			        <a href="<?=base_url()?>appraisal">Appraisal</a>
 			    </li>
 			    <li <?=$this->uri->segment(2) == 'training' ? 'class="active"' : '' ?>>
 			        <a href="<?=base_url()?>appraisal/training">Training Appraisal</a>
 			    </li>
-			</ul> -->
+			</ul>
             <h2 class="page-title">Job Appraisal for <i><?=$this->session->userdata( 'job_title' )?></i></h2>
 			<div class="btn-toolbar">
 				<a href="<?=base_url()?>appraisal/add" class="btn btn-primary" data-toggle="modal"><i class="icon-plus"></i>Add new appraisal</a>

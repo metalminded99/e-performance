@@ -65,7 +65,7 @@ class Goal_Model extends CI_Model {
                          ->update( 
                                     EMP_GOALS
                                     ,array( 
-                                            'status' => 'In Progress'
+                                            'status' => 'On-going'
                                           )
                                  );
             }

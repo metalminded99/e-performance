@@ -23,7 +23,10 @@ class Dev_Plan_Model extends CI_Model {
                             ->result_array();
     }
 
-    public function getTotalDevPlan( $user_id ) {
+    public function getTotalDevPlan( $user_id, $status = '' ) {
+        if( $status != '' )
+            $this->db->where( 'status', $status );
+        
     	return $this->db
                         ->where( array( 'user_id' => $user_id ) )
                         ->count_all_results( DEV_PLAN );

@@ -1,3 +1,15 @@
+<?php 
+    $module = $this->uri->segment(1);
+    $cnt = $this->uri->segment(5)!= '' ? $this->uri->segment(5) : 0;
+    if( $module == 'employees' ){
+        $uri = base_url().'employees/info/dev_plan/'.$this->uri->segment(4).'/';
+        if( $this->uri->total_segments() == 5 )
+            $cnt = $this->uri->segment(6) != '' ? $this->uri->segment(6) : 0;
+    }
+    else{
+        $uri = base_url().'my_trainings/';
+    }
+?>
 <div class="container-fluid">
     <div class="row-fluid">
 
@@ -18,21 +30,32 @@
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <?=$msg['str']?>
                 </div>
-            <?php 
-                endif;
-            ?>
-            <div class="btn-toolbar">
-                <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
-                <a id="add_btn" href="#addModal" class="btn btn-primary" data-toggle="modal" data-backdrop="static" data-keyboard="false"><i class="icon-plus"></i>Add Training</a>
-                <? } ?>
-                <div class="btn-group"></div>
-            </div>
+            <?php endif; ?>
+
             <div class="row-fluid">
                 <div class="block span12">
-                    <div class="block-heading" data-target="#widget1container">
-                        Development Plans
-                    </div>
                     <div id="widget1container" class="block-body">
+                        <div class="">
+                            <ul class="nav nav-tabs">
+                                <li class="<?=$this->uri->total_segments() == 1 || $this->uri->total_segments() == 4 ? 'active' : ''?>">
+                                    <a href="<?=$uri?>"><i class="icon-time"></i>&nbsp;Pending <span class="badge badge-info"><?=$p_cnt?></span></a>
+                                </li>
+
+                                <li class="<?=$this->uri->segment(2) == 'on_going' || $this->uri->segment(5) == 'on_going' ? 'active' : ''?>">
+                                    <a href="<?=$uri?>on_going"><i class="icon-road"></i>&nbsp;On-going <span class="badge badge-info"><?=$og_cnt?></span></a>
+                                </li>
+
+                                <li class="<?=$this->uri->segment(2) == 'completed' || $this->uri->segment(5) == 'completed' ? 'active' : ''?>">
+                                    <a href="<?=$uri?>completed"><i class="icon-check"></i>&nbsp;Completed <span class="badge badge-success"><?=$co_cnt?></span></a>
+                                </li>
+
+                                <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
+                                <li class="pull-right">
+                                    <a id="add_btn" href="#addModal"data-toggle="modal" data-backdrop="static" data-keyboard="false"><i class="icon-plus-sign"></i> New Training</a>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
                         <table id="tbl_dev_plans" class="table">
                             <thead>
                                 <th width="2%">#</th>
@@ -46,7 +69,6 @@
                             <tbody>
                                 <?php
                                     if( count( $dev_plans ) > 0 ){
-                                        $cnt = $this->uri->segment(5) != '' ? $this->uri->segment(5) : 0;
                                         foreach ( $dev_plans as $dev_plan ) {
                                             $cnt++;
                                 ?>
@@ -60,14 +82,22 @@
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
                                     <td>
+                                        <a id="<?=$dev_plan['training_id']?>" title="View details" class="view_btn optlnk" href="#viewModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
+                                        <?php if( $this->uri->segment( 5 ) == '' ) { ?>
                                         <a id="<?=$dev_plan['training_id']?>" title="Update" class="update_btn optlnk" href="#addModal" role="button" data-toggle="modal"><i class="icon-edit"></i></a>&nbsp;
                                         <a id="<?=$dev_plan['training_id']?>" title="Remove" class="del_btn optlnk" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
+                                        <?php } ?>
                                     </td>
                                     <? } ?>
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 3 ) { ?>
                                     <td>
-                                        <a id="<?=$dev_plan['training_id']?>" title="View details" class="view_btn optlnk" href="#viewModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>
+                                        <a id="<?=$dev_plan['training_id']?>" title="View details" class="view_btn optlnk" href="#viewModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
+                                        <?php if( $this->uri->segment( 2 ) == '' ) { ?>
+                                        <a title="Accept" class="optlnk" href="javascript:void(0);" onclick="do_action( 'on_going', '<?=$dev_plan['training_id']?>' );"><i class="icon-chevron-right"></i></a>
+                                        <?php } if( $this->uri->segment( 2 ) == 'on_going' ) { ?>
+                                        <a title="Completed" class="optlnk" href="javascript:void(0);" onclick="do_action( 'completed', '<?=$dev_plan['training_id']?>' );"><i class="icon-ok"></i></a>
+                                        <?php } ?>
                                     </td>
                                     <? } ?>
 
@@ -127,7 +157,7 @@
                         <div class="modal-body">
                             <label class="label label-info">Trainings</label>
                             <div class="clearfix"></div>                       
-                            <select id="trainings" name="training_id" class="validate[required]">
+                            <select id="trainings_add" name="training_id" class="span12 validate[required]">
                                 <option value="">----------------</option>
                             </select>
                             <div id="details" style="display:none;">
@@ -171,7 +201,7 @@
                         </div>
                     </form>
                 </div>
-                <? } if( $this->session->userdata( 'lvl' ) == 3 ){ ?>
+                <?php } ?>
 
                 <div class="modal hide fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
                     <div class="modal-header">
@@ -181,7 +211,7 @@
                     <div class="modal-body">
                         <label class="label label-info">Trainings</label>
                         <div class="clearfix"></div>                       
-                        <select id="trainings" name="training_id" disabled>
+                        <select id="trainings" name="training_id" class="span12" disabled>
                         </select>
                         <div id="details">
                             <div class="clearfix"></div>
@@ -195,14 +225,13 @@
                             <p id="date_end" class="muted"></p>
                             <div class="clearfix"></div>
                             <label class="label label-info">Included Skills</label>
-                            <table class="table table-condensed" id="included_skills">
+                            <table class="table table-condensed" id="included_skills_v">
                                 <tbody>
                                 </tbody>
                             </table>
-                            <div id="included_skills"></div>
                             <div class="clearfix"></div>
                             <label class="label label-info">Included Abilities</label>
-                            <table class="table table-condensed" id="included_abilities">
+                            <table class="table table-condensed" id="included_abilities_v">
                                 <tbody>
                                 </tbody>
                             </table>
@@ -213,7 +242,6 @@
                         <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Back</button>
                     </div>
                 </div>
-                <? } ?>
             </div>
         </div>
         <script type="text/javascript">
@@ -278,16 +306,9 @@
             <? } ?>
 
             <?php if( isset( $user_id ) ){ ?>
-            function do_action( action ){
-                var arr = [];
-                $( '#tbl_dev_plans tr td input[type=checkbox]' ).each( function() {
-                    if( $(this).prop( 'checked' ) ) {
-                        arr.push( $(this).val() );
-                    }
-                });
-                
-                $.post( '<?=$action_url?>', { item : arr, state : action, user : '<?=$user_id?>' }, function(data) {
-                    window.location = data;
+            function do_action( action, training ){
+                $.post( '<?=base_url()?>/my_trainings/ajax_request', { action : action, training : training }, function(data) {
+                    window.location = '<?=isset($landing_page) ? $landing_page : base_url().uri_string() ?>';
                 });
             }
             <? } ?>           
@@ -297,8 +318,8 @@
 
                 if( t_id != '' ){
                     $('#AddModalLabel').text( 'Update Training Detail' );
-                    $('#trainings').val( t_id ).change();
-                    $('#trainings').prop( 'disabled', true );
+                    $('#trainings_add').val( t_id ).change();
+                    $('#trainings_add').prop( 'disabled', true );
                     $('#frm_dev_plan').prop( 'action', '<?=$update_url?>' );
                     $('#frm_dev_plan input[name=t_id]').val( t_id );
 
@@ -348,13 +369,15 @@
             });
             
             function generate_trainings( ){
-                var select = $('#trainings');
+                var select      = $('#trainings');
+                var select_add  = $('#trainings_add');
                 $.each( json_trainings, function( i, l ) {
                     select.append( $('<option></option>').attr( 'value', json_trainings[i].training_id ).text( json_trainings[i].training_title ) );
+                    select_add.append( $('<option></option>').attr( 'value', json_trainings[i].training_id ).text( json_trainings[i].training_title ) );
                 });
             }
 
-            $('#trainings').change( function( ){
+            $('#trainings_add').change( function( ){
                 var t_id = $(this).val();
                 if( t_id != '' ){
                     $.each( json_trainings, function( i, l ) {
@@ -414,8 +437,42 @@
 
                     $.each( json_dev_plans, function( i, l ) {
                         if( json_dev_plans[i].training_id === t_id ){
+                            $('p#desc').text( json_dev_plans[i].training_desc );
                             $('p#date_start').text( json_dev_plans[i].date_start );
                             $('p#date_end').text( json_dev_plans[i].date_end );
+
+                            $( '#included_skills tbody' ).html('');
+                            $( '#included_abilities tbody' ).html('');
+
+                            var t_skill_result = '';
+                            var t_ability_result = '';
+                            var t_s = json_dev_plans[i].t_skills;
+                            var t_a = json_dev_plans[i].t_abilities;
+                            $.each( t_s, function (i , l) {
+                                if (i != 0 && i % 3 == 0) {
+                                    t_skill_result = t_skill_result + '<tr>';
+                                }
+
+                                t_skill_result = t_skill_result + '<td>' + t_s[i].skill_name + '</td>';
+
+                                if (i != 0 && i % 3 == 0) {
+                                    t_skill_result = t_skill_result + '</tr>';
+                                }
+                            });
+                            $.each( t_a, function (i , l) {
+                                if (i != 0 && i % 3 == 0) {
+                                    t_ability_result = t_ability_result + '<tr>';
+                                }
+
+                                t_ability_result = t_ability_result + '<td>' + t_a[i].ability_name + '</td>';
+
+                                if (i != 0 && i % 3 == 0) {
+                                    t_ability_result = t_ability_result + '</tr>';
+                                }
+                            });
+
+                            $( t_skill_result ).appendTo( "#included_skills_v tbody" );
+                            $( t_ability_result ).appendTo( "#included_abilities_v tbody" );
                         }
                     });
                     $('#details').slideDown();
