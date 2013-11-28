@@ -307,7 +307,7 @@
 
             <?php if( isset( $user_id ) ){ ?>
             function do_action( action, training ){
-                $.post( '<?=base_url()?>/my_trainings/ajax_request', { action : action, training : training }, function(data) {
+                $.post( '<?=base_url()?>my_trainings/ajax_request', { action : action, training : training }, function(data) {
                     window.location = '<?=isset($landing_page) ? $landing_page : base_url().uri_string() ?>';
                 });
             }

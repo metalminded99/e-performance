@@ -336,7 +336,7 @@
                     $('#reject_comment').val('');
                     $('#rejectModal').modal('hide');
                 }
-                $.post( '<?=base_url()?>/my_goal/ajax_request', { state : action, goal : goal, comment : comment }, function(data) {
+                $.post( '<?=base_url()?>my_goal/ajax_request', { state : action, goal : goal, comment : comment }, function(data) {
                     window.location = '<?=isset($landing_page) ? $landing_page : base_url().uri_string() ?>';
                 });
             }
