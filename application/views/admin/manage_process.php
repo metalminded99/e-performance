@@ -61,6 +61,9 @@
 			<input id="end_date" name="end_date" class="validate[required] datepicker" value="<?=isset( $process['end_date'] ) ? $process['end_date'] : '' ?>"/>
 		</div>
 		<div class="element">
+			Remind me in <input id="reminder" name="reminder" size="3" maxlength="3" class="validate[required], custom[number]" value="<?=isset( $process['reminder'] ) ? $process['reminder'] : '' ?>"/> day/s<span class="red">(required)</span>
+		</div>
+		<div class="element">
 			<label for="end_date">Select employee</label>
 			<table style="width:600px;">
 				<thead>
@@ -70,9 +73,43 @@
 					<th>Department</th>
 				</thead>
 				<tbody>
+					<tr>
+						<td colspan="4">
+							<b>Manager's List</b>
+						</td>
+					</tr>
 					<?php 
-						if ( count( $users_list > 0 ) ){
-							foreach ( $users_list as $employee ) {
+						if ( count( $managers > 0 ) ){
+							foreach ( $managers as $manager ) {
+					?>
+
+					<tr>
+						<td align="center"><input type="checkbox" name="emp[]" class="emp" value="<?=$manager['user_id']?>" <?=$this->template_library->check_array_value_exist( @$emp_process, $manager['user_id'] ) ? 'checked="true"' : ''?> ></td>
+						<td><?=ucwords( $manager['lname'].', '.$manager['fname'].' '.$manager['mname'] )?></td>
+						<td><?=ucwords( $manager['job_title'])?></td>
+						<td><?=ucwords( $manager['dept_name'])?></td>
+					</tr>
+
+					<?php 
+							}
+						} else {
+					?>
+					<tr>
+						<td colspan="4">
+							<b>No managers available at this time.</b>
+						</td>
+					</tr>
+					<?php
+						}
+					?>
+					<tr>
+						<td colspan="4">
+							<b>Employee's List</b>
+						</td>
+					</tr>
+					<?php 
+						if ( count( $employees > 0 ) ){
+							foreach ( $employees as $employee ) {
 					?>
 
 					<tr>
@@ -84,6 +121,14 @@
 
 					<?php 
 							}
+						} else {
+					?>
+					<tr>
+						<td colspan="4">
+							<b>No employee's available at this time.</b>
+						</td>
+					</tr>
+					<?php
 						}
 					?>
 				</tbody>

@@ -7,7 +7,6 @@
         
         <div class="span9">
             <?php 
-                echo isset( $app_menu ) ? $app_menu : '' ;
                 if( $this->session->flashdata( 'message' ) ): 
                     $msg = $this->session->flashdata( 'message' );
             ?>
@@ -18,56 +17,46 @@
             <?php 
                 endif;
             ?>
+            <a href="<?=base_url()?>potential_appraisal/add" class="btn btn-primary btn-small" type="button"><i class="icon-plus-sign"></i> Add Employee</a>
+            <br/>
+            <br/>
             <div class="row-fluid">
                 <div class="block span12">
                     <div class="block-heading" data-target="#widget1container">
-                        Peer Feedback
+                        Potential Promotions Appraisal
                     </div>
                     <div id="widget1container" class="block-body">                        
                         <table id="tbl_feedbacks" class="table">
                             <thead>
                                 <th>#</th>
-                                <th>Feedback Title</th>
                                 <th>Name</th>
-                                <th>Status</th>
-                                <th>Date Assigned</th>
-                                <th></th>
+                                <th>Percentage</th>
+                                <th>Date Created</th>
                             </thead>
                             <tbody>
-                                <?php
-                                    if( count( $feedbacks ) > 0 ){
-                                        $cnt = isset( $counter ) ? $counter : 0;
-                                        foreach ( $feedbacks as $feedback ) {
-                                            $cnt++;
+                                <?php 
+                                    if( count( $potentials ) > 0 ) { 
+                                        foreach ($potentials as $potential) {
+                                            $counter++;
                                 ?>
                                 <tr>
-                                    <td><?=$cnt?></td>
-                                    <td><?=$feedback['appraisal_title']?></td>
-                                    <td><?=$feedback['full_name']?></td>
-                                    <td><?=$feedback['status']?></td>
-                                    <td><?=$this->template_library->format_mysql_date( $feedback['date_assigned'], 'F d, Y' )?></td>
-                                    <td>
-                                        <?php if($feedback['status'] == 'Pending' ){ ?> 
-                                        <a href="<?=base_url()?>feedbacks/peer_feedback/<?=$feedback['app_id']?>/<?=$feedback['assign_id']?>" title="Evaluate" class="optlnk"><i class="icon-edit"></i></a> 
-                                        <?php } else { ?>
-                                        <a href="javascript:void(0)" title="View Result" onclick="get_summary('<?=$feedback['app_id']?>');" class="optlnk"><i class="icon-file"></i></a>
-                                        <?php } ?>
-                                    </td>
+                                    <td><?=$counter?></td>
+                                    <td><?=$potential['full_name']?></td>
+                                    <td><?=is_numeric($potential['ave']) ? number_format(($potential['ave'] / 5) * 100) . '%' : '-'?></td>
+                                    <td><?=$potential['date_submit']?></td>
                                 </tr>
-                                <?php
+                                <?php 
                                         }
-                                    } else {
-                                ?>
+                                    } else { 
+                                ?> 
                                 <tr>
                                     <td colspan="4">
                                         <center>
-                                            <span class="label">No records found</label>
+                                            <label class="label label-info">No records found!</label>
                                         </center>
                                     </td>
                                 </tr>
-                                <?php
-                                    }
-                                ?>
+                                <?php } ?>
                             </tbody>
                         </table>
                         <div class="clearfix"></div>

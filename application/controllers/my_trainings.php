@@ -35,7 +35,7 @@ class My_trainings extends CI_Controller {
 				$dev_plans[] = array_merge( $trainings[ $i ], $t_skills, $t_abilities );
 			}
 		}
-		$template_param['dev_plans'] = $dev_plans;
+		$template_param['dev_plans'] = @$dev_plans;
 		$template_param['action_url'] = base_url().'my_trainings/update';
 		# Template meta data
 		$trainings = $this->trainings_model->getAllTrainings( 0, 1000 );

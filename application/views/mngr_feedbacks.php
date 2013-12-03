@@ -28,6 +28,7 @@
                             <thead>
                                 <th>#</th>
                                 <th>Feedback Title</th>
+                                <th>Name</th>
                                 <th>Status</th>
                                 <th>Date Assigned</th>
                                 <th></th>
@@ -42,6 +43,7 @@
                                 <tr>
                                     <td><?=$cnt?></td>
                                     <td><?=$feedback['appraisal_title']?></td>
+                                    <td><?=$feedback['full_name']?></td>
                                     <td><?=$feedback['status']?></td>
                                     <td><?=$this->template_library->format_mysql_date( $feedback['date_assigned'], 'F d, Y' )?></td>
                                     <td>

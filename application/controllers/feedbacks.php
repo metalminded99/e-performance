@@ -21,7 +21,7 @@ class Feedbacks extends CI_Controller {
 
 		# Appraisal list
 		$template_param['pagination'] = $this->template_library->get_pagination(
-																					'feedbacks' 
+																					'feedbacks/index' 
 																					,$this->appraisal_model->getSelfFeedbackCount( $this->user_id )
 																					,PER_PAGE
 																					,'user'
@@ -122,6 +122,24 @@ class Feedbacks extends CI_Controller {
 				$this->save_feedback();
 		}
 
+		if( $assign == 0 ) {
+			$template_param['user'] = array(
+												'full_name' => ucfirst($this->session->userdata('fname')) . ' ' . ucfirst($this->session->userdata('lname'))
+												,'job_title' => $this->session->userdata('job_title')
+											);
+		}else{
+			$module = $this->uri->segment(1);
+			if( $module == 'mngr_feedbacks' ){
+				$table = 'tbl_appraisal_mngr_assignment';
+			}elseif( $module == 'peer_feedbacks' ){
+				$table = 'tbl_appraisal_peer_assignment';
+			}else{
+				$table = 'tbl_appraisal_assignment';
+			}
+			$user_details = $this->appraisal_model->getAssignedName( $table, $assign );
+			$template_param['user'] = $user_details[0];
+		}
+
 		$_questions = array();
 		$sub_cat = $this->appraisal_model->getAppraisalSubCategories( array( 'main_cat_id' => $cat[$step]['main_category_id'] ) );
 		foreach ($sub_cat as $sc) {
@@ -174,6 +192,7 @@ class Feedbacks extends CI_Controller {
 				$u_field	= 'user_id';
 				$table 		= APP_ASSIGN;
 				$log 		= 'Evaluate self appraisal';
+				$type		= 0;
 				break;
 
 			case 'peer_feedback':
@@ -181,6 +200,7 @@ class Feedbacks extends CI_Controller {
 				$u_field	= 'peer_id';
 				$table 		= APP_PEER_ASSIGN;
 				$log 		= 'Evaluate peer appraisal';
+				$type		= 1;
 				break;
 			
 			default:
@@ -188,12 +208,25 @@ class Feedbacks extends CI_Controller {
 				$u_field	= 'manager_id';
 				$table 		= APP_MNGR_ASSIGN;
 				$log 		= 'Evaluate employee appraisal';
+				$type		= 2;
 				break;
 		}
 
 		$cat = $this->appraisal_model->getAppraisalMainCategories();
 		foreach ($cat as $c) {			
 			foreach ( $this->session->userdata('app_data-'.$c['main_category_id']) as $key => $value ) {
+				if( preg_match('/comment/', $key) ) {
+					if( $value != '' ){
+						$c_param = array(
+											'main_category_id'	=> $c['main_category_id']
+											,'appraisal_id'		=> $app_id
+											,'user_id'			=> $this->session->userdata('user_id')
+											,'comment'			=> $value
+											,'app_type'			=> $type
+										);
+						$this->appraisal_model->addAppraisalComment($c_param);
+					}
+				}
 				if( preg_match('/question/', $key) ) {
 					$q_id = explode( '_', $key );
 					
@@ -282,10 +315,10 @@ class Feedbacks extends CI_Controller {
 			foreach ($main_cat as $mc) {
 				$where = array_merge( $result_param, array( 'main_cat_id' => $mc['main_category_id'] ) );
 				$sub_cat = $this->appraisal_model->getFeedbackSummarySubCat( $field, $where );
+				$mc_perc = $mc['percentage'] / 100;
+				$percentage = ((($mc['ave'] / 5) * 100) * $mc_perc);
+				$overall += $percentage;
 				foreach ($sub_cat as $sc) {
-					$mc_perc = $mc['percentage'] / 100;
-					$percentage = ((($mc['ave'] / 5) * 100) * $mc_perc);
-					$overall += $percentage;
 					$data['summary'][ $mc['main_category_name'] ][ $percentage ."% out of " .$mc['percentage']. "%" ][] = $sc;
 				}
 			}

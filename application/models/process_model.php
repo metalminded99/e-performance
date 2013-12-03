@@ -9,7 +9,7 @@ class Process_Model extends CI_Model {
     
     public function getAllProcess( $offset, $per_page, $where = array() ) {
             $this->db
-                    ->select( 'proc_id, proc_title, proc_desc, start_date, end_date' )
+                    ->select( 'proc_id, proc_title, proc_desc, start_date, end_date, reminder' )
                     ->from( PROCESS )
                     ->order_by( 'date_added', 'DESC' )
                     ->limit( $per_page, $offset );

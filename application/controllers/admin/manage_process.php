@@ -54,7 +54,8 @@ class Manage_process extends CI_Controller {
 		$this->load->model( 'manage_user_model' );
 
 		# Process form
-		$data['users_list'] = $this->manage_user_model->getAllUsers( 0, 1000 );
+		$data['managers'] = $this->manage_user_model->getAllUsers( 0, 1000, array( 'lvl' => 2 ) );
+		$data['employees'] = $this->manage_user_model->getAllUsers( 0, 1000, array( 'lvl' => 3 ) );
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );
 		$template_param['main_content'] = $this->load->view( 'admin/manage_process', $data, true );
 		$template_param['content'] = 'templates/admin_template';
@@ -76,7 +77,8 @@ class Manage_process extends CI_Controller {
 		# Job form
 		$process_details	= $this->process_model->getAllProcess( 0, 1, array( 'proc_id' => $proc_id ) );
 		$data['process']	= $process_details[0];
-		$data['users_list'] = $this->manage_user_model->getAllUsers( 0, 1000 );
+		$data['managers'] = $this->manage_user_model->getAllUsers( 0, 1000, array( 'lvl' => 2 ) );
+		$data['employees'] = $this->manage_user_model->getAllUsers( 0, 1000, array( 'lvl' => 3 ) );
 		$data['emp_process'] = $this->process_model->getEmpProcess( $proc_id );
 
 		$template_param['sidebar'] = $this->load->view( '_components/sidebar', '', true );

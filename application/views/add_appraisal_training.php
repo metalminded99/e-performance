@@ -139,7 +139,7 @@
             $( "#frm_appraisal" ).validationEngine();
             
             $('.optlnk').tooltip();
-
+q_parent
             $('.slider').slider({
                  min            : 0
                 ,max            : 100
@@ -187,24 +187,22 @@
         }
 
         function addQuestion( src ){
-            console.log(src.parent().parent().parent().parent().attr('id'));
-            console.log(src.parent().parent().parent().attr('class') +' : '+ src.parent().parent().parent().attr('id'));
-            // var s_index = $('#'+parent+' .sc-container:eq('+q_parent+')').length;
+            var p_id     = src.parent().parent().parent().parent().attr('id');
+            var sc_id    = src.parent().parent().parent().attr('id');
+            var _sc      = sc_id.split('_');
+            var s_id     = parseInt(_sc.splice(1));
 
-            // var q_htm = '<div class="question"><textarea name="quest_'+sq_index+'_'+s_index+'[]" class="span8 q-input validate[required]"></textarea><div class="q-controls"><a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest( $(this).parent().parent().parent().parent().parent().index(), $(this).index() );"><i class="icon-remove-sign"></i></a></div></div>';
+            var q_htm = '<div class="question"><textarea name="quest_'+p_id+'_'+s_id+'[]" class="span8 q-input validate[required]"></textarea><div class="q-controls"><a title="Remove" class="optlnk" href="javascript:void(0);" role="button" onclick="remove_quest( '+sc_id+', $(this).index() );"><i class="icon-remove-sign"></i></a></div></div>';
 
-            // $( q_htm ).hide().insertAfter( "#"+parent+" .q-form:eq("+q_parent+") .question:last" ).fadeIn("slow");
+            $( q_htm ).hide().insertAfter( "#"+sc_id+" .q-container .q-form .question:last" ).fadeIn("slow");
 
-            // $('.optlnk').tooltip();
+            $('.optlnk').tooltip();
         }
 
         function remove_quest( parent, q_index ){
-            parent--;
-            q_index++;
-            
             var ans = confirm('Delete this question?');
             if( ans )
-                $('.sc-container:eq('+parent+') .q-container .q-form .question:eq('+q_index+')').fadeOut("slow").remove();
+                $('#'+parent+' .q-container .q-form .question:eq('+q_index+')').fadeOut("slow").remove();
         }
 
         function removeSub(index) {

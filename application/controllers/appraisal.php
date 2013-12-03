@@ -178,10 +178,48 @@ class Appraisal extends CI_Controller {
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );
 		}elseif( $action == 'add_training' ) {
 			echo "<pre>";
-			print_r($_SESSION);
+			$db_data = $this->session->userdata( 't_app_data' );
+			$app_data = array(
+								 'training_id'		=> $db_data['training']
+								,'appraisal_title'	=> $db_data['appraisal_title']
+								,'appraisal_desc'	=> $db_data['appraisal_desc']
+							 );
+			$_app = $this->appraisal_model->addTrainingAppraisal( $app_data );
+
+			$mc_id = array();
+			for ( $m = 0; $m < count($db_data['training_mc']); $m++ ) {
+				$mc_data = array(
+									 'appraisal_id'			=> $_app
+									,'main_category_name'	=> $db_data['training_mc'][$m]
+									,'percentage'			=> $db_data['percentage'][$m]
+								);
+				$mc_id[] = $this->appraisal_model->addTrainingAppraisalMainCategories( $mc_data );
+			}
+			print_r($mc_id);
+			foreach ($db_data as $key => $value) {
+				if( preg_match('/sub_c/', $key) ){
+					$s_ids		= explode('_', $key);
+					$main		= $mc_id[1] - 1;
+					$sub		= $s_ids[2];
+					for( $s = 0; $s < count($value); $s++ ){
+						// $subs[$sub] = $this->trainings_model->addTrainingAppraisalSubCategories( 
+						// 																		array( 
+						// 																				 'main_cat_id' => $mc_id[$main]
+						// 																				,'appraisal_id' => $_app
+						// 																				,'sub_category_name' => $value[$s]
+						// 																			 ) 
+						// 																		);
+						print_r(array( 
+									 'main_cat_id' => $mc_id[$main]
+									,'appraisal_id' => $_app
+									,'sub_category_name' => $value[$s]
+								) );
+					}
+				}
+			}
+			print_r($db_data);
 			exit();
-			$db_data = $this->session->userdata( 't_app_data-title' );
-			// $this->session->unset_userdata('t_app_data-title');
+			// $this->session->unset_userdata('t_app_data');
 
 			$this->appraisal_model->updateAppraisal( $app_id, $db_data );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );

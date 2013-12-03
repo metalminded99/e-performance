@@ -35,7 +35,7 @@
 				<td class="align-center"> <?=$ctr?> </td>
 				<?php 
 					for( $k = 0; $k < count( $result_keys ); $k++ ){ 
-						if( !preg_match( '/id/', $result_keys[ $k ] ) ){
+						if( !preg_match( '/id/', $result_keys[ $k ] ) && !preg_match( '/reminder/', $result_keys[ $k ] ) ){
 				?>
 				
 				<td> <?=$result[ $result_keys[ $k ] ]?> </td>

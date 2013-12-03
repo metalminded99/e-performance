@@ -67,6 +67,7 @@
 	<?php } ?>
 
 	$(function () {
+		<?php if( $this->session->userdata('lvl') == 2 ){ ?>
 		var colors = Highcharts.getOptions().colors,
             categories = ['Goals', '360 feedback', 'Training', 'Department Goal', 'Job Specification'],
             name = 'Browser brands',
@@ -190,6 +191,41 @@
             }]
 	    });
 
+		$('#compentency').highcharts({
+	        title: {
+                text: 'Yearly Employee Performance Average',
+                x: -20 //center
+            },
+            xAxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            },
+            yAxis: {
+                title: {
+                    text: 'Scores'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: ''
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+	        credits: {
+	            enabled: false
+	        },
+            series: series_plot
+	    });
+		<?php } ?>
+
 		$('#scores').highcharts({
             chart: {
                 type: 'column'
@@ -238,40 +274,6 @@
 	        },
             series: series_plot
         });
-
-		$('#compentency').highcharts({
-	        title: {
-                text: 'Yearly Employee Performance Average',
-                x: -20 //center
-            },
-            xAxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            },
-            yAxis: {
-                title: {
-                    text: 'Scores'
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-                valueSuffix: ''
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle',
-                borderWidth: 0
-            },
-	        credits: {
-	            enabled: false
-	        },
-            series: series_plot
-	    });
 
 		$('#goals').highcharts({
             chart: {
@@ -390,6 +392,7 @@
 				</p>
 			</div>
 			<h1 class="page-title">Dashboard</h1>
+			<?php if( $this->session->userdata('lvl') == 2 ){ ?>
 			<div class="row-fluid">
 				<!--- Pie Chart -->
 				<div class="block span12">
@@ -403,17 +406,6 @@
 			</div>
 
 			<div class="row-fluid">
-				<!--- Basic Bar Chart -->
-				<div class="block span12">
-					<p class="block-heading" data-toggle="collapse" data-target="#chart-container">
-						Score Distribution
-					</p>
-					<div id="scores-container" class="block-body collapse in">
-						<div id="scores" style="width: auto; height: 350px; margin: 0 auto"></div>
-					</div>
-				</div>
-			</div>
-			<div class="row-fluid">
 				<!--- Bar Chart -->
 				<div class="block span12">
 					<p class="block-heading" data-toggle="collapse" data-target="#chart-container">
@@ -424,12 +416,25 @@
 					</div>
 				</div>
 			</div>
+			<?php } ?>
+
+			<div class="row-fluid">
+				<!--- Basic Bar Chart -->
+				<div class="block span12">
+					<p class="block-heading" data-toggle="collapse" data-target="#chart-container">
+						<?=$this->session->userdata('lvl') == 2 ? 'Score Distribution' : 'My Monthly Score'?>
+					</p>
+					<div id="scores-container" class="block-body collapse in">
+						<div id="scores" style="width: auto; height: 350px; margin: 0 auto"></div>
+					</div>
+				</div>
+			</div>			
 
 			<div class="row-fluid">
 				<!--- Stacked Bar Chart -->
 				<div class="block span12">
 					<p class="block-heading" data-toggle="collapse" data-target="#chart-container">
-						Goal Status
+						<?=$this->session->userdata('lvl') == 2 ? 'Goal Status' : 'My Goal Status'?>
 					</p>
 					<div id="goals-container" class="block-body collapse in">
 						<div id="goals" style="width: auto; height: 350px; margin: 0 auto"></div>

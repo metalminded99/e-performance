@@ -61,8 +61,6 @@
                                 <th width="2%">#</th>
                                 <th width="20%">Training Title</th>
                                 <th width="40%">Description</th>
-                                <th width="10%">Start Date</th>
-                                <th width="10%">End Date</th>
                                 <th width="10%">Status</th>
                                 <th width="8%"></th>
                             </thead>
@@ -76,8 +74,6 @@
                                     <td><?=$cnt?></td>
                                     <td><?=$dev_plan['training_title']?></td>
                                     <td><?=$dev_plan['training_desc']?></td>
-                                    <td><?=!is_null($dev_plan['date_start']) ? $this->template_library->format_mysql_date( $dev_plan['date_start'], 'F d, Y' ) : ''?></td>
-                                    <td><?=$this->template_library->format_mysql_date( $dev_plan['date_end'], 'F d, Y' )?></td>
                                     <td><?=$dev_plan['status']?></td>
 
                                     <?php if( $this->session->userdata( 'lvl' ) == 2 ) { ?>
@@ -165,22 +161,6 @@
                                 <label class="label label-info">Description</label>
                                 <p id="desc" class="muted"></p>
                                 <div class="clearfix"></div>
-                                <label class="label label-info">Start Date</label>
-                                <div id="date_starttimepicker" class="input-append date">
-                                    <input data-format="yyyy-mm-dd" class="span5 validate[required]" type="text" name="date_start" id="date_start" readonly>
-                                    <span class="add-on">
-                                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                                    </span>
-                                </div>
-                                <div class="clearfix"></div>
-                                <label class="label label-info">End Date</label>
-                                <div id="end_datetimepicker" class="input-append date">
-                                    <input data-format="yyyy-mm-dd" class="span5 validate[required]" type="text" name="date_end" id="end_date" readonly>
-                                    <span class="add-on">
-                                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                                    </span>
-                                </div>
-                                <div class="clearfix"></div>
                                 <label class="label label-info">Included Skills</label>
                                 <table class="table table-condensed" id="included_skills">
                                     <tbody>
@@ -218,12 +198,6 @@
                             <label class="label label-info">Description</label>
                             <p id="desc" class="muted"></p>
                             <div class="clearfix"></div>
-                            <label class="label label-info">Start Date</label>
-                            <p id="date_start" class="muted"></p>
-                            <div class="clearfix"></div>
-                            <label class="label label-info">End Date</label>
-                            <p id="date_end" class="muted"></p>
-                            <div class="clearfix"></div>
                             <label class="label label-info">Included Skills</label>
                             <table class="table table-condensed" id="included_skills_v">
                                 <tbody>
@@ -254,23 +228,6 @@
 
                 <?php if(isset($save_url)) { ?> 
                 $( "#frm_dev_plan" ).validationEngine(); 
-
-                $( '#date_starttimepicker' ).datetimepicker( 
-                                                                {
-                                                                    format: 'yyyy-MM-dd'
-                                                                    ,startDate: 0
-                                                                    ,pickTime: false
-                                                                    ,endDate: Infinity
-                                                                } 
-                                                            );
-                $( '#end_datetimepicker' ).datetimepicker( 
-                                                            {
-                                                                format: 'yyyy-MM-dd'
-                                                                ,startDate: 0
-                                                                ,pickTime: false
-                                                                ,endDate: Infinity
-                                                            } 
-                                                        );
                 <? } ?>
 
                 $('.cancel').bind('click', function(e) {
@@ -325,9 +282,6 @@
 
                     $.each( json_dev_plans, function( i, l ) {
                         if( json_dev_plans[i].training_id === t_id ){
-                            $('#frm_dev_plan input[name=date_start]').val( json_dev_plans[i].date_start );
-                            $('#frm_dev_plan input[name=date_end]').val( json_dev_plans[i].date_end );
-
                             $( '#included_skills tbody' ).html('');
                             $( '#included_abilities tbody' ).html('');
 
@@ -438,8 +392,6 @@
                     $.each( json_dev_plans, function( i, l ) {
                         if( json_dev_plans[i].training_id === t_id ){
                             $('p#desc').text( json_dev_plans[i].training_desc );
-                            $('p#date_start').text( json_dev_plans[i].date_start );
-                            $('p#date_end').text( json_dev_plans[i].date_end );
 
                             $( '#included_skills tbody' ).html('');
                             $( '#included_abilities tbody' ).html('');

@@ -363,9 +363,10 @@ class Appraisal_Model extends CI_Model {
             $this->db->where( $where );
 
          return $this->db
-                        ->select( 'tas.app_id, pa.assign_id, a.appraisal_title, tas.date_assigned, pa.status' )
+                        ->select( "tas.app_id, pa.assign_id, a.appraisal_title, concat( `u`.`fname`, ' ', `u`.`lname` ) full_name, tas.date_assigned, pa.status", false )
                         ->from( APP_PEER_ASSIGN.' pa' )
                         ->join( APP_ASSIGN.' tas', 'tas.assign_id = pa.assign_id', 'left' )
+                        ->join( USER.' u', 'u.user_id = tas.user_id', 'left' )
                         ->join( APPRAISAL.' a', 'a.appraisal_id = tas.app_id', 'left' )
                         ->group_by( 'tas.app_id, pa.peer_id' )
                         ->limit( $offset, $per_page )
@@ -377,10 +378,11 @@ class Appraisal_Model extends CI_Model {
         if( !is_null( $where ) )
             $this->db->where( $where );
 
-         return $this->db
-                        ->select( 'tas.app_id, pa.assign_id, a.appraisal_title, tas.date_assigned, pa.status' )
+        return $this->db
+                        ->select( "tas.app_id, pa.assign_id, a.appraisal_title, concat( `u`.`fname`, ' ', `u`.`lname` ) full_name, tas.date_assigned, pa.status", false )
                         ->from( APP_MNGR_ASSIGN.' pa' )
                         ->join( APP_ASSIGN.' tas', 'tas.assign_id = pa.assign_id', 'left' )
+                        ->join( USER.' u', 'u.user_id = tas.user_id', 'left' )
                         ->join( APPRAISAL.' a', 'a.appraisal_id = tas.app_id', 'left' )
                         ->limit( $offset, $per_page )
                         ->get()
@@ -406,6 +408,8 @@ class Appraisal_Model extends CI_Model {
                 $up_data = array( 'peer_id' => $feedback[ 'peer_id' ], 'peer_score' => $feedback[ 'peer_score' ] );
             }elseif ( isset( $feedback[ 'manager_id' ] ) ){
                 $up_data = array( 'manager_id' => $feedback[ 'manager_id' ], 'manager_score' => $feedback[ 'manager_score' ] );
+            }else{
+                $up_data = array( 'user_id' => $feedback[ 'user_id' ], 'self_score' => $feedback[ 'self_score' ] );
             }
 
             return $this->db
@@ -426,7 +430,7 @@ class Appraisal_Model extends CI_Model {
             $this->db->where('ap.appraisal_id', $where['aq.appraisal_id']);
 
           return $this->db
-                        ->select( 'mc.main_category_id, mc.main_category_name, SUM( ar.'.$field.' ) ave, ap.percentage' )
+                        ->select( 'mc.main_category_id, mc.main_category_name, AVG( ar.'.$field.' ) ave, ap.percentage' )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
                         ->join( APP_MAIN_CAT.' mc', 'mc.main_category_id = aq.category', 'left' )
@@ -556,6 +560,11 @@ class Appraisal_Model extends CI_Model {
                         ->result_array();
     }
 
+    public function addTrainingAppraisal( $db_param ) {
+        $this->db->insert( APP_TRAINING, $db_param );
+        return $this->db->insert_id();
+    }
+
     public function addTrainingAppraisalMainCategories( $db_param ) {
         $this->db->insert( APP_TRAINING_MAIN_CAT, $db_param );
         return $this->db->insert_id();
@@ -588,6 +597,21 @@ class Appraisal_Model extends CI_Model {
                 ->where( $where )
                 ->update( APP_TRAINING_MAIN_CAT, $db_param );
         return true;
+    }
+
+    public function getAssignedName( $table, $assign_id ) {
+        return $this->db
+                        ->select( "CONCAT( u.fname, ' ', u.lname ) full_name, j.job_title", false )
+                        ->where( 'a.assign_id', $assign_id )
+                        ->join( USER.' u', 'u.user_id = a.user_id' )
+                        ->join( JOBS.' j', 'j.job_id = u.job_id' )
+                        ->get( $table . ' a' )
+                        ->result_array( );
+    }
+
+    public function addAppraisalComment( $db_param ) {
+        $this->db->insert( 'tbl_appraisal_categories_comment', $db_param );
+        return $this->db->insert_id();
     }
 
 }

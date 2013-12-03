@@ -17,6 +17,7 @@
 				<li><a href="<?=base_url()?>employees">Employees</a></li>
 				<li><a href="<?=base_url()?>dept_goals">Department Goal</a></li>
 				<li><a href="<?=base_url()?>appraisal">Appraisals</a></li>
+				<li><a href="<?=base_url()?>potential_appraisal">Potential Promotions</a></li>
 				<?php } ?>
 
 				<li><a href="<?=base_url()?>feedbacks<?=$this->session->userdata('lvl') == 2 ? '/mngr' : '' ?>">360 Feedback</a></li>
