@@ -319,7 +319,8 @@ class Feedbacks extends CI_Controller {
 				$percentage = ((($mc['ave'] / 5) * 100) * $mc_perc);
 				$overall += $percentage;
 				foreach ($sub_cat as $sc) {
-					$data['summary'][ $mc['main_category_name'] ][ $percentage ."% out of " .$mc['percentage']. "%" ][] = $sc;
+					$perc = $percentage > 0 ? $percentage."% out of " .$mc['percentage']. "%" : 'N/A';
+					$data['summary'][ $mc['main_category_name'] ][ $perc ][] = $sc;
 				}
 			}
 			$data['overall'] = $overall;

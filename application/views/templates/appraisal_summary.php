@@ -30,7 +30,7 @@
                                 <?=$sub_cat['sub_category_name'] ?>
                             </td>
                             <td>
-                                <?=$sub_cat['ave'] ?>
+                                <?=$sub_cat['ave'] > 0 ? $sub_cat['ave'] : 'N/A' ?>
                             </td>
                         </tr>
     <?php 

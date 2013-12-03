@@ -430,7 +430,7 @@ class Appraisal_Model extends CI_Model {
             $this->db->where('ap.appraisal_id', $where['aq.appraisal_id']);
 
           return $this->db
-                        ->select( 'mc.main_category_id, mc.main_category_name, AVG( ar.'.$field.' ) ave, ap.percentage' )
+                        ->select( 'mc.main_category_id, mc.main_category_name, (sum( ar.'.$field.' ) / sum(if( ar.'.$field.' > 0, 1, 0 ))) ave, ap.percentage', false )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
                         ->join( APP_MAIN_CAT.' mc', 'mc.main_category_id = aq.category', 'left' )
@@ -445,7 +445,7 @@ class Appraisal_Model extends CI_Model {
             $this->db->where( $where );
 
         return $this->db
-                        ->select( 'sc.sub_category_name, AVG( ar.'.$field.' ) ave' )
+                        ->select( 'sc.sub_category_name, if( ar.'.$field.' > 0, (sum( ar.'.$field.' ) / sum(if( ar.'.$field.' > 0, 1, 0 ))), 0 ) ave', false )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
                         ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = aq.sub_category', 'left' )
@@ -503,8 +503,9 @@ class Appraisal_Model extends CI_Model {
             $this->db->where( $where );
         
         return $this->db
-                        ->select( 'ar.appraisal_id, CONCAT( u.fname, \' \', u.lname ) full_name', false )
+                        ->select( 'ar.appraisal_id, u.user_id, CONCAT( u.fname, \' \', u.lname ) full_name, j.job_title', false )
                         ->join( USER.' u', 'u.user_id = ar.user_id', 'left' )
+                        ->join( JOBS.' j', 'j.job_id = u.job_id', 'left' )
                         ->group_by( 'ar.appraisal_id' )
                         ->get( APP_RESULT.' ar' );
     }
@@ -514,11 +515,11 @@ class Appraisal_Model extends CI_Model {
             $this->db->where( $where );
         
         return $this->db
-                        ->select( 'mc.main_category_name, sc.sub_category_name, aq.question, ar.self_score, ar.peer_score, ar.manager_score' )
+                        ->select( 'ar.appraisal_id, mc.main_category_name, sc.sub_category_name, aq.question, ar.self_score, ar.peer_score, ar.manager_score' )
                         ->join( APP_MAIN_CAT.' mc', 'mc.main_category_id = aq.category', 'left' )
                         ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = aq.sub_category', 'left' )
                         ->join( APP_RESULT.' ar', 'aq.question_id = ar.question_id', 'left' )
-                        ->order_by( 'mc.main_category_id', 'asc' )
+                        ->order_by( 'ar.appraisal_id, mc.main_category_id', 'asc' )
                         ->get( APP_QUESTION.' aq' );
     }
 
@@ -614,4 +615,43 @@ class Appraisal_Model extends CI_Model {
         return $this->db->insert_id();
     }
 
+    public function getAppraisalSummary( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+            return $this->db
+                            ->select( 'ar.appraisal_id, a.appraisal_title, mc.main_category_id, mc.main_category_name, (sum( ar.self_score ) / sum(if( ar.self_score > 0, 1, 0 ))) self_ave, (sum( ar.peer_score ) / sum(if( ar.peer_score > 0, 1, 0 ))) peer_ave, (sum( ar.manager_score ) / sum(if( ar.manager_score > 0, 1, 0 ))) mngr_ave, ap.percentage', false )
+                            ->from( APP_RESULT.' ar' )
+                            ->join( APPRAISAL.' a', 'a.appraisal_id = ar.appraisal_id', 'left' )
+                            ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+                            ->join( APP_MAIN_CAT.' mc', 'mc.main_category_id = aq.category', 'left' )
+                            ->join( 'tbl_appraisal_percentage ap', 'ap.main_cat_id = mc.main_category_id', 'left' )
+                            ->group_by( 'mc.main_category_id, ar.appraisal_id' )
+                            ->order_by( 'ar.appraisal_id, mc.main_category_id', 'asc' )
+                            ->get();
+    }
+
+    public function getAppraisalSummarySubCat( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->select( 'sc.sub_category_id, sc.sub_category_name, if( ar.self_score > 0, (sum( ar.self_score ) / sum(if( ar.self_score > 0, 1, 0 ))), 0 ) self_ave, if( ar.peer_score > 0, (sum( ar.peer_score ) / sum(if( ar.peer_score > 0, 1, 0 ))), 0 ) peer_ave, if( ar.manager_score > 0, (sum( ar.manager_score ) / sum(if( ar.manager_score > 0, 1, 0 ))), 0 ) mngr_ave', false )
+                        ->from( APP_RESULT.' ar' )
+                        ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+                        ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = aq.sub_category', 'left' )
+                        ->group_by( 'sc.sub_category_id' )
+                        ->get();
+    }
+
+    public function getAppraisalSummaryQuestions( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->select( 'aq.question,  ar.self_score, ar.peer_score, ar.manager_score' )
+                        ->from( APP_RESULT.' ar' )
+                        ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+                        ->get();
+    }
 }

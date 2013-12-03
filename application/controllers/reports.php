@@ -172,7 +172,7 @@ class Reports extends CI_Controller {
 		$this->load->model( 'appraisal_model' );
 
 		if($this->input->get()){
-			$ap_where = $where = "date_submit between '".$this->input->get('date_submitted')." 00:00:00' AND '".$this->input->get('date_submitted2')." 23:59:59'";
+			$ap_where = $where = "ar.date_submit between '".$this->input->get('date_submitted')." 00:00:00' AND '".$this->input->get('date_submitted2')." 23:59:59'";
 
 			if( $this->input->get('appraisal_title') ){
 				$ap_where .= "AND a.appraisal_title like '%".addslashes( $this->input->get('appraisal_title') )."%'";
@@ -185,26 +185,46 @@ class Reports extends CI_Controller {
 			}
 
 			$results = array();
-			$apps = $this->appraisal_model->getSubmittedAppraisal( $ap_where );
+			$_quest = array();
+			$apps = $this->appraisal_model->getAppraisalSummary( $ap_where );
 			if( $apps->num_rows() > 0 ){
 				foreach ($apps->result_array() as $app) {
+					$percentage		= $app['percentage'] / 100;
+					$cat_ave		= ((((($app['self_ave'] + $app['peer_ave']) + $app['mngr_ave']) / 3) / 5) * 100) * $percentage;
+					@$ave[$app['appraisal_id']]		+= $cat_ave;
 					$app_users = $this->appraisal_model->getSubmittedAppraisalUsers( $where );
 					if ( $app_users->num_rows() > 0 ) {
 						foreach ($app_users->result_array() as $app_user) {
-							$app_results = $this->appraisal_model->getSubmittedAppraisalResults( array( 'ar.appraisal_id' => $app['appraisal_id'] ) );
-							if( $app_results->num_rows() > 0 ){
-								foreach ($app_results->result_array() as $app_result) {
-									$results[ $app['appraisal_title'] ][ $app_user['full_name'] ][ $app_result['main_category_name'] ][ $app_result['sub_category_name'] ][] = array( 
-																					$app_result['question'] => array( 
-																									 'self' => $app_result['self_score'] 
-																									,'peer' => $app_result['peer_score'] 
-																									,'mngr' => $app_result['manager_score'] 
-																									) 
-																					);
+							$app_sub_cats = $this->appraisal_model->getAppraisalSummarySubCat( array( 'ar.appraisal_id' => $app['appraisal_id'] ) );
+							if( $app_sub_cats->num_rows() > 0 ){
+								foreach ($app_sub_cats->result_array() as $app_sub_cat) {
+									$q_param = array(
+														 'ar.appraisal_id' 	=> $app['appraisal_id']
+														,'aq.category'		=> $app['main_category_id']
+														,'aq.sub_category' 	=> $app_sub_cat['sub_category_id']
+
+													);
+									$app_questions = $this->appraisal_model->getAppraisalSummaryQuestions( $q_param );
+									if( $app_questions->num_rows() > 0 ){
+										foreach ($app_questions->result_array() as $app_question) {
+											if( !in_array($app_question['question'], $_quest ) ){
+												$main_cat = $cat_ave > 0 ? number_format($cat_ave, 1) .'% / '. $app['percentage'] . '%' : 'N/A';
+												$results[ $app['appraisal_id'].'_'.$app['appraisal_title'] ][ $app_user['full_name'] . '_' . $app_user['job_title'] ][ $app['main_category_name'] . ' (' .$main_cat. ')' ][ $app_sub_cat['sub_category_name'] ][] = array( 
+																						$app_question['question'] => array( 
+																										 'self' => $app_question['self_score']
+																										,'peer' => $app_question['peer_score']
+																										,'mngr' => $app_question['manager_score'] 
+																										) 
+																						);
+												$_quest[] = $app_question['question' ];
+											}
+										}
+									}
 								}
 							}
 						}
 					}
+					$template_param['overall'] = $ave;
 				}
 			}
 			$template_param['appraisals'] = $results;

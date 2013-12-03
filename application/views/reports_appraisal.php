@@ -118,15 +118,20 @@
                                     <?php 
                                         if( !empty( $appraisals ) ){
                                             foreach ($appraisals as $key => $val) {
+                                                $app_info = explode('_', $key);
                                     ?>
                                     <tr>
-                                        <td colspan="4">Appraisal Title: <strong><?=$key?></strong></td>
+                                        <td colspan="4">Appraisal Title: <strong><?=$app_info[1]?></strong></td>
                                     </tr>
                                     <?php 
                                                 foreach ($val as $k => $v) {
+                                                    $user_info = explode('_', $k);
                                     ?>
                                     <tr>
-                                        <td colspan="4">Employee: <strong><?=$k?></strong></td>
+                                        <td colspan="4">Employee: <strong><?=$user_info[0]?> (Overall: <?=number_format($overall[$app_info[0]], 1)?>%)</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">Job Title: <strong><?=$user_info[1]?></strong></td>
                                     </tr>
                                     <?php
                                                     foreach ($v as $cat => $sub) {
@@ -146,9 +151,9 @@
                                     ?>
                                     <tr>
                                         <td><?=$question?></td>
-                                        <td><?=$score['self'] != '' ? $score['self'] : '-' ?></td>
-                                        <td><?=$score['peer'] != '' ? $score['peer'] : '-' ?></td>
-                                        <td><?=$score['mngr'] != '' ? $score['mngr'] : '-' ?></td>
+                                        <td><?=$score['self'] > 0 ? $score['self'] : 'N/A' ?></td>
+                                        <td><?=$score['peer'] > 0 ? $score['peer'] : 'N/A' ?></td>
+                                        <td><?=$score['mngr'] > 0 ? $score['mngr'] : 'N/A' ?></td>
                                     </tr>
                                     <?php
                                                                 }
