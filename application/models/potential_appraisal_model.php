@@ -48,4 +48,18 @@ class Potential_Appraisal_Model extends CI_Model {
         return $this->db->insert_batch('tbl_appraisal_potential_result', $db_param);
     }
 
+    public function getPotentialAppraisalReport( $where, $by, $order ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->select( "concat(u.fname, ' ', u.lname) full_name,j.job_title, ((avg(manager_score) / 5) * 100) ave, date_format(date_submit, '%b %d, %Y') date_submit", false )
+                        ->group_by( 'p.user_id, manager_id' )
+                        ->order_by( 'date_submit', 'desc' )
+                        ->join( USER.' u', 'u.user_id = p.user_id' )
+                        ->join( JOBS.' j', 'j.job_id = u.user_id' )
+                        ->get( 'tbl_appraisal_potential_result p' )
+                        ->result_array();
+
+    }
 }

@@ -116,6 +116,48 @@ class Reports extends CI_Controller {
 										);
 	}
 
+	public function potential() {
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+		$this->load->model( 'potential_appraisal_model' );
+
+		if($this->input->get()){
+			$where = "p.date_submit between '".$this->input->get('date_submit1')."' AND '".$this->input->get('date_submit2')."'";
+
+			if( $this->input->get('lname') ){
+				$where .= " AND u.lname like '%".addslashes( $this->input->get('lname') )."%'";
+			}
+			if( $this->input->get('fname') ){
+				$where .= " AND u.fname like '%".addslashes( $this->input->get('fname') )."%'";
+			}
+
+			$report = $this->potential_appraisal_model->getPotentialAppraisalReport( 
+																				$where
+																				,$this->input->get('by')
+																				,$this->input->get('order')
+																			);
+			$potentials = array();
+			for ( $i=0; $i < count($report); $i++) {
+				if( $report[$i]['ave'] >= 85 ){
+					$potentials[] = $report[$i];
+				}
+			}
+			$template_param['potentials'] = $potentials;
+		}
+		# Template meta data
+		$data['active']						= 'potential';
+		$template_param['emp_menu']			= $this->load->view( '_components/report_menu', $data, true );
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']			= 'report_potential';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
+	}
+
 	public function process() {
 		# Check user's session
 		$this->template_library->check_session( 'user' );

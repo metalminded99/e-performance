@@ -32,6 +32,7 @@
 				<li><a href="<?=base_url()?>reports/dev_plans">Development Plans</a></li>
 				<li><a href="<?=base_url()?>reports/process">Process</a></li>
 				<li><a href="<?=base_url()?>reports/appraisal">Appraisal</a></li>
+				<li><a href="<?=base_url()?>reports/potential">Potential Promotions</a></li>
 			</ul>
 			<?php } ?>
 
