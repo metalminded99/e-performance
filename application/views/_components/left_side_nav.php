@@ -33,6 +33,7 @@
 				<li><a href="<?=base_url()?>reports/process">Process</a></li>
 				<li><a href="<?=base_url()?>reports/appraisal">Appraisal</a></li>
 				<li><a href="<?=base_url()?>reports/potential">Potential Promotions</a></li>
+				<li><a href="<?=base_url()?>reports/training_needs">Training Needs</a></li>
 			</ul>
 			<?php } ?>
 

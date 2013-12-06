@@ -67,10 +67,20 @@
                                     <td>
                                         <a onclick="javascript:view_details(<?=$proc['proc_id']?>)" title="More details" class="view_btn optlnk" href="#detailModal" role="button" data-toggle="modal"><i class="icon-zoom-in"></i></a>&nbsp;
                                         
-                                        <?php if( $proc['status'] == 'Pending' ){ ?>
+                                        <?php 
+                                            $_date = strtotime($proc['start_date']);
+                                            if( $proc['status'] == 'Pending' && $_date <= time() ){ 
+                                        ?>
                                         <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'start')" title="Start" class="optlnk" href="#" role="button"><i class="icon-play"></i></a>&nbsp;
                                         
-                                        <?php } elseif( $proc['status'] == 'On-going' ) { ?>
+                                        <?php 
+                                            } elseif( $this->uri->segment(2) == '' ) { 
+                                        ?>
+                                        <a title="Not ready" class="optlnk" href="javascript:void(0);" role="button"><i class="icon-info-sign"></i></a>&nbsp;
+                                        <?php
+                                            } 
+                                            if( $proc['status'] == 'On-going' ) { 
+                                        ?>
                                         <a onclick="javascript:do_action(<?=$proc['proc_id']?>, 'complete')" title="Completed" class="optlnk" href="#" role="button"><i class="icon-ok"></i></a>
                                         <?php }?>
                                     </td>

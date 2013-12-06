@@ -16,7 +16,7 @@ class Manage_process extends CI_Controller {
 
 		# Process list
 		$data['pagination'] = $this->template_library->get_pagination(
-																		'control_panel/manage_process' 
+																		'control_panel/manage_process/index' 
 																		,$this->process_model->getTotalProcess()
 																		,PER_PAGE
 																	 );

@@ -101,9 +101,9 @@ class Process_Model extends CI_Model {
     public function getProcessReminder( $user_id ) {
         $where = array( 
                         'ep.user_id' => $user_id
-                        ,"DATE(SYSDATE()) >= p.start_date" => null
-                        ,"DATE(SYSDATE()) <= p.end_date" => null
+                        ,"DATE(NOW()) = DATE_SUB(p.start_date, INTERVAL p.reminder DAY)" => null
                         ,"ep.date_accomplished" => null
+                        ,"ep.status" => 'Pending'
                       );
 
         return $this->db

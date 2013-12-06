@@ -14,4 +14,7 @@
     <li <?=$active == 'potential' ? 'class="active"' : '' ?>>
         <a href="<?=base_url()?>reports/potential">Potential Promotions</a>
     </li>
+    <li <?=$active == 'training_needs' ? 'class="active"' : '' ?>>
+        <a href="<?=base_url()?>reports/training_needs">Training Needs</a>
+    </li>
 </ul>

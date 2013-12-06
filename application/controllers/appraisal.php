@@ -177,7 +177,6 @@ class Appraisal extends CI_Controller {
 			$this->appraisal_model->updateAppraisal( $app_id, $db_data );
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );
 		}elseif( $action == 'add_training' ) {
-			echo "<pre>";
 			$db_data = $this->session->userdata( 't_app_data' );
 			$app_data = array(
 								 'training_id'		=> $db_data['training']
@@ -195,37 +194,44 @@ class Appraisal extends CI_Controller {
 								);
 				$mc_id[] = $this->appraisal_model->addTrainingAppraisalMainCategories( $mc_data );
 			}
-			print_r($mc_id);
+			$subs = array();
 			foreach ($db_data as $key => $value) {
 				if( preg_match('/sub_c/', $key) ){
 					$s_ids		= explode('_', $key);
-					$main		= $mc_id[1] - 1;
-					$sub		= $s_ids[2];
+					$main		= $mc_id[ ($s_ids[2] - 1) ];
 					for( $s = 0; $s < count($value); $s++ ){
-						// $subs[$sub] = $this->trainings_model->addTrainingAppraisalSubCategories( 
-						// 																		array( 
-						// 																				 'main_cat_id' => $mc_id[$main]
-						// 																				,'appraisal_id' => $_app
-						// 																				,'sub_category_name' => $value[$s]
-						// 																			 ) 
-						// 																		);
-						print_r(array( 
-									 'main_cat_id' => $mc_id[$main]
-									,'appraisal_id' => $_app
-									,'sub_category_name' => $value[$s]
-								) );
+						$subs [] = $this->appraisal_model->addTrainingAppraisalSubCategories( 
+																								array( 
+																										 'main_cat_id' => $main
+																										,'appraisal_id' => $_app
+																										,'sub_category_name' => $value[$s]
+																									 ) 
+																								);
 					}
 				}
 			}
-			print_r($db_data);
-			exit();
-			// $this->session->unset_userdata('t_app_data');
-
-			$this->appraisal_model->updateAppraisal( $app_id, $db_data );
+			foreach ($db_data as $key => $value) {
+				if( preg_match('/quest/', $key) ){
+					$q_ids		= explode('_', $key);
+					$main		= $mc_id[ ($q_ids[1] - 1) ];
+					$sub		= $subs[ ($q_ids[2] - 1) ];
+					for( $s = 0; $s < count($value); $s++ ){
+						$this->appraisal_model->addTrainingAppraisalQuestions( 
+																				array( 
+																						 'category'		=> $main
+																						,'appraisal_id'	=> $_app
+																						,'sub_category'	=> $sub
+																						,'question'		=> $value[$s]
+																					 ) 
+																				);
+					}
+				}
+			}
+			$this->session->unset_userdata('t_app_data');
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been updated successfully!', 'class' => 'info' ) );
 		}
 
-		redirect( base_url().'appraisal' );
+		redirect( base_url().'appraisal/training' );
 	}
 
 	public function update( $app_id ) {
@@ -274,6 +280,19 @@ class Appraisal extends CI_Controller {
 			
 			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal has been deleted successfully!', 'class' => 'info' ) );
 			echo base_url().'appraisal';
+		}
+	}
+
+	public function training_delete() {
+		if( $this->input->is_ajax_request() ){
+			$db_data = array( 'appraisal_id' => $this->input->post('item') );
+			$this->appraisal_model->removeTrainingAppraisal( $db_data );
+			$this->appraisal_model->removeTrainingAppraisalSubCategories( $db_data );
+			$this->appraisal_model->removeTrainingAppraisalMainCategories( $db_data );
+			$this->appraisal_model->removeTrainingAppraisalQuestions( $db_data );
+			
+			$this->session->set_flashdata( 'message', array( 'str' => '<i class="icon-ok"></i> Appraisal training has been deleted successfully!', 'class' => 'info' ) );
+			echo base_url().'appraisal/training';
 		}
 	}
 

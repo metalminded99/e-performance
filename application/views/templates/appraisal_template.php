@@ -6,7 +6,7 @@
         <!-- left side nav END -->
         
         <div class="span9">
-        	<!-- <ul class="nav nav-pills">
+        <!-- 	<ul class="nav nav-pills">
 			    <li <?=$this->uri->segment(2) == '' ? 'class="active"' : '' ?>>
 			        <a href="<?=base_url()?>appraisal">Appraisal</a>
 			    </li>

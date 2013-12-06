@@ -158,6 +158,46 @@ class Reports extends CI_Controller {
 										);
 	}
 
+	public function training_needs() {
+		# Check user's session
+		$this->template_library->check_session( 'user' );
+		$this->load->model( 'appraisal_model' );
+
+		if($this->input->get()){
+			$main_cat = $this->appraisal_model->getAppraisalMainCategories();
+			$report = array();
+			if( count($main_cat) > 0 ){
+				foreach ($main_cat as $mc) {
+					$sub_cat = $this->appraisal_model->getAppraisalSubCatReport( array( 
+																						 'main_cat_id' 	  => $mc['main_category_id']
+																						,'date_submit >=' => $this->input->get('date_submit1')
+																						,'date_submit <=' => $this->input->get('date_submit2')
+																					  ) 
+																				);
+					if( $sub_cat->num_rows() > 0 ){
+						foreach ($sub_cat->result_array() as $sc) {
+							$report[ $mc['main_category_name'] ][] = $sc;
+						}
+					}
+				}
+			}
+			$template_param['needs'] = $report;
+		}
+		# Template meta data
+		$data['active']						= 'training_needs';
+		$template_param['emp_cnt']			= $this->appraisal_model->getAppraisalEmployeeCnt( $this->session->userdata('job_id') );;
+		$template_param['emp_menu']			= $this->load->view( '_components/report_menu', $data, true );
+		$template_param['left_side_nav']	= $this->load->view( '_components/left_side_nav', '', true );
+		$template_param['content']			= 'report_traning_needs';
+		$this->template_library->render( 
+											$template_param 
+											,'user_header'
+											,'user_top'
+											,'user_footer'
+											,'' 
+										);
+	}
+
 	public function process() {
 		# Check user's session
 		$this->template_library->check_session( 'user' );

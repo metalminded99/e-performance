@@ -429,7 +429,7 @@ class Appraisal_Model extends CI_Model {
         if(isset($where['aq.appraisal_id'] ))
             $this->db->where('ap.appraisal_id', $where['aq.appraisal_id']);
 
-          return $this->db
+        return $this->db
                         ->select( 'mc.main_category_id, mc.main_category_name, (sum( ar.'.$field.' ) / sum(if( ar.'.$field.' > 0, 1, 0 ))) ave, ap.percentage', false )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
@@ -438,6 +438,7 @@ class Appraisal_Model extends CI_Model {
                         ->group_by( 'mc.main_category_id, aq.appraisal_id' )
                         ->get()
                         ->result_array();
+
     }
 
     public function getFeedbackSummarySubCat( $field, $where = null ) {
@@ -576,6 +577,16 @@ class Appraisal_Model extends CI_Model {
         return $this->db->insert_id();
     }
 
+    public function addTrainingAppraisalQuestions( $db_param ) {
+        $this->db->insert( 'tbl_appraisal_training_questionaire', $db_param );
+        return $this->db->insert_id();
+    }
+
+    public function removeTrainingAppraisal( $db_param ) {
+        $this->db->delete( 'tbl_appraisal_training', $db_param );
+        return true;
+    }
+
     public function removeTrainingAppraisalSubCategories( $db_param ) {
         $this->db->delete( APP_TRAINING_SUB_CAT, $db_param );
         return true;
@@ -583,6 +594,11 @@ class Appraisal_Model extends CI_Model {
 
     public function removeTrainingAppraisalMainCategories( $db_param ) {
         $this->db->delete( APP_TRAINING_MAIN_CAT, $db_param );
+        return true;
+    }
+
+    public function removeTrainingAppraisalQuestions( $db_param ) {
+        $this->db->delete( 'tbl_appraisal_training_questionaire', $db_param );
         return true;
     }
 
@@ -652,6 +668,30 @@ class Appraisal_Model extends CI_Model {
                         ->select( 'aq.question,  ar.self_score, ar.peer_score, ar.manager_score' )
                         ->from( APP_RESULT.' ar' )
                         ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+                        ->get();
+    }
+
+    public function getAppraisalEmployeeCnt( $job_id ) {
+        $total = $this->db
+                        ->select('COUNT( DISTINCT user_id ) total', false)
+                        ->join( APPRAISAL.' a', 'a.appraisal_id = ar.appraisal_id', 'left')
+                        ->where( 'a.job_id', $job_id )
+                        ->group_by( 'user_id' )
+                        ->get( APP_RESULT.' ar' );
+
+        return $total->row()->total;
+    }
+
+    public function getAppraisalSubCatReport( $where = null ) {
+        if( !is_null( $where ) )
+            $this->db->where( $where );
+
+        return $this->db
+                        ->select( 'sc.sub_category_id, sc.sub_category_name, ((if( ar.self_score > 0, (sum( ar.self_score ) / sum(if( ar.self_score > 0, 1, 0 ))), 0 ) + if( ar.peer_score > 0, (sum( ar.peer_score ) / sum(if( ar.peer_score > 0, 1, 0 ))), 0 ) + if( ar.manager_score > 0, (sum( ar.manager_score ) / sum(if( ar.manager_score > 0, 1, 0 ))), 0 )) / 3) ave', false )
+                        ->from( APP_RESULT.' ar' )
+                        ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+                        ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = aq.sub_category', 'left' )
+                        ->group_by( 'sc.sub_category_id' )
                         ->get();
     }
 }

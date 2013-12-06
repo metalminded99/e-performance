@@ -99,9 +99,10 @@ class Goal_Model extends CI_Model {
     public function getEmpGoalReminder( $user_id ) {
         $where = array( 
                         'user_id' => $user_id
-                        ,'status' => 'Not Started'
+                        ,'status' => 'Pending'
+                        ,'DATE(NOW()) = DATE_SUB(due_date, INTERVAL days_to_remind DAY)' => null
                       );
-        #"DATE_FORMAT(DATE_SUB(DUE_DATE, INTERVAL days_to_remind DAY), '%Y-%m-%d') = LEFT(SYSDATE(),10)" => null
+
         return $this->db
                         ->where( $where )
                         ->count_all_results( EMP_GOALS );

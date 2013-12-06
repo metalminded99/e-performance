@@ -51,7 +51,7 @@
 			          	<td><?=$this->template_library->shorten_words( $appraisal['appraisal_desc'] )?></td>
 			          	<td><?=$appraisal['date_created']?></td>
 						<td>
-							<a title="update" class="up_btn" href="<?=base_url()?>appraisal/update/<?=$appraisal['appraisal_id']?>" role="button"><i class="icon-edit"></i></a>
+							<!-- <a title="update" class="up_btn" href="<?=base_url()?>appraisal/update/<?=$appraisal['appraisal_id']?>" role="button"><i class="icon-edit"></i></a> -->
 							<a id="<?=$appraisal['appraisal_id']?>" title="remove" class="del_btn" href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
 						</td>
 			        </tr>
@@ -98,7 +98,7 @@
     		function delete_item() {
     			$.ajax({
 				    type: "POST"
-				    ,url: "<?=base_url()?>appraisal/delete"
+				    ,url: "<?=base_url()?>appraisal/training_delete"
 				    ,data: { 'item' : item_id },
 				    success: function( data ) {
 				    	window.location = data;
