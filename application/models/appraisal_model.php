@@ -683,15 +683,15 @@ class Appraisal_Model extends CI_Model {
     }
 
     public function getAppraisalSubCatReport( $where = null ) {
-        if( !is_null( $where ) )
-            $this->db->where( $where );
-
-        return $this->db
-                        ->select( 'sc.sub_category_id, sc.sub_category_name, ((if( ar.self_score > 0, (sum( ar.self_score ) / sum(if( ar.self_score > 0, 1, 0 ))), 0 ) + if( ar.peer_score > 0, (sum( ar.peer_score ) / sum(if( ar.peer_score > 0, 1, 0 ))), 0 ) + if( ar.manager_score > 0, (sum( ar.manager_score ) / sum(if( ar.manager_score > 0, 1, 0 ))), 0 )) / 3) ave', false )
-                        ->from( APP_RESULT.' ar' )
-                        ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
-                        ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = aq.sub_category', 'left' )
-                        ->group_by( 'sc.sub_category_id' )
-                        ->get();
+        $return = $this->db->query("SELECT sub_category_id, sub_category_name, ave from (SELECT sc.sub_category_id, sc.sub_category_name, ((if( ar.self_score > 0, (sum( ar.self_score ) / sum(if( ar.self_score > 0, 1, 0 ))), 0 ) + if( ar.peer_score > 0, (sum( ar.peer_score ) / sum(if( ar.peer_score > 0, 1, 0 ))), 0 ) + if( ar.manager_score > 0, (sum( ar.manager_score ) / sum(if( ar.manager_score > 0, 1, 0 ))), 0 )) / 3) ave FROM (`tbl_appraisal_result` ar) LEFT JOIN `tbl_appraisal_questionaire` aq ON `aq`.`question_id` = `ar`.`question_id` LEFT JOIN `tbl_appraisal_sub_categories` sc ON `sc`.`sub_category_id` = `aq`.`sub_category` WHERE `main_cat_id` = '".$where['main_cat_id']."' AND `date_submit` >= '".$where['date_submit1']."' AND `date_submit` <= '".$where['date_submit2']."' GROUP BY `sc`.`sub_category_id`) as r_table having ave < 2 ");
+        
+        return $return;
+        // return $this->db
+        //                 ->select( 'sc.sub_category_id, sc.sub_category_name, ((if( ar.self_score > 0, (sum( ar.self_score ) / sum(if( ar.self_score > 0, 1, 0 ))), 0 ) + if( ar.peer_score > 0, (sum( ar.peer_score ) / sum(if( ar.peer_score > 0, 1, 0 ))), 0 ) + if( ar.manager_score > 0, (sum( ar.manager_score ) / sum(if( ar.manager_score > 0, 1, 0 ))), 0 )) / 3) ave', false )
+        //                 ->from( APP_RESULT.' ar' )
+        //                 ->join( APP_QUESTION.' aq', 'aq.question_id = ar.question_id', 'left' )
+        //                 ->join( APP_SUB_CAT.' sc', 'sc.sub_category_id = aq.sub_category', 'left' )
+        //                 ->group_by( 'sc.sub_category_id' )
+        //                 ->get();
     }
 }

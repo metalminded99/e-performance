@@ -136,9 +136,19 @@ class Reports extends CI_Controller {
 																				,$this->input->get('by')
 																				,$this->input->get('order')
 																			);
+
 			$potentials = array();
 			for ( $i=0; $i < count($report); $i++) {
-				if( $report[$i]['ave'] >= 85 ){
+				$perf_app = $this->potential_appraisal_model->getPerformanceAppraisalAve( 
+																							array(
+																									 'user_id'			=> $report[$i]['user_id']
+																									,'date_submit >='	=> $this->input->get('date_submit1').' 00:00:00'
+																									,'date_submit <='	=> $this->input->get('date_submit2').' 23:59:59'
+																								 )
+																						);
+				$total = ($report[$i]['ave'] + $perf_app) / 2;
+				if( $total >= 85 ){
+					$report[$i]['ave'] = $total;
 					$potentials[] = $report[$i];
 				}
 			}
@@ -169,9 +179,9 @@ class Reports extends CI_Controller {
 			if( count($main_cat) > 0 ){
 				foreach ($main_cat as $mc) {
 					$sub_cat = $this->appraisal_model->getAppraisalSubCatReport( array( 
-																						 'main_cat_id' 	  => $mc['main_category_id']
-																						,'date_submit >=' => $this->input->get('date_submit1')
-																						,'date_submit <=' => $this->input->get('date_submit2')
+																						 'main_cat_id' 	=> $mc['main_category_id']
+																						,'date_submit1' => $this->input->get('date_submit1')
+																						,'date_submit2' => $this->input->get('date_submit2')
 																					  ) 
 																				);
 					if( $sub_cat->num_rows() > 0 ){

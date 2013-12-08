@@ -65,7 +65,7 @@
                     <div id="widget1container" class="block-body">
                         <form id="frm_potential" action="" method="GET">
                             <div class="element">
-                                <label for="date_submit1">Date Start <span class="red">(required)</span></label>
+                                <label for="date_submit1">Date Created <span class="red">(required)</span></label>
                                 <input id="date_submit1" name="date_submit1" class="text validate[required] datepicker" value="<?=isset( $_GET['date_submit1'] ) ? $_GET['date_submit1'] : '' ?>"/>
                                 To
                                 <input id="date_submit2" name="date_submit2" class="text validate[required] datepicker" value="<?=isset( $_GET['date_submit2'] ) ? $_GET['date_submit2'] : '' ?>"/>

@@ -42,7 +42,7 @@
                                 <tr>
                                     <td><?=$counter?></td>
                                     <td><?=$potential['full_name']?></td>
-                                    <td><?=is_numeric($potential['ave']) ? number_format(($potential['ave'] / 5) * 100) . '%' : '-'?></td>
+                                    <td><?=is_numeric($potential['ave']) ? number_format(($potential['ave'] / 5) * 100, 2) . '%' : '-'?></td>
                                     <td><?=$potential['date_submit']?></td>
                                 </tr>
                                 <?php 
