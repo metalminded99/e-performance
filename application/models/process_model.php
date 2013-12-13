@@ -19,7 +19,7 @@ class Process_Model extends CI_Model {
             
             return $this->db
                             ->get()
-                            ->result_array();
+                            ->result_array(); 
     }
     
     public function getAllEmpProcess( $offset, $per_page, $where = array() ) {

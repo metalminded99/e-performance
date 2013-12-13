@@ -57,7 +57,7 @@ class Home extends CI_Controller {
 		$performance = array();
 		$months = range(1, 12);
 		if( count($score_summary) > 0 ){
-			foreach ($score_summary as $ss) {
+			foreach ($score_summary as $ss) { 
 				for( $i=0; $i < count($months); $i++ ){
 					$performance[ $ss['dsy'] ][ $months[$i] ] = $ss['dsm'] == $months[$i] ? (($ss['sc'] + $ss['ps'] + $ss['ms']) / 3) : 0;
 				}

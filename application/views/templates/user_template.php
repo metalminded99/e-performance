@@ -141,7 +141,7 @@
                 });
             }
         }
-
+ 
     	$('#process').highcharts({
 	        chart: {
                 type: 'pie'
