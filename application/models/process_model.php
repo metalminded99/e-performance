@@ -156,13 +156,23 @@ class Process_Model extends CI_Model {
                         ->result_array();
     }
 
-    public function getProcessSummary( $status ) {
+    public function getProcessSummary( $proc ) {
+        return $this->db
+                        ->select( "ep.status, count(*) total", false )
+                        ->join( PROCESS .' p', 'p.proc_id = ep.process_id', 'left' )
+                        ->where( 'p.proc_title', $proc )
+                        ->group_by( 'ep.process_id, ep.status' )
+                        ->get( EMP_PROCESS.' ep' )
+                        ->result_array();
+    }
+
+    public function getOverallProcessCnt( ) {
         return $this->db
                         ->select( "p.proc_title, count(*) total", false )
-                        ->join( PROCESS .' p', 'p.proc_id = ep.process_id', 'left' )
-                        ->where( 'ep.status', $status )
+                        ->join( EMP_PROCESS.' ep', 'p.proc_id = ep.process_id', 'left' )
+                        ->where( 'YEAR( p.date_added ) = YEAR( NOW( ) )', null )
                         ->group_by( 'ep.process_id' )
-                        ->get( EMP_PROCESS.' ep' )
+                        ->get( PROCESS .' p' )
                         ->result_array();
     }
 

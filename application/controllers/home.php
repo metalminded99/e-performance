@@ -87,8 +87,13 @@ class Home extends CI_Controller {
 
 		# Process chart data start
 		$proc_status	= $template_param['proc_status'] = array( 'Pending','On-going','Completed','Rejected' );
-		$processes		= $this->process_model->getAllProcess( 0, 10000 );
+		$processes		= $this->process_model->getOverallProcessCnt();
 		$proc_summary	= array();
+		foreach( $processes as $proc ) {
+			$proc_summary[ $proc['proc_title'] ] = (int)$proc['total'];
+		}
+		$template_param['process_summary'] = json_encode( $proc_summary );
+
 		foreach ($dept_goals as $dept_goal) {
 			for( $i=0; $i < count( $goal_status ); $i++ ){
 				$where = array( 'dg.goal_id' => $dept_goal['goal_id'], 'status' => $goal_status[$i] );
@@ -202,6 +207,16 @@ class Home extends CI_Controller {
 				} 
 
 				echo json_encode( $stats_array );
+			}
+			
+			if( $this->input->post('action') == 'proc_details' ) {
+				$stats 		 = $this->process_model->getProcessSummary( $this->input->post('proc') );
+				// $stats_array = array();
+				// foreach ($stats as $stat) {
+				// 	$stats_array[ $stat[ 'proc_title' ] ] =  $stat[ 'total' ];
+				// } 
+
+				echo json_encode( $stats );
 			}
 		}else
 			redirect( base_url() );
