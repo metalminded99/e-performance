@@ -63,8 +63,47 @@ class Home extends CI_Controller {
 				}
 			}
 		}
-		
+
+		$score_summary2	= $this->appraisal_model->getPerformanceSummary2( $p_where );
+		$performance2 = array();
+		$scores = range(1, 5);
+		if( count($score_summary2) > 0 ){
+			foreach ($score_summary2 as $ss) { 
+				switch ($ss['ave']) {
+					case 1:
+						$performance2[ $ss['dsy'] ][ 1 ] = (int)$ss['cnt'] ;
+						break;
+					
+					case 2:
+						$performance2[ $ss['dsy'] ][ 2 ] = (int)$ss['cnt'];
+						break;
+					
+					case 3:
+						$performance2[ $ss['dsy'] ][ 3 ] = (int)$ss['cnt'];
+						break;
+					
+					case 4:
+						$performance2[ $ss['dsy'] ][ 4 ] = (int)$ss['cnt'];
+						break;
+					
+					case 5:
+						$performance2[ $ss['dsy'] ][ 5 ] = (int)$ss['cnt'];
+						break;
+					
+					default:
+						# code...
+						break;
+				}
+				for ($i=0; $i < count($scores); $i++) { 
+					if( !isset($performance2[ $ss['dsy'] ][$scores[$i]]) ){
+						$performance2[ $ss['dsy'] ][ $scores[$i] ] = 0;
+					}
+				}
+				asort($performance2[$ss['dsy']]);
+			}
+		}
 		$template_param['performance_summary']		= !empty( $performance ) ? json_encode( $performance ) : 0 ;
+		$template_param['performance_summary2']		= !empty( $performance2 ) ? json_encode( $performance2 ) : 0 ;
 		# Performance and score chart data end
 
 		# Goals chart data start

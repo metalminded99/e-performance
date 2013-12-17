@@ -161,13 +161,14 @@
 	function toInt(n){ return Number((n).toFixed(1)); };
 
 	var series_plot = [];
+	var series_plot2 = [];
 
 	<?php if( isset( $performance_summary ) ){ ?>
 	var perf_summary = <?=$performance_summary?>;
 	$.each( perf_summary, function( k, v ){
 		var perf_data = [];
 		$.each( v, function( i, a ){
-			perf_data.push( toInt( a ) );
+			perf_data.push( toInt(a) );
 		});
 		series_plot = [{
 						name : k,
@@ -175,6 +176,23 @@
 					  }];
 	});
 	console.log( series_plot );
+	<?php } ?>
+
+	<?php if( isset( $performance_summary2 ) ){ ?>
+	var perf_summary2 = <?=$performance_summary2?>;
+	console.log( perf_summary2 );
+	$.each( perf_summary2, function( k, v ){
+		var perf_data2 = [];
+		$.each( v, function( i, a ){
+			perf_data2.push( a );
+		});
+		console.log('val', perf_data2);
+		series_plot2 = [{
+						name : k,
+						data : perf_data2
+					  }];
+	});
+	console.log( series_plot2 );
 	<?php } ?>
 
 	<?php if( isset( $goals_summary ) ){ ?>
@@ -356,28 +374,24 @@
                 type: 'column'
             },
             title: {
-                text: 'Monthly Score Average'
+                text: 'Score Average'
             },
             xAxis: {
                 categories: [
-                    'Jan',
-                    'Feb',
-                    'Mar',
-                    'Apr',
-                    'May',
-                    'Jun',
-                    'Jul',
-                    'Aug',
-                    'Sep',
-                    'Oct',
-                    'Nov',
-                    'Dec'
-                ]
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5'
+                ],
+                title: {
+                    text: 'Scores'
+                }
             },
             yAxis: {
                 min: 0,
                 title: {
-                    text: 'Scores'
+                    text: 'Number of Employees'
                 }
             },
             tooltip: {
@@ -397,7 +411,7 @@
 	        credits: {
 	            enabled: false
 	        },
-            series: series_plot
+            series: series_plot2
         });
 
 		$('#goals').highcharts({

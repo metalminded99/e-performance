@@ -488,6 +488,13 @@ class Appraisal_Model extends CI_Model {
                         ->result_array();
     }
 
+    public function getPerformanceSummary2( ) {
+        $query = $this->db->query( 'SELECT * FROM (SELECT YEAR(date_submit)dsy, COUNT(distinct user_id) cnt, ROUND(((AVG(self_score) + AVG(peer_score) + AVG(manager_score)) / 3)) ave FROM (`tbl_appraisal_result`) GROUP BY `user_id` HAVING ((AVG(self_score) + AVG(peer_score) + AVG(manager_score)) / 3) is not null) a GROUP BY cnt, ave' );
+
+        return $query->result_array();
+    }
+
+
     public function getSubmittedAppraisal( $where = null ) {
         if( !is_null( $where ) )
             $this->db->where( $where );
